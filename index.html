@@ -3,52 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cosas Aleix</title>
+<title>Cosas Aleix - Admin</title>
 <style>
-  :root { --primary: #28a745; --danger: #dc3545; --dark: #333; --google: #4285F4; }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f4f7f6; margin: 0; padding: 20px; }
+  :root { --primary: #28a745; --danger: #dc3545; --dark: #333; }
+  body { font-family: 'Segoe UI', sans-serif; background:#f4f7f6; margin: 0; padding: 20px; }
   .container { max-width: 800px; margin: auto; background:white; padding:30px; border-radius:15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-  
-  h2 { text-align: center; color: var(--dark); }
-  
+  h2 { text-align: center; }
   table { width:100%; border-collapse:collapse; margin-top:20px; }
-  th { background: #f8f9fa; padding: 12px; border-bottom: 2px solid #dee2e6; }
-  td { padding: 12px; border-bottom: 1px solid #eee; text-align:center; }
+  th, td { padding: 12px; border-bottom: 1px solid #eee; text-align:center; }
   img { width:60px; height:60px; object-fit: cover; border-radius:8px; }
-  
-  .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+  .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
   .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
-  .btn-delete { background: var(--danger); color: white; padding: 5px 10px; font-size: 0.8em; }
-  .btn-google { background: var(--google); color: white; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
-  .btn-login-open { background: transparent; color: #ccc; font-size: 0.7em; margin-top: 50px; display: block; width: 100px; margin-left: auto; margin-right: auto; }
-
+  .btn-delete { background: var(--danger); color: white; padding: 5px 10px; }
   #adminPanel { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px dashed #ccc; display: none; }
-  .input-group { display: grid; gap: 10px; grid-template-columns: 1fr 1fr 1fr; }
-  
   #loginOverlay { 
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; 
   }
-  .login-box { background: white; padding: 30px; border-radius: 10px; width: 300px; position: relative; text-align: center; }
-  .close-modal { position: absolute; top: 10px; right: 10px; cursor: pointer; font-weight: bold; }
-
-  #totalPrice { font-size: 1.5em; font-weight: bold; text-align: center; margin-top: 30px; color: var(--primary); }
+  .login-box { background: white; padding: 30px; border-radius: 10px; width: 280px; text-align: center; }
+  input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>🛍️ Lista de Deseos Aleix</h2>
+  <h2>🛍️ Lista de Deseos</h2>
 
   <div id="adminPanel">
-    <h3 style="margin-top:0">Panel de Editor</h3>
-    <div class="input-group">
-      <input id="price" type="number" placeholder="Precio €" style="padding:8px">
-      <input id="link" placeholder="Link web" style="padding:8px">
-      <input id="image" placeholder="Link imagen" style="padding:8px">
-    </div>
-    <button id="addBtn" class="btn btn-add">Guardar Producto</button>
-    <button onclick="cerrarSesion()" style="background:none; color:gray; border:none; cursor:pointer; margin-top:10px;">Cerrar Sesión</button>
+    <h3>Añadir Producto</h3>
+    <input id="price" type="number" placeholder="Precio €">
+    <input id="link" placeholder="Enlace web">
+    <input id="image" placeholder="Enlace imagen">
+    <button id="addBtn" class="btn btn-add">Guardar</button>
+    <button onclick="logout()" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">Cerrar Sesión</button>
   </div>
 
   <table>
@@ -56,27 +43,25 @@
       <tr>
         <th>Imagen</th>
         <th>Precio</th>
-        <th>Enlace</th>
+        <th>Link</th>
         <th class="admin-only" style="display:none">Acción</th>
       </tr>
     </thead>
     <tbody id="products"></tbody>
   </table>
 
-  <div id="totalPrice">Cargando...</div>
-
-  <button class="btn btn-login-open" onclick="toggleLogin(true)">Admin Login</button>
+  <div id="totalPrice" style="text-align:center; font-weight:bold; font-size:1.5em; margin-top:20px;">Total: 0.00 €</div>
+  
+  <button onclick="document.getElementById('loginOverlay').style.display='flex'" style="display:block; margin: 40px auto; color:#ccc; background:none; border:none; cursor:pointer;">Admin Login</button>
 </div>
 
 <div id="loginOverlay">
   <div class="login-box">
-    <span class="close-modal" onclick="toggleLogin(false)">×</span>
-    <h3>Acceso Restringido</h3>
-    <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">Identifícate con Google para editar la lista.</p>
-    <button onclick="iniciarSesionGoogle()" class="btn btn-google">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
-      Entrar con Google
-    </button>
+    <h3>Entrar</h3>
+    <input id="email" type="email" placeholder="Correo">
+    <input id="pass" type="password" placeholder="Contraseña">
+    <button onclick="login()" class="btn btn-add">Entrar</button>
+    <button onclick="document.getElementById('loginOverlay').style.display='none'" style="margin-top:10px; border:none; background:none; cursor:pointer;">Cancelar</button>
   </div>
 </div>
 
@@ -97,92 +82,58 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const auth = firebase.auth();
-  const productosCol = db.collection("productos");
 
-  // --- TU CORREO AUTORIZADO ---
-  const USUARIO_AUTORIZADO = "aleixruto@gmail.com"; 
-
-  function toggleLogin(show) {
-    document.getElementById('loginOverlay').style.display = show ? 'flex' : 'none';
+  // LOGIN
+  function login() {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("pass").value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(() => document.getElementById('loginOverlay').style.display='none')
+      .catch(err => alert("Datos incorrectos"));
   }
 
-  // NUEVA FUNCIÓN CON REDIRECT
-  function iniciarSesionGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
-  }
+  function logout() { auth.signOut(); }
 
-  // Manejar el resultado del regreso de Google
-  auth.getRedirectResult().catch(err => {
-    if(err.code !== 'auth/none') alert("Error: " + err.message);
-  });
-
-  function cerrarSesion() { 
-    auth.signOut().then(() => {
-        location.reload(); 
-    });
-  }
-
+  // ESTADO DE LA SESIÓN
   auth.onAuthStateChanged(user => {
-    const adminPanel = document.getElementById('adminPanel');
-    const adminCols = document.querySelectorAll('.admin-only');
-    
-    if (user && user.email === USUARIO_AUTORIZADO) {
-      adminPanel.style.display = 'block';
-      adminCols.forEach(el => el.style.display = 'table-cell');
-      toggleLogin(false); 
-    } else {
-      adminPanel.style.display = 'none';
-      adminCols.forEach(el => el.style.display = 'none');
-      if (user) alert("Tu correo (" + user.email + ") no está autorizado.");
-    }
+    const isLogged = !!user;
+    document.getElementById('adminPanel').style.display = isLogged ? 'block' : 'none';
+    cargarProductos(isLogged);
   });
 
-  document.getElementById("addBtn").onclick = function() {
+  // AÑADIR
+  document.getElementById("addBtn").onclick = () => {
     const price = Number(document.getElementById("price").value);
-    const link = document.getElementById("link").value.trim();
-    const image = document.getElementById("image").value.trim();
-
-    if (!price || !link || !image) return alert("Completa los datos");
-
-    productosCol.add({ price, link, image, date: new Date() })
-      .then(() => {
-        document.getElementById("price").value = "";
-        document.getElementById("link").value = "";
-        document.getElementById("image").value = "";
-      })
-      .catch(() => alert("Error: No tienes permiso para escribir en la base de datos."));
-  };
-
-  window.deleteProduct = (id) => {
-    if(confirm("¿Eliminar este producto?")) {
-        productosCol.doc(id).delete().catch(() => alert("Error al borrar."));
+    const link = document.getElementById("link").value;
+    const image = document.getElementById("image").value;
+    if(price && link && image) {
+      db.collection("productos").add({ price, link, image, date: new Date() });
     }
   };
 
-  productosCol.orderBy("date", "desc").onSnapshot(snapshot => {
-    const tbody = document.getElementById("products");
-    let total = 0;
-    tbody.innerHTML = "";
-    
-    snapshot.forEach(doc => {
-      const p = doc.data();
-      total += Number(p.price);
-      const isLogged = auth.currentUser && auth.currentUser.email === USUARIO_AUTORIZADO;
+  // BORRAR
+  window.borrar = (id) => { if(confirm("¿Borrar?")) db.collection("productos").doc(id).delete(); };
 
-      tbody.innerHTML += `
-        <tr>
-          <td><img src="${p.image}" onerror="this.src='https://via.placeholder.com/60'"></td>
-          <td><b>${Number(p.price).toFixed(2)} €</b></td>
-          <td><a href="${p.link}" target="_blank" style="color:#007bff; text-decoration:none">🔗 Ver producto</a></td>
-          <td class="admin-only" style="display: ${isLogged ? 'table-cell' : 'none'}">
-            <button class="btn btn-delete" onclick="deleteProduct('${doc.id}')">🗑️</button>
+  // MOSTRAR PRODUCTOS
+  function cargarProductos(admin) {
+    db.collection("productos").orderBy("date", "desc").onSnapshot(snap => {
+      let html = ""; let total = 0;
+      snap.forEach(doc => {
+        const p = doc.data();
+        total += p.price;
+        html += `<tr>
+          <td><img src="${p.image}"></td>
+          <td>${p.price.toFixed(2)} €</td>
+          <td><a href="${p.link}" target="_blank">Ver</a></td>
+          <td style="display:${admin ? 'table-cell' : 'none'}">
+            <button class="btn btn-delete" onclick="borrar('${doc.id}')">🗑️</button>
           </td>
-        </tr>
-      `;
+        </tr>`;
+      });
+      document.getElementById("products").innerHTML = html;
+      document.getElementById("totalPrice").innerText = `Total: ${total.toFixed(2)} €`;
     });
-    document.getElementById("totalPrice").innerText = `Total acumulado: ${total.toFixed(2)} €`;
-  });
+  }
 </script>
 </body>
 </html>
