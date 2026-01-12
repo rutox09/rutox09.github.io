@@ -12,6 +12,8 @@ button { background:#28a745; color:white; border:none; cursor:pointer; }
 table { width:100%; border-collapse:collapse; margin-top:20px; }
 th, td { border:1px solid #ccc; padding:5px; text-align:center; }
 img { width:50px; border-radius:4px; }
+.deleteBtn { background:#dc3545; color:white; padding:5px 8px; border:none; border-radius:4px; cursor:pointer; }
+#totalPrice { font-weight:bold; margin-top:10px; text-align:center; }
 </style>
 </head>
 <body>
@@ -29,10 +31,13 @@ img { width:50px; border-radius:4px; }
         <th>Imagen</th>
         <th>Precio</th>
         <th>Link</th>
+        <th>Eliminar</th>
       </tr>
     </thead>
     <tbody id="products"></tbody>
   </table>
+
+  <div id="totalPrice">Total: 0 €</div>
 </div>
 
 <!-- Firebase SDKs -->
@@ -59,6 +64,7 @@ img { width:50px; border-radius:4px; }
   const imageInput = document.getElementById("image");
   const addBtn = document.getElementById("addBtn");
   const tbody = document.getElementById("products");
+  const totalDiv = document.getElementById("totalPrice");
 
   // Añadir producto
   addBtn.onclick = function() {
@@ -66,10 +72,7 @@ img { width:50px; border-radius:4px; }
     const link = linkInput.value.trim();
     const image = imageInput.value.trim();
 
-    if (!price || !link || !image) {
-      alert("Rellena precio, link y URL de imagen");
-      return;
-    }
+    if (!price || !link || !image) { alert("Rellena todos los campos"); return; }
 
     productosCol.add({ price, link, image })
       .then(() => {
@@ -80,13 +83,19 @@ img { width:50px; border-radius:4px; }
       .catch(err => alert("Error al añadir: " + err));
   };
 
-  // Mostrar productos en tiempo real
+  // Eliminar producto
+  function deleteProduct(id) {
+    productosCol.doc(id).delete();
+  }
+
+  // Mostrar productos en tiempo real y calcular total
   productosCol.onSnapshot(snapshot => {
     tbody.innerHTML = "";
+    let total = 0;
     snapshot.forEach(doc => {
       const p = doc.data();
-      // Comprobar que los campos existan
       const price = p.price ? Number(p.price).toFixed(2) : "0.00";
+      total += Number(price);
       const link = p.link ? p.link : "#";
       const image = p.image ? p.image : "";
 
@@ -95,9 +104,11 @@ img { width:50px; border-radius:4px; }
           <td>${image ? `<img src="${image}" alt="Imagen">` : ""}</td>
           <td>${price} €</td>
           <td><a href="${link}" target="_blank">Ver</a></td>
+          <td><button class="deleteBtn" onclick="deleteProduct('${doc.id}')">Eliminar</button></td>
         </tr>
       `;
     });
+    totalDiv.innerText = "Total: " + total.toFixed(2) + " €";
   });
 </script>
 
