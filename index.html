@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist Aleix - Pro</title>
+    <title>Wishlist Abierta - Aleix</title>
     <style>
         :root {
             --primary: #2ecc71;
@@ -14,14 +14,14 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background: #f0f2f5;
             margin: 0;
             padding: 20px;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: auto;
             background: white;
             padding: 30px;
@@ -31,14 +31,13 @@
 
         h2 { text-align: center; color: var(--dark); margin-bottom: 30px; }
 
-        /* Panel Admin */
-        #adminPanel {
+        /* Formulario Abierto */
+        .admin-box {
             background: var(--light);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 30px;
-            border: 2px dashed #ddd;
-            display: none;
+            border: 1px solid #ddd;
         }
 
         .form-grid {
@@ -55,7 +54,6 @@
             font-size: 14px;
         }
 
-        /* Botones */
         .btn {
             padding: 10px 20px;
             border: none;
@@ -66,10 +64,8 @@
         }
 
         .btn-add { background: var(--primary); color: white; width: 100%; }
-        .btn-login { background: none; border: 1px solid #ccc; color: #999; margin: 40px auto; display: block; }
-        .btn-logout { background: none; color: var(--danger); font-size: 12px; margin-top: 10px; }
 
-        /* Tarjetas de Producto */
+        /* Grid de Productos */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -82,40 +78,40 @@
             padding: 15px;
             text-align: center;
             border: 1px solid #eee;
-            transition: 0.3s;
+            position: relative;
         }
-
-        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
         .card img {
             width: 100%;
             height: 150px;
             object-fit: cover;
             border-radius: 10px;
-            margin-bottom: 15px;
         }
 
         .card .price { font-size: 1.5em; font-weight: bold; color: var(--primary); margin: 10px 0; }
         
-        .card .actions { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .btn-edit { background: #f1c40f; color: white; padding: 5px 10px; }
-        .btn-del { background: var(--danger); color: white; padding: 5px 10px; }
-
-        /* Login Overlay */
-        #loginOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+        .btn-del { 
+            background: var(--danger); color: white; padding: 5px; 
+            position: absolute; top: 10px; right: 10px; border-radius: 50%;
+            width: 30px; height: 30px; line-height: 1;
         }
 
-        .login-box { background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center; }
-
-        #totalPrice { text-align: center; font-size: 1.8em; margin-top: 30px; color: var(--dark); font-weight: bold; }
+        #totalPrice { text-align: center; font-size: 1.8em; margin-top: 30px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🛍️ Lista de Deseos</h2>
+    <h2>🛍️ Lista de Deseos (Modo Abierto)</h2>
+
+    <div class="admin-box">
+        <div class="form-grid">
+            <input id="price" type="number" step="0.01" placeholder="Precio €">
+            <input id="link" placeholder="Enlace web">
+            <input id="image" placeholder="Enlace imagen">
+        </div>
+        <button onclick="guardarProducto()" class="btn btn-add">Añadir a la lista</button>
+    </div>
 
     <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
         <select id="sortOrder" onchange="renderizar()">
@@ -125,38 +121,13 @@
         </select>
     </div>
 
-    <div id="adminPanel">
-        <h3 id="panelTitle">Añadir Producto</h3>
-        <input type="hidden" id="editId">
-        <div class="form-grid">
-            <input id="price" type="number" step="0.01" placeholder="Precio €">
-            <input id="link" placeholder="Enlace web">
-            <input id="image" placeholder="Enlace imagen">
-        </div>
-        <button onclick="guardarProducto()" class="btn btn-add">Guardar</button>
-        <button onclick="logout()" class="btn btn-logout">Cerrar Sesión</button>
-    </div>
-
     <div id="productContainer" class="grid"></div>
 
     <div id="totalPrice">Total: 0.00 €</div>
-
-    <button id="showLogin" class="btn btn-login" onclick="document.getElementById('loginOverlay').style.display='flex'">Admin Login</button>
-</div>
-
-<div id="loginOverlay">
-    <div class="login-box">
-        <h3>Entrar</h3>
-        <input id="email" type="email" placeholder="Correo" style="width:100%; margin-bottom:10px">
-        <input id="pass" type="password" placeholder="Contraseña" style="width:100%; margin-bottom:15px">
-        <button onclick="login()" class="btn btn-add">Acceder</button>
-        <button onclick="document.getElementById('loginOverlay').style.display='none'" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer">Cancelar</button>
-    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -170,74 +141,33 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const auth = firebase.auth();
     let listaProductos = [];
 
-    // AUTH
-    function login() {
-        const e = document.getElementById("email").value;
-        const p = document.getElementById("pass").value;
-        auth.signInWithEmailAndPassword(e, p)
-            .then(() => document.getElementById('loginOverlay').style.display='none')
-            .catch(() => alert("Datos incorrectos"));
-    }
-
-    function logout() { auth.signOut(); }
-
-    auth.onAuthStateChanged(user => {
-        document.getElementById('adminPanel').style.display = user ? 'block' : 'none';
-        document.getElementById('showLogin').style.display = user ? 'none' : 'block';
-        escucharDatos();
+    // Escuchar cambios automáticamente
+    db.collection("productos").onSnapshot(snap => {
+        listaProductos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderizar();
     });
 
-    // DATOS
-    function escucharDatos() {
-        db.collection("productos").onSnapshot(snap => {
-            listaProductos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderizar();
-        });
-    }
-
     async function guardarProducto() {
-        const id = document.getElementById("editId").value;
         const price = parseFloat(document.getElementById("price").value);
         const link = document.getElementById("link").value.trim();
         const image = document.getElementById("image").value.trim();
 
-        if(!price || !link || !image) return alert("Rellena todo");
+        if(!price || !link || !image) return alert("Rellena todos los campos");
 
-        // VALIDACIÓN: No repetir enlaces
-        const existe = listaProductos.find(p => p.link === link && p.id !== id);
-        if(existe) return alert("Este enlace ya existe en la lista");
+        // No repetir enlaces
+        if(listaProductos.find(p => p.link === link)) return alert("Este enlace ya existe");
 
-        const data = { price, link, image, date: id ? listaProductos.find(p=>p.id===id).date : new Date() };
+        await db.collection("productos").add({ price, link, image, date: new Date() });
 
-        if(id) {
-            await db.collection("productos").doc(id).update(data);
-        } else {
-            await db.collection("productos").add(data);
-        }
-
-        // Reset
-        document.getElementById("editId").value = "";
         document.getElementById("price").value = "";
         document.getElementById("link").value = "";
         document.getElementById("image").value = "";
-        document.getElementById("panelTitle").innerText = "Añadir Producto";
-    }
-
-    function prepararEdicion(id) {
-        const p = listaProductos.find(prod => prod.id === id);
-        document.getElementById("editId").value = p.id;
-        document.getElementById("price").value = p.price;
-        document.getElementById("link").value = p.link;
-        document.getElementById("image").value = p.image;
-        document.getElementById("panelTitle").innerText = "Editando Producto";
-        window.scrollTo(0,0);
     }
 
     function eliminar(id) {
-        if(confirm("¿Eliminar producto?")) db.collection("productos").doc(id).delete();
+        if(confirm("¿Eliminar?")) db.collection("productos").doc(id).delete();
     }
 
     function renderizar() {
@@ -253,15 +183,10 @@
             total += p.price;
             html += `
                 <div class="card">
+                    <button class="btn btn-del" onclick="eliminar('${p.id}')">×</button>
                     <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
                     <div class="price">${p.price.toFixed(2)} €</div>
-                    <a href="${p.link}" target="_blank" class="btn" style="background:var(--secondary); color:white; text-decoration:none; display:block">Ver</a>
-                    ${auth.currentUser ? `
-                        <div class="actions">
-                            <button class="btn btn-edit" onclick="prepararEdicion('${p.id}')">✏️</button>
-                            <button class="btn btn-del" onclick="eliminar('${p.id}')">🗑️</button>
-                        </div>
-                    ` : ''}
+                    <a href="${p.link}" target="_blank" class="btn" style="background:var(--secondary); color:white; text-decoration:none; display:block">Ver Producto</a>
                 </div>
             `;
         });
