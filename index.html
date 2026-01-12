@@ -1,68 +1,157 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cosas Aleix - Admin</title>
-<style>
-  :root { --primary: #28a745; --danger: #dc3545; --dark: #333; }
-  body { font-family: 'Segoe UI', sans-serif; background:#f4f7f6; margin: 0; padding: 20px; }
-  .container { max-width: 800px; margin: auto; background:white; padding:30px; border-radius:15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-  h2 { text-align: center; }
-  table { width:100%; border-collapse:collapse; margin-top:20px; }
-  th, td { padding: 12px; border-bottom: 1px solid #eee; text-align:center; }
-  img { width:60px; height:60px; object-fit: cover; border-radius:8px; }
-  .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-  .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
-  .btn-delete { background: var(--danger); color: white; padding: 5px 10px; }
-  #adminPanel { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px dashed #ccc; display: none; }
-  #loginOverlay { 
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; 
-  }
-  .login-box { background: white; padding: 30px; border-radius: 10px; width: 280px; text-align: center; }
-  input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist Aleix - Pro</title>
+    <style>
+        :root {
+            --primary: #2ecc71;
+            --secondary: #3498db;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h2 { text-align: center; color: var(--dark); margin-bottom: 30px; }
+
+        /* Panel Admin */
+        #adminPanel {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px dashed #ddd;
+            display: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-add { background: var(--primary); color: white; width: 100%; }
+        .btn-login { background: none; border: 1px solid #ccc; color: #999; margin: 40px auto; display: block; }
+        .btn-logout { background: none; color: var(--danger); font-size: 12px; margin-top: 10px; }
+
+        /* Tarjetas de Producto */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: 0.3s;
+        }
+
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card .price { font-size: 1.5em; font-weight: bold; color: var(--primary); margin: 10px 0; }
+        
+        .card .actions { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .btn-edit { background: #f1c40f; color: white; padding: 5px 10px; }
+        .btn-del { background: var(--danger); color: white; padding: 5px 10px; }
+
+        /* Login Overlay */
+        #loginOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+        }
+
+        .login-box { background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center; }
+
+        #totalPrice { text-align: center; font-size: 1.8em; margin-top: 30px; color: var(--dark); font-weight: bold; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>🛍️ Lista de Deseos</h2>
+    <h2>🛍️ Lista de Deseos</h2>
 
-  <div id="adminPanel">
-    <h3>Añadir Producto</h3>
-    <input id="price" type="number" placeholder="Precio €">
-    <input id="link" placeholder="Enlace web">
-    <input id="image" placeholder="Enlace imagen">
-    <button id="addBtn" class="btn btn-add">Guardar</button>
-    <button onclick="logout()" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">Cerrar Sesión</button>
-  </div>
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+        <select id="sortOrder" onchange="renderizar()">
+            <option value="recent">Más recientes</option>
+            <option value="priceAsc">Precio: Menor a Mayor</option>
+            <option value="priceDesc">Precio: Mayor a Menor</option>
+        </select>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Imagen</th>
-        <th>Precio</th>
-        <th>Link</th>
-        <th class="admin-only" style="display:none">Acción</th>
-      </tr>
-    </thead>
-    <tbody id="products"></tbody>
-  </table>
+    <div id="adminPanel">
+        <h3 id="panelTitle">Añadir Producto</h3>
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+            <input id="price" type="number" step="0.01" placeholder="Precio €">
+            <input id="link" placeholder="Enlace web">
+            <input id="image" placeholder="Enlace imagen">
+        </div>
+        <button onclick="guardarProducto()" class="btn btn-add">Guardar</button>
+        <button onclick="logout()" class="btn btn-logout">Cerrar Sesión</button>
+    </div>
 
-  <div id="totalPrice" style="text-align:center; font-weight:bold; font-size:1.5em; margin-top:20px;">Total: 0.00 €</div>
-  
-  <button onclick="document.getElementById('loginOverlay').style.display='flex'" style="display:block; margin: 40px auto; color:#ccc; background:none; border:none; cursor:pointer;">Admin Login</button>
+    <div id="productContainer" class="grid"></div>
+
+    <div id="totalPrice">Total: 0.00 €</div>
+
+    <button id="showLogin" class="btn btn-login" onclick="document.getElementById('loginOverlay').style.display='flex'">Admin Login</button>
 </div>
 
 <div id="loginOverlay">
-  <div class="login-box">
-    <h3>Entrar</h3>
-    <input id="email" type="email" placeholder="Correo">
-    <input id="pass" type="password" placeholder="Contraseña">
-    <button onclick="login()" class="btn btn-add">Entrar</button>
-    <button onclick="document.getElementById('loginOverlay').style.display='none'" style="margin-top:10px; border:none; background:none; cursor:pointer;">Cancelar</button>
-  </div>
+    <div class="login-box">
+        <h3>Entrar</h3>
+        <input id="email" type="email" placeholder="Correo" style="width:100%; margin-bottom:10px">
+        <input id="pass" type="password" placeholder="Contraseña" style="width:100%; margin-bottom:15px">
+        <button onclick="login()" class="btn btn-add">Acceder</button>
+        <button onclick="document.getElementById('loginOverlay').style.display='none'" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer">Cancelar</button>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -70,70 +159,115 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-    authDomain: "cosas-af46c.firebaseapp.com",
-    projectId: "cosas-af46c",
-    storageBucket: "cosas-af46c.firebasestorage.app",
-    messagingSenderId: "145996030094",
-    appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+        authDomain: "cosas-af46c.firebaseapp.com",
+        projectId: "cosas-af46c",
+        storageBucket: "cosas-af46c.firebasestorage.app",
+        messagingSenderId: "145996030094",
+        appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    let listaProductos = [];
 
-  // LOGIN
-  function login() {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("pass").value;
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => document.getElementById('loginOverlay').style.display='none')
-      .catch(err => alert("Datos incorrectos"));
-  }
-
-  function logout() { auth.signOut(); }
-
-  // ESTADO DE LA SESIÓN
-  auth.onAuthStateChanged(user => {
-    const isLogged = !!user;
-    document.getElementById('adminPanel').style.display = isLogged ? 'block' : 'none';
-    cargarProductos(isLogged);
-  });
-
-  // AÑADIR
-  document.getElementById("addBtn").onclick = () => {
-    const price = Number(document.getElementById("price").value);
-    const link = document.getElementById("link").value;
-    const image = document.getElementById("image").value;
-    if(price && link && image) {
-      db.collection("productos").add({ price, link, image, date: new Date() });
+    // AUTH
+    function login() {
+        const e = document.getElementById("email").value;
+        const p = document.getElementById("pass").value;
+        auth.signInWithEmailAndPassword(e, p)
+            .then(() => document.getElementById('loginOverlay').style.display='none')
+            .catch(() => alert("Datos incorrectos"));
     }
-  };
 
-  // BORRAR
-  window.borrar = (id) => { if(confirm("¿Borrar?")) db.collection("productos").doc(id).delete(); };
+    function logout() { auth.signOut(); }
 
-  // MOSTRAR PRODUCTOS
-  function cargarProductos(admin) {
-    db.collection("productos").orderBy("date", "desc").onSnapshot(snap => {
-      let html = ""; let total = 0;
-      snap.forEach(doc => {
-        const p = doc.data();
-        total += p.price;
-        html += `<tr>
-          <td><img src="${p.image}"></td>
-          <td>${p.price.toFixed(2)} €</td>
-          <td><a href="${p.link}" target="_blank">Ver</a></td>
-          <td style="display:${admin ? 'table-cell' : 'none'}">
-            <button class="btn btn-delete" onclick="borrar('${doc.id}')">🗑️</button>
-          </td>
-        </tr>`;
-      });
-      document.getElementById("products").innerHTML = html;
-      document.getElementById("totalPrice").innerText = `Total: ${total.toFixed(2)} €`;
+    auth.onAuthStateChanged(user => {
+        document.getElementById('adminPanel').style.display = user ? 'block' : 'none';
+        document.getElementById('showLogin').style.display = user ? 'none' : 'block';
+        escucharDatos();
     });
-  }
+
+    // DATOS
+    function escucharDatos() {
+        db.collection("productos").onSnapshot(snap => {
+            listaProductos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderizar();
+        });
+    }
+
+    async function guardarProducto() {
+        const id = document.getElementById("editId").value;
+        const price = parseFloat(document.getElementById("price").value);
+        const link = document.getElementById("link").value.trim();
+        const image = document.getElementById("image").value.trim();
+
+        if(!price || !link || !image) return alert("Rellena todo");
+
+        // VALIDACIÓN: No repetir enlaces
+        const existe = listaProductos.find(p => p.link === link && p.id !== id);
+        if(existe) return alert("Este enlace ya existe en la lista");
+
+        const data = { price, link, image, date: id ? listaProductos.find(p=>p.id===id).date : new Date() };
+
+        if(id) {
+            await db.collection("productos").doc(id).update(data);
+        } else {
+            await db.collection("productos").add(data);
+        }
+
+        // Reset
+        document.getElementById("editId").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("link").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("panelTitle").innerText = "Añadir Producto";
+    }
+
+    function prepararEdicion(id) {
+        const p = listaProductos.find(prod => prod.id === id);
+        document.getElementById("editId").value = p.id;
+        document.getElementById("price").value = p.price;
+        document.getElementById("link").value = p.link;
+        document.getElementById("image").value = p.image;
+        document.getElementById("panelTitle").innerText = "Editando Producto";
+        window.scrollTo(0,0);
+    }
+
+    function eliminar(id) {
+        if(confirm("¿Eliminar producto?")) db.collection("productos").doc(id).delete();
+    }
+
+    function renderizar() {
+        const order = document.getElementById("sortOrder").value;
+        let lista = [...listaProductos];
+
+        if(order === "priceAsc") lista.sort((a,b) => a.price - b.price);
+        if(order === "priceDesc") lista.sort((a,b) => b.price - a.price);
+        if(order === "recent") lista.sort((a,b) => b.date - a.date);
+
+        let html = ""; let total = 0;
+        lista.forEach(p => {
+            total += p.price;
+            html += `
+                <div class="card">
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="price">${p.price.toFixed(2)} €</div>
+                    <a href="${p.link}" target="_blank" class="btn" style="background:var(--secondary); color:white; text-decoration:none; display:block">Ver</a>
+                    ${auth.currentUser ? `
+                        <div class="actions">
+                            <button class="btn btn-edit" onclick="prepararEdicion('${p.id}')">✏️</button>
+                            <button class="btn btn-del" onclick="eliminar('${p.id}')">🗑️</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        document.getElementById("productContainer").innerHTML = html;
+        document.getElementById("totalPrice").innerText = `Total: ${total.toFixed(2)} €`;
+    }
 </script>
 </body>
 </html>
