@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wishlist Abierta - Aleix</title>
+    <title>Cosas - Aleix</title>
     <style>
         :root {
             --primary: #2ecc71;
             --secondary: #3498db;
             --danger: #e74c3c;
+            --warning: #f1c40f;
             --dark: #2c3e50;
             --light: #f8f9fa;
         }
@@ -29,22 +30,27 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        h2 { text-align: center; color: var(--dark); margin-bottom: 30px; }
+        h2 { text-align: center; color: var(--dark); margin-bottom: 20px; font-size: 2.5em; }
 
-        /* Formulario Abierto */
         .admin-box {
             background: var(--light);
             padding: 20px;
             border-radius: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .editing-mode {
+            border: 2px solid var(--warning);
+            background: #fffdf0;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr 2fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         input, select {
@@ -52,10 +58,12 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -63,9 +71,22 @@
             transition: 0.3s;
         }
 
-        .btn-add { background: var(--primary); color: white; width: 100%; }
+        .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 5px; }
+        .btn-update { background: var(--warning); color: white; width: 100%; margin-top: 5px; }
 
-        /* Grid de Productos */
+        .top-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: var(--dark);
+            color: white;
+            border-radius: 12px;
+        }
+
+        #totalPrice { font-size: 1.4em; font-weight: bold; margin: 0; }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -79,6 +100,17 @@
             text-align: center;
             border: 1px solid #eee;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            min-height: 1.2em;
         }
 
         .card img {
@@ -90,40 +122,63 @@
 
         .card .price { font-size: 1.5em; font-weight: bold; color: var(--primary); margin: 10px 0; }
         
-        .btn-del { 
-            background: var(--danger); color: white; padding: 5px; 
-            position: absolute; top: 10px; right: 10px; border-radius: 50%;
-            width: 30px; height: 30px; line-height: 1;
+        .card-actions {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
         }
 
-        #totalPrice { text-align: center; font-size: 1.8em; margin-top: 30px; font-weight: bold; }
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .btn-del { background: var(--danger); }
+        .btn-edit { background: var(--warning); }
+
+        .btn-view { background: var(--secondary); color: white; text-decoration: none; display: block; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🛍️ Lista de Deseos (Modo Abierto)</h2>
+    <h2>Cosas</h2>
 
-    <div class="admin-box">
+    <div id="formContainer" class="admin-box">
+        <h3 id="formTitle" style="margin-top:0; font-size: 1.1em;">Añadir Nuevo</h3>
+        <input type="hidden" id="editId">
         <div class="form-grid">
+            <input id="name" type="text" placeholder="Nombre (Opcional)">
             <input id="price" type="number" step="0.01" placeholder="Precio €">
             <input id="link" placeholder="Enlace web">
             <input id="image" placeholder="Enlace imagen">
         </div>
-        <button onclick="guardarProducto()" class="btn btn-add">Añadir a la lista</button>
+        <button id="submitBtn" onclick="guardarProducto()" class="btn btn-add">Añadir a la lista</button>
+        <button id="cancelBtn" onclick="cancelarEdicion()" class="btn" style="display:none; background:#ccc; width:100%; margin-top:5px">Cancelar Edición</button>
     </div>
 
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-        <select id="sortOrder" onchange="renderizar()">
-            <option value="recent">Más recientes</option>
-            <option value="priceAsc">Precio: Menor a Mayor</option>
-            <option value="priceDesc">Precio: Mayor a Menor</option>
-        </select>
+    <div class="top-info">
+        <div id="totalPrice">Total: 0.00 €</div>
+        <div style="width: 180px;">
+            <select id="sortOrder" onchange="renderizar()">
+                <option value="recent">Más recientes</option>
+                <option value="priceAsc">Menor precio</option>
+                <option value="priceDesc">Mayor precio</option>
+            </select>
+        </div>
     </div>
 
     <div id="productContainer" class="grid"></div>
-
-    <div id="totalPrice">Total: 0.00 €</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -143,31 +198,84 @@
     const db = firebase.firestore();
     let listaProductos = [];
 
-    // Escuchar cambios automáticamente
     db.collection("productos").onSnapshot(snap => {
         listaProductos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderizar();
     });
 
     async function guardarProducto() {
+        const id = document.getElementById("editId").value;
+        const name = document.getElementById("name").value.trim();
         const price = parseFloat(document.getElementById("price").value);
         const link = document.getElementById("link").value.trim();
         const image = document.getElementById("image").value.trim();
 
-        if(!price || !link || !image) return alert("Rellena todos los campos");
+        if(!price || !link || !image) return alert("Faltan datos obligatorios");
 
-        // No repetir enlaces
-        if(listaProductos.find(p => p.link === link)) return alert("Este enlace ya existe");
+        // Buscar producto existente para mantener su fecha original
+        const productoExistente = id ? listaProductos.find(p => p.id === id) : null;
 
-        await db.collection("productos").add({ price, link, image, date: new Date() });
+        const datos = { 
+            name: name || "", 
+            price: price, 
+            link: link, 
+            image: image,
+            // Corrección: asegura que la fecha nunca sea undefined
+            date: productoExistente ? (productoExistente.date || new Date()) : new Date() 
+        };
 
+        try {
+            if(id) {
+                // Actualiza el documento sin borrar el resto
+                await db.collection("productos").doc(id).update(datos);
+                cancelarEdicion();
+            } else {
+                await db.collection("productos").add(datos);
+                limpiarForm();
+            }
+        } catch (e) {
+            alert("Error al guardar: " + e.message);
+        }
+    }
+
+    function prepararEdicion(id) {
+        const p = listaProductos.find(prod => prod.id === id);
+        if(!p) return;
+
+        document.getElementById("editId").value = p.id;
+        document.getElementById("name").value = p.name || "";
+        document.getElementById("price").value = p.price;
+        document.getElementById("link").value = p.link;
+        document.getElementById("image").value = p.image;
+        
+        document.getElementById("formContainer").classList.add("editing-mode");
+        document.getElementById("formTitle").innerText = "Editando producto...";
+        document.getElementById("submitBtn").innerText = "Guardar Cambios";
+        document.getElementById("submitBtn").className = "btn btn-update";
+        document.getElementById("cancelBtn").style.display = "block";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicion() {
+        limpiarForm();
+        document.getElementById("editId").value = "";
+        document.getElementById("formContainer").classList.remove("editing-mode");
+        document.getElementById("formTitle").innerText = "Añadir Nuevo";
+        document.getElementById("submitBtn").innerText = "Añadir a la lista";
+        document.getElementById("submitBtn").className = "btn btn-add";
+        document.getElementById("cancelBtn").style.display = "none";
+    }
+
+    function limpiarForm() {
+        document.getElementById("name").value = "";
         document.getElementById("price").value = "";
         document.getElementById("link").value = "";
         document.getElementById("image").value = "";
     }
 
     function eliminar(id) {
-        if(confirm("¿Eliminar?")) db.collection("productos").doc(id).delete();
+        if(confirm("¿Eliminar producto?")) db.collection("productos").doc(id).delete();
     }
 
     function renderizar() {
@@ -183,10 +291,14 @@
             total += p.price;
             html += `
                 <div class="card">
-                    <button class="btn btn-del" onclick="eliminar('${p.id}')">×</button>
-                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="card-actions">
+                        <button class="action-btn btn-edit" onclick="prepararEdicion('${p.id}')">✏️</button>
+                        <button class="action-btn btn-del" onclick="eliminar('${p.id}')">×</button>
+                    </div>
+                    <div class="product-name">${p.name || ''}</div>
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150?text=Error+Imagen'">
                     <div class="price">${p.price.toFixed(2)} €</div>
-                    <a href="${p.link}" target="_blank" class="btn" style="background:var(--secondary); color:white; text-decoration:none; display:block">Ver Producto</a>
+                    <a href="${p.link}" target="_blank" class="btn btn-view">Ver Producto</a>
                 </div>
             `;
         });
