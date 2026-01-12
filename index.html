@@ -99,28 +99,29 @@
   const auth = firebase.auth();
   const productosCol = db.collection("productos");
 
+  // --- TU CORREO AUTORIZADO ---
   const USUARIO_AUTORIZADO = "aleixruto@gmail.com"; 
 
   function toggleLogin(show) {
     document.getElementById('loginOverlay').style.display = show ? 'flex' : 'none';
   }
 
+  // NUEVA FUNCIÓN CON REDIRECT
   function iniciarSesionGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    // Usamos Redirect para evitar bloqueos de popup
     auth.signInWithRedirect(provider);
   }
 
+  // Manejar el resultado del regreso de Google
+  auth.getRedirectResult().catch(err => {
+    if(err.code !== 'auth/none') alert("Error: " + err.message);
+  });
+
   function cerrarSesion() { 
     auth.signOut().then(() => {
-      location.reload(); // Recarga para limpiar la vista
+        location.reload(); 
     });
   }
-
-  // Detectar el resultado del login después de la redirección
-  auth.getRedirectResult().catch(err => {
-    if (err.code !== 'auth/none') alert("Error al entrar: " + err.message);
-  });
 
   auth.onAuthStateChanged(user => {
     const adminPanel = document.getElementById('adminPanel');
@@ -129,11 +130,11 @@
     if (user && user.email === USUARIO_AUTORIZADO) {
       adminPanel.style.display = 'block';
       adminCols.forEach(el => el.style.display = 'table-cell');
-      console.log("Bienvenido Aleix");
+      toggleLogin(false); 
     } else {
       adminPanel.style.display = 'none';
       adminCols.forEach(el => el.style.display = 'none');
-      if (user) alert("Tu correo (" + user.email + ") no tiene permiso.");
+      if (user) alert("Tu correo (" + user.email + ") no está autorizado.");
     }
   });
 
@@ -150,12 +151,12 @@
         document.getElementById("link").value = "";
         document.getElementById("image").value = "";
       })
-      .catch(err => alert("No tienes permiso en la base de datos"));
+      .catch(() => alert("Error: No tienes permiso para escribir en la base de datos."));
   };
 
   window.deleteProduct = (id) => {
     if(confirm("¿Eliminar este producto?")) {
-        productosCol.doc(id).delete().catch(err => alert("Error al borrar"));
+        productosCol.doc(id).delete().catch(() => alert("Error al borrar."));
     }
   };
 
