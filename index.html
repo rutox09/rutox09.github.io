@@ -99,8 +99,7 @@
   const auth = firebase.auth();
   const productosCol = db.collection("productos");
 
-  // --- CONFIGURACIÓN: Pon tu correo aquí ---
-  const USUARIO_AUTORIZADO = "aleixruto@gmail.com"; // <--- CAMBIA ESTO
+  const USUARIO_AUTORIZADO = "aleixruto@gmail.com"; 
 
   function toggleLogin(show) {
     document.getElementById('loginOverlay').style.display = show ? 'flex' : 'none';
@@ -108,25 +107,33 @@
 
   function iniciarSesionGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-      .then(() => toggleLogin(false))
-      .catch(err => alert("Error: " + err.message));
+    // Usamos Redirect para evitar bloqueos de popup
+    auth.signInWithRedirect(provider);
   }
 
-  function cerrarSesion() { auth.signOut(); }
+  function cerrarSesion() { 
+    auth.signOut().then(() => {
+      location.reload(); // Recarga para limpiar la vista
+    });
+  }
+
+  // Detectar el resultado del login después de la redirección
+  auth.getRedirectResult().catch(err => {
+    if (err.code !== 'auth/none') alert("Error al entrar: " + err.message);
+  });
 
   auth.onAuthStateChanged(user => {
     const adminPanel = document.getElementById('adminPanel');
     const adminCols = document.querySelectorAll('.admin-only');
     
-    // Solo mostramos herramientas si el correo coincide
     if (user && user.email === USUARIO_AUTORIZADO) {
       adminPanel.style.display = 'block';
       adminCols.forEach(el => el.style.display = 'table-cell');
+      console.log("Bienvenido Aleix");
     } else {
       adminPanel.style.display = 'none';
       adminCols.forEach(el => el.style.display = 'none');
-      if (user) alert("Usuario no autorizado para editar.");
+      if (user) alert("Tu correo (" + user.email + ") no tiene permiso.");
     }
   });
 
@@ -142,11 +149,14 @@
         document.getElementById("price").value = "";
         document.getElementById("link").value = "";
         document.getElementById("image").value = "";
-      });
+      })
+      .catch(err => alert("No tienes permiso en la base de datos"));
   };
 
   window.deleteProduct = (id) => {
-    if(confirm("¿Eliminar este producto?")) productosCol.doc(id).delete();
+    if(confirm("¿Eliminar este producto?")) {
+        productosCol.doc(id).delete().catch(err => alert("Error al borrar"));
+    }
   };
 
   productosCol.orderBy("date", "desc").onSnapshot(snapshot => {
