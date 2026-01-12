@@ -1,68 +1,184 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cosas Aleix - Admin</title>
-<style>
-  :root { --primary: #28a745; --danger: #dc3545; --dark: #333; }
-  body { font-family: 'Segoe UI', sans-serif; background:#f4f7f6; margin: 0; padding: 20px; }
-  .container { max-width: 800px; margin: auto; background:white; padding:30px; border-radius:15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-  h2 { text-align: center; }
-  table { width:100%; border-collapse:collapse; margin-top:20px; }
-  th, td { padding: 12px; border-bottom: 1px solid #eee; text-align:center; }
-  img { width:60px; height:60px; object-fit: cover; border-radius:8px; }
-  .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-  .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
-  .btn-delete { background: var(--danger); color: white; padding: 5px 10px; }
-  #adminPanel { background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px dashed #ccc; display: none; }
-  #loginOverlay { 
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; 
-  }
-  .login-box { background: white; padding: 30px; border-radius: 10px; width: 280px; text-align: center; }
-  input { width: 100%; padding: 10px; margin: 5px 0; box-sizing: border-box; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wishlist Pro - Aleix</title>
+    <style>
+        :root {
+            --primary: #2ecc71;
+            --secondary: #3498db;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 { text-align: center; font-size: 2.5em; margin-bottom: 30px; color: var(--dark); }
+
+        /* Controles de Orden y Admin */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* Panel de Edición/Añadir */
+        #adminPanel {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--secondary); }
+
+        /* Lista de Productos (Cards) */
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .card-body { padding: 15px; text-align: center; }
+
+        .price { font-size: 1.4em; font-weight: bold; color: var(--primary); margin: 10px 0; }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-main { background: var(--primary); color: white; width: 100%; }
+        .btn-outline { background: var(--secondary); color: white; margin-top: 10px; font-size: 0.8em; }
+        .btn-edit { background: #f1c40f; color: white; padding: 5px 10px; margin-right: 5px; }
+        .btn-delete { background: var(--danger); color: white; padding: 5px 10px; }
+
+        #totalPrice {
+            text-align: center;
+            font-size: 1.8em;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid var(--light);
+        }
+
+        /* Modal Login */
+        #loginOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 15px; width: 300px; text-align: center; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>🛍️ Lista de Deseos</h2>
+    <h2>🛍️ Mi Lista de Deseos</h2>
 
-  <div id="adminPanel">
-    <h3>Añadir Producto</h3>
-    <input id="price" type="number" placeholder="Precio €">
-    <input id="link" placeholder="Enlace web">
-    <input id="image" placeholder="Enlace imagen">
-    <button id="addBtn" class="btn btn-add">Guardar</button>
-    <button onclick="logout()" style="margin-top:10px; background:none; border:none; color:gray; cursor:pointer;">Cerrar Sesión</button>
-  </div>
+    <div class="controls">
+        <select id="sortOrder" onchange="renderizar()">
+            <option value="recent">Más recientes</option>
+            <option value="priceDesc">Precio: Mayor a Menor</option>
+            <option value="priceAsc">Precio: Menor a Mayor</option>
+        </select>
+        <button id="loginBtn" class="btn btn-outline" onclick="abrirLogin()">Acceso Admin</button>
+    </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Imagen</th>
-        <th>Precio</th>
-        <th>Link</th>
-        <th class="admin-only" style="display:none">Acción</th>
-      </tr>
-    </thead>
-    <tbody id="products"></tbody>
-  </table>
+    <div id="adminPanel">
+        <h3 id="panelTitle">Añadir Nuevo Producto</h3>
+        <input type="hidden" id="editId">
+        <div class="form-grid">
+            <input id="price" type="number" step="0.01" placeholder="Precio €">
+            <input id="link" type="text" placeholder="URL del producto">
+            <input id="image" type="text" placeholder="URL de la imagen">
+        </div>
+        <button id="saveBtn" class="btn btn-main" onclick="guardarProducto()">Guardar Producto</button>
+        <button onclick="cerrarSesion()" class="btn btn-outline" style="background:#95a5a6; width:100%">Cerrar Sesión</button>
+    </div>
 
-  <div id="totalPrice" style="text-align:center; font-weight:bold; font-size:1.5em; margin-top:20px;">Total: 0.00 €</div>
-  
-  <button onclick="document.getElementById('loginOverlay').style.display='flex'" style="display:block; margin: 40px auto; color:#ccc; background:none; border:none; cursor:pointer;">Admin Login</button>
+    <div id="productContainer" class="product-list">
+        </div>
+
+    <div id="totalPrice">Total: 0.00 €</div>
 </div>
 
 <div id="loginOverlay">
-  <div class="login-box">
-    <h3>Entrar</h3>
-    <input id="email" type="email" placeholder="Correo">
-    <input id="pass" type="password" placeholder="Contraseña">
-    <button onclick="login()" class="btn btn-add">Entrar</button>
-    <button onclick="document.getElementById('loginOverlay').style.display='none'" style="margin-top:10px; border:none; background:none; cursor:pointer;">Cancelar</button>
-  </div>
+    <div class="login-box">
+        <h3>Admin Login</h3>
+        <input id="email" type="email" placeholder="Correo">
+        <input id="pass" type="password" placeholder="Contraseña">
+        <button onclick="login()" class="btn btn-main">Entrar</button>
+        <button onclick="cerrarLogin()" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer;">Cancelar</button>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -70,70 +186,122 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-    authDomain: "cosas-af46c.firebaseapp.com",
-    projectId: "cosas-af46c",
-    storageBucket: "cosas-af46c.firebasestorage.app",
-    messagingSenderId: "145996030094",
-    appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
-  };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+        authDomain: "cosas-af46c.firebaseapp.com",
+        projectId: "cosas-af46c",
+        storageBucket: "cosas-af46c.firebasestorage.app",
+        messagingSenderId: "145996030094",
+        appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    let productosLocales = [];
 
-  // LOGIN
-  function login() {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("pass").value;
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => document.getElementById('loginOverlay').style.display='none')
-      .catch(err => alert("Datos incorrectos"));
-  }
-
-  function logout() { auth.signOut(); }
-
-  // ESTADO DE LA SESIÓN
-  auth.onAuthStateChanged(user => {
-    const isLogged = !!user;
-    document.getElementById('adminPanel').style.display = isLogged ? 'block' : 'none';
-    cargarProductos(isLogged);
-  });
-
-  // AÑADIR
-  document.getElementById("addBtn").onclick = () => {
-    const price = Number(document.getElementById("price").value);
-    const link = document.getElementById("link").value;
-    const image = document.getElementById("image").value;
-    if(price && link && image) {
-      db.collection("productos").add({ price, link, image, date: new Date() });
+    // --- FUNCIONES DE AUTH ---
+    function abrirLogin() { document.getElementById('loginOverlay').style.display = 'flex'; }
+    function cerrarLogin() { document.getElementById('loginOverlay').style.display = 'none'; }
+    function login() {
+        const email = document.getElementById("email").value;
+        const pass = document.getElementById("pass").value;
+        auth.signInWithEmailAndPassword(email, pass).then(cerrarLogin).catch(() => alert("Error de acceso"));
     }
-  };
+    function cerrarSesion() { auth.signOut(); }
 
-  // BORRAR
-  window.borrar = (id) => { if(confirm("¿Borrar?")) db.collection("productos").doc(id).delete(); };
-
-  // MOSTRAR PRODUCTOS
-  function cargarProductos(admin) {
-    db.collection("productos").orderBy("date", "desc").onSnapshot(snap => {
-      let html = ""; let total = 0;
-      snap.forEach(doc => {
-        const p = doc.data();
-        total += p.price;
-        html += `<tr>
-          <td><img src="${p.image}"></td>
-          <td>${p.price.toFixed(2)} €</td>
-          <td><a href="${p.link}" target="_blank">Ver</a></td>
-          <td style="display:${admin ? 'table-cell' : 'none'}">
-            <button class="btn btn-delete" onclick="borrar('${doc.id}')">🗑️</button>
-          </td>
-        </tr>`;
-      });
-      document.getElementById("products").innerHTML = html;
-      document.getElementById("totalPrice").innerText = `Total: ${total.toFixed(2)} €`;
+    auth.onAuthStateChanged(user => {
+        document.getElementById('adminPanel').style.display = user ? 'block' : 'none';
+        document.getElementById('loginBtn').style.display = user ? 'none' : 'block';
+        escucharProductos();
     });
-  }
+
+    // --- GESTIÓN DE PRODUCTOS ---
+    function escucharProductos() {
+        db.collection("productos").onSnapshot(snap => {
+            productosLocales = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderizar();
+        });
+    }
+
+    async function guardarProducto() {
+        const id = document.getElementById("editId").value;
+        const price = parseFloat(document.getElementById("price").value);
+        const link = document.getElementById("link").value.trim();
+        const image = document.getElementById("image").value.trim();
+
+        if (!price || !link || !image) return alert("Completa todos los campos");
+
+        // VALIDACIÓN: No repetir enlaces
+        const existe = productosLocales.find(p => p.link === link && p.id !== id);
+        if (existe) return alert("Este enlace ya está en la lista.");
+
+        const datos = { price, link, image, date: new Date() };
+
+        if (id) {
+            await db.collection("productos").doc(id).update(datos);
+        } else {
+            await db.collection("productos").add(datos);
+        }
+        
+        // Limpiar form
+        document.getElementById("editId").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("link").value = "";
+        document.getElementById("image").value = "";
+        document.getElementById("panelTitle").innerText = "Añadir Nuevo Producto";
+    }
+
+    function editar(id) {
+        const p = productosLocales.find(prod => prod.id === id);
+        document.getElementById("editId").value = p.id;
+        document.getElementById("price").value = p.price;
+        document.getElementById("link").value = p.link;
+        document.getElementById("image").value = p.image;
+        document.getElementById("panelTitle").innerText = "Editando Producto";
+        window.scrollTo(0, 0);
+    }
+
+    function borrar(id) {
+        if (confirm("¿Seguro que quieres eliminarlo?")) db.collection("productos").doc(id).delete();
+    }
+
+    function renderizar() {
+        const container = document.getElementById("productContainer");
+        const orden = document.getElementById("sortOrder").value;
+        const isAdmin = auth.currentUser;
+
+        // ORDENACIÓN
+        let lista = [...productosLocales];
+        if (orden === "priceAsc") lista.sort((a, b) => a.price - b.price);
+        if (orden === "priceDesc") lista.sort((a, b) => b.price - a.price);
+        if (orden === "recent") lista.sort((a, b) => b.date - a.date);
+
+        let html = "";
+        let total = 0;
+
+        lista.forEach(p => {
+            total += p.price;
+            html += `
+                <div class="card">
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/200?text=No+Image'">
+                    <div class="card-body">
+                        <div class="price">${p.price.toFixed(2)} €</div>
+                        <a href="${p.link}" target="_blank" class="btn btn-main">Ver Producto</a>
+                        ${isAdmin ? `
+                            <div style="margin-top:10px">
+                                <button class="btn btn-edit" onclick="editar('${p.id}')">✏️</button>
+                                <button class="btn btn-delete" onclick="borrar('${p.id}')">🗑️</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        document.getElementById("totalPrice").innerText = `Total acumulado: ${total.toFixed(2)} €`;
+    }
 </script>
 </body>
 </html>
