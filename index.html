@@ -3,182 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosas - Aleix</title>
+    <title>Cosas | Digital Inventory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2ecc71;
-            --secondary: #3498db;
-            --danger: #e74c3c;
-            --warning: #f1c40f;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
+            --accent: #6366f1;
+            --bg: #030712;
+            --surface: rgba(17, 24, 39, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f9fafb;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15), transparent);
+            color: var(--text);
+            margin: 0; padding: 40px 20px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        .container { max-width: 1000px; margin: auto; }
+
+        /* Dashboard Header */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
         }
 
-        h2 { text-align: center; color: var(--dark); margin-bottom: 20px; font-size: 2.5em; }
+        h1 { font-size: 2.5rem; margin: 0; letter-spacing: -1px; }
+        .stats { background: var(--surface); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border); }
+        #totalPrice { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
 
-        .admin-box {
-            background: var(--light);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
+        /* Control Panel */
+        .controls {
+            display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;
         }
 
         input, select {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            width: 100%;
-            box-sizing: border-box;
+            background: var(--surface); border: 1px solid var(--border);
+            color: white; padding: 12px 15px; border-radius: 12px; outline: none;
         }
 
         .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
+            background: var(--accent); color: white; border: none; padding: 12px 25px;
+            border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;
         }
 
-        .btn-add { background: var(--primary); color: white; width: 100%; margin-top: 5px; }
-        .btn-update { background: var(--warning); color: white; width: 100%; margin-top: 5px; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
-        .top-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding: 15px;
-            background: var(--dark);
-            color: white;
-            border-radius: 12px;
+        /* Formulario */
+        #formPanel {
+            background: var(--surface); padding: 25px; border-radius: 20px;
+            border: 1px solid var(--border); margin-bottom: 30px; display: none;
         }
 
-        #totalPrice { font-size: 1.4em; font-weight: bold; margin: 0; }
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-        }
+        /* Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
 
         .card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #eee;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            background: var(--surface); border-radius: 24px; border: 1px solid var(--border);
+            overflow: hidden; position: relative; transition: 0.3s;
         }
 
-        .product-name {
-            font-weight: bold;
-            color: var(--dark);
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
 
-        .card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+        .card-img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 20px; }
+        .card-name { font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        .card-price { font-size: 1.6rem; font-weight: 800; }
 
-        .card .price { font-size: 1.5em; font-weight: bold; color: var(--primary); margin: 10px 0; }
-        
         .card-actions {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            display: flex;
-            gap: 5px;
-            z-index: 10;
+            position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; opacity: 0;
         }
+
+        .card:hover .card-actions { opacity: 1; }
 
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+            width: 35px; height: 35px; border-radius: 10px; border: none; cursor: pointer; color: white;
         }
 
-        .btn-del { background: var(--danger); }
-        .btn-edit { background: var(--warning); }
-        .btn-view { background: var(--secondary); color: white; text-decoration: none; display: block; }
+        #toast {
+            position: fixed; bottom: 20px; right: 20px; background: white; color: black;
+            padding: 15px 25px; border-radius: 10px; font-weight: bold; display: none; z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Cosas</h2>
-
-    <div id="formContainer" class="admin-box">
-        <h3 id="formTitle" style="margin-top:0; font-size: 1.1em;">Añadir Nuevo</h3>
-        <input type="hidden" id="editId">
-        <div class="form-grid">
-            <input id="name" type="text" placeholder="Nombre (Opcional)">
-            <input id="price" type="number" step="0.01" placeholder="Precio €">
-            <input id="link" placeholder="Enlace web">
-            <input id="image" placeholder="Enlace imagen">
-        </div>
-        <input id="masterPass" type="password" placeholder="Contraseña de Admin" style="margin-bottom: 10px; border: 2px solid #ddd;">
-        
-        <button id="submitBtn" onclick="validarYGuardar()" class="btn btn-add">Guardar en la lista</button>
-        <button id="cancelBtn" onclick="cancelarEdicion()" class="btn" style="display:none; background:#ccc; width:100%; margin-top:5px">Cancelar</button>
+    <div class="header">
+        <h1>Cosas</h1>
+        <div class="stats">Total: <span id="totalPrice">0.00 €</span></div>
     </div>
 
-    <div class="top-info">
-        <div id="totalPrice">Total: 0.00 €</div>
-        <div style="width: 180px;">
-            <select id="sortOrder" onchange="renderizar()">
-                <option value="recent">Más recientes</option>
-                <option value="priceAsc">Menor precio</option>
-                <option value="priceDesc">Mayor precio</option>
-            </select>
+    <div class="controls">
+        <input type="text" id="searchInput" placeholder="Buscar..." oninput="renderizar()" style="flex: 1;">
+        <select id="sortOrder" onchange="renderizar()">
+            <option value="recent">Recientes</option>
+            <option value="priceDesc">Más caro</option>
+            <option value="priceAsc">Más barato</option>
+        </select>
+        <button class="btn" onclick="toggleForm()">+ Nuevo</button>
+    </div>
+
+    <div id="formPanel">
+        <div class="grid-form">
+            <input id="name" placeholder="Nombre">
+            <input id="price" type="number" step="0.01" placeholder="Precio (€)">
+            <input id="link" placeholder="Enlace web">
+            <input id="image" placeholder="URL Imagen">
         </div>
+        <div style="display: flex; gap: 10px;">
+            <input id="masterPass" type="password" placeholder="Contraseña Admin" style="width: 150px;">
+            <button class="btn" onclick="validarYGuardar()" style="flex: 1;">Guardar Producto</button>
+            <button class="btn" onclick="toggleForm()" style="background: #374151;">Cerrar</button>
+        </div>
+        <input type="hidden" id="editId">
     </div>
 
     <div id="productContainer" class="grid"></div>
 </div>
 
+<div id="toast"></div>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
 <script>
+    // CONFIGURACIÓN (Verifica que sea la tuya)
     const firebaseConfig = {
         apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
         authDomain: "cosas-af46c.firebaseapp.com",
@@ -190,126 +144,108 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    
-    // --- CAMBIA TU CONTRASEÑA AQUÍ ---
-    const PASSWORD_MAESTRA = "AR5624AR"; 
-    // --------------------------------
-    
-    let listaProductos = [];
+    const MASTER_KEY = "1234"; 
+    let listaItems = [];
 
+    // Cargar datos en tiempo real
     db.collection("productos").onSnapshot(snap => {
-        listaProductos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        listaItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderizar();
+    }, error => {
+        console.error("Error de Firebase:", error);
+        alert("Error de conexión: Revisa las Reglas de Firebase");
     });
 
+    function toggleForm() {
+        const panel = document.getElementById('formPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function msg(text) {
+        const t = document.getElementById('toast');
+        t.innerText = text; t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
+    }
+
     async function validarYGuardar() {
-        const passIngresada = document.getElementById("masterPass").value;
-        
-        if (passIngresada !== PASSWORD_MAESTRA) {
-            alert("Contraseña incorrecta. No puedes realizar cambios.");
-            return;
-        }
+        const pass = document.getElementById("masterPass").value;
+        if (pass !== MASTER_KEY) return alert("Contraseña incorrecta");
         
         const id = document.getElementById("editId").value;
-        const name = document.getElementById("name").value.trim();
-        const price = parseFloat(document.getElementById("price").value);
-        const link = document.getElementById("link").value.trim();
-        const image = document.getElementById("image").value.trim();
-
-        if(!price || !link || !image) return alert("Faltan datos");
-
-        const productoExistente = id ? listaProductos.find(p => p.id === id) : null;
-        const datos = { 
-            name: name || "", 
-            price: price, 
-            link: link, 
-            image: image,
-            date: productoExistente ? (productoExistente.date || new Date()) : new Date() 
+        const pVal = parseFloat(document.getElementById("price").value) || 0;
+        
+        const datos = {
+            name: document.getElementById("name").value || "Sin nombre",
+            price: pVal,
+            link: document.getElementById("link").value,
+            image: document.getElementById("image").value,
+            date: id ? listaItems.find(p => p.id === id).date : new Date()
         };
 
         try {
-            if(id) {
-                await db.collection("productos").doc(id).update(datos);
-                cancelarEdicion();
-            } else {
-                await db.collection("productos").add(datos);
-                limpiarForm();
-            }
-            document.getElementById("masterPass").value = ""; // Limpia la pass tras éxito
+            if(id) await db.collection("productos").doc(id).update(datos);
+            else await db.collection("productos").add(datos);
+            
+            msg("¡Guardado!");
+            limpiar();
+            toggleForm();
         } catch (e) {
-            alert("Error: " + e.message);
+            console.error(e);
+            alert("Error al guardar en la base de datos");
         }
     }
 
     function eliminar(id) {
-        const pass = prompt("Introduce la contraseña para eliminar:");
-        if (pass === PASSWORD_MAESTRA) {
+        if (prompt("Contraseña:") === MASTER_KEY) {
             db.collection("productos").doc(id).delete();
-        } else if (pass !== null) {
-            alert("Contraseña incorrecta");
+            msg("Eliminado");
         }
     }
 
     function prepararEdicion(id) {
-        const p = listaProductos.find(prod => prod.id === id);
-        if(!p) return;
-
-        document.getElementById("editId").value = p.id;
-        document.getElementById("name").value = p.name || "";
+        const p = listaItems.find(prod => prod.id === id);
+        document.getElementById("name").value = p.name;
         document.getElementById("price").value = p.price;
         document.getElementById("link").value = p.link;
         document.getElementById("image").value = p.image;
-        
-        document.getElementById("formTitle").innerText = "Editando producto...";
-        document.getElementById("submitBtn").innerText = "Actualizar Cambios";
-        document.getElementById("submitBtn").className = "btn btn-update";
-        document.getElementById("cancelBtn").style.display = "block";
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById("editId").value = p.id;
+        document.getElementById("formPanel").style.display = 'block';
+        window.scrollTo(0,0);
     }
 
-    function cancelarEdicion() {
-        limpiarForm();
-        document.getElementById("editId").value = "";
-        document.getElementById("masterPass").value = "";
-        document.getElementById("formTitle").innerText = "Añadir Nuevo";
-        document.getElementById("submitBtn").innerText = "Guardar en la lista";
-        document.getElementById("submitBtn").className = "btn btn-add";
-        document.getElementById("cancelBtn").style.display = "none";
-    }
-
-    function limpiarForm() {
-        document.getElementById("name").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("link").value = "";
-        document.getElementById("image").value = "";
-        document.getElementById("masterPass").value = "";
+    function limpiar() {
+        ['name','price','link','image','masterPass','editId'].forEach(id => document.getElementById(id).value = "");
     }
 
     function renderizar() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
         const order = document.getElementById("sortOrder").value;
-        let lista = [...listaProductos];
-        if(order === "priceAsc") lista.sort((a,b) => a.price - b.price);
-        if(order === "priceDesc") lista.sort((a,b) => b.price - a.price);
-        if(order === "recent") lista.sort((a,b) => b.date - a.date);
-
+        
+        let filtrados = listaItems.filter(item => item.name.toLowerCase().includes(query));
+        
+        if(order === "priceAsc") filtrados.sort((a,b) => a.price - b.price);
+        if(order === "priceDesc") filtrados.sort((a,b) => b.price - a.price);
+        
         let html = ""; let total = 0;
-        lista.forEach(p => {
+        filtrados.forEach(p => {
             total += p.price;
             html += `
                 <div class="card">
                     <div class="card-actions">
-                        <button class="action-btn btn-edit" onclick="prepararEdicion('${p.id}')">✏️</button>
-                        <button class="action-btn btn-del" onclick="eliminar('${p.id}')">×</button>
+                        <button class="action-btn" style="background:#f1c40f" onclick="prepararEdicion('${p.id}')">✏️</button>
+                        <button class="action-btn" style="background:#e74c3c" onclick="eliminar('${p.id}')">🗑️</button>
                     </div>
-                    <div class="product-name">${p.name || ''}</div>
-                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/150?text=Error+Imagen'">
-                    <div class="price">${p.price.toFixed(2)} €</div>
-                    <a href="${p.link}" target="_blank" class="btn btn-view">Ver Producto</a>
+                    <img class="card-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
+                    <div class="card-content">
+                        <span class="card-name">${p.name}</span>
+                        <div class="card-price">${p.price.toFixed(2)}€</div>
+                        <a href="${p.link}" target="_blank" class="btn" style="display:block; text-align:center; margin-top:10px; background:rgba(255,255,255,0.1); text-decoration:none;">Abrir Web</a>
+                    </div>
                 </div>
             `;
         });
         document.getElementById("productContainer").innerHTML = html;
-        document.getElementById("totalPrice").innerText = `Total: ${total.toFixed(2)} €`;
+        document.getElementById("totalPrice").innerText = `${total.toFixed(2)} €`;
     }
 </script>
 </body>
