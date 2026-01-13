@@ -38,12 +38,6 @@
             border-radius: 15px;
             margin-bottom: 20px;
             border: 1px solid #ddd;
-            transition: all 0.3s ease;
-        }
-
-        .editing-mode {
-            border: 2px solid var(--warning);
-            background: #fffdf0;
         }
 
         .form-grid {
@@ -110,7 +104,6 @@
             color: var(--dark);
             margin-bottom: 10px;
             font-size: 1.1em;
-            min-height: 1.2em;
         }
 
         .card img {
@@ -145,7 +138,6 @@
 
         .btn-del { background: var(--danger); }
         .btn-edit { background: var(--warning); }
-
         .btn-view { background: var(--secondary); color: white; text-decoration: none; display: block; }
     </style>
 </head>
@@ -163,8 +155,10 @@
             <input id="link" placeholder="Enlace web">
             <input id="image" placeholder="Enlace imagen">
         </div>
-        <button id="submitBtn" onclick="guardarProducto()" class="btn btn-add">Añadir a la lista</button>
-        <button id="cancelBtn" onclick="cancelarEdicion()" class="btn" style="display:none; background:#ccc; width:100%; margin-top:5px">Cancelar Edición</button>
+        <input id="masterPass" type="password" placeholder="Contraseña de Admin" style="margin-bottom: 10px; border: 2px solid #ddd;">
+        
+        <button id="submitBtn" onclick="validarYGuardar()" class="btn btn-add">Guardar en la lista</button>
+        <button id="cancelBtn" onclick="cancelarEdicion()" class="btn" style="display:none; background:#ccc; width:100%; margin-top:5px">Cancelar</button>
     </div>
 
     <div class="top-info">
@@ -196,6 +190,11 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    
+    // --- CAMBIA TU CONTRASEÑA AQUÍ ---
+    const PASSWORD_MAESTRA = "AR5624AR"; 
+    // --------------------------------
+    
     let listaProductos = [];
 
     db.collection("productos").onSnapshot(snap => {
@@ -203,38 +202,51 @@
         renderizar();
     });
 
-    async function guardarProducto() {
+    async function validarYGuardar() {
+        const passIngresada = document.getElementById("masterPass").value;
+        
+        if (passIngresada !== PASSWORD_MAESTRA) {
+            alert("Contraseña incorrecta. No puedes realizar cambios.");
+            return;
+        }
+        
         const id = document.getElementById("editId").value;
         const name = document.getElementById("name").value.trim();
         const price = parseFloat(document.getElementById("price").value);
         const link = document.getElementById("link").value.trim();
         const image = document.getElementById("image").value.trim();
 
-        if(!price || !link || !image) return alert("Faltan datos obligatorios");
+        if(!price || !link || !image) return alert("Faltan datos");
 
-        // Buscar producto existente para mantener su fecha original
         const productoExistente = id ? listaProductos.find(p => p.id === id) : null;
-
         const datos = { 
             name: name || "", 
             price: price, 
             link: link, 
             image: image,
-            // Corrección: asegura que la fecha nunca sea undefined
             date: productoExistente ? (productoExistente.date || new Date()) : new Date() 
         };
 
         try {
             if(id) {
-                // Actualiza el documento sin borrar el resto
                 await db.collection("productos").doc(id).update(datos);
                 cancelarEdicion();
             } else {
                 await db.collection("productos").add(datos);
                 limpiarForm();
             }
+            document.getElementById("masterPass").value = ""; // Limpia la pass tras éxito
         } catch (e) {
-            alert("Error al guardar: " + e.message);
+            alert("Error: " + e.message);
+        }
+    }
+
+    function eliminar(id) {
+        const pass = prompt("Introduce la contraseña para eliminar:");
+        if (pass === PASSWORD_MAESTRA) {
+            db.collection("productos").doc(id).delete();
+        } else if (pass !== null) {
+            alert("Contraseña incorrecta");
         }
     }
 
@@ -248,21 +260,19 @@
         document.getElementById("link").value = p.link;
         document.getElementById("image").value = p.image;
         
-        document.getElementById("formContainer").classList.add("editing-mode");
         document.getElementById("formTitle").innerText = "Editando producto...";
-        document.getElementById("submitBtn").innerText = "Guardar Cambios";
+        document.getElementById("submitBtn").innerText = "Actualizar Cambios";
         document.getElementById("submitBtn").className = "btn btn-update";
         document.getElementById("cancelBtn").style.display = "block";
-        
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function cancelarEdicion() {
         limpiarForm();
         document.getElementById("editId").value = "";
-        document.getElementById("formContainer").classList.remove("editing-mode");
+        document.getElementById("masterPass").value = "";
         document.getElementById("formTitle").innerText = "Añadir Nuevo";
-        document.getElementById("submitBtn").innerText = "Añadir a la lista";
+        document.getElementById("submitBtn").innerText = "Guardar en la lista";
         document.getElementById("submitBtn").className = "btn btn-add";
         document.getElementById("cancelBtn").style.display = "none";
     }
@@ -272,16 +282,12 @@
         document.getElementById("price").value = "";
         document.getElementById("link").value = "";
         document.getElementById("image").value = "";
-    }
-
-    function eliminar(id) {
-        if(confirm("¿Eliminar producto?")) db.collection("productos").doc(id).delete();
+        document.getElementById("masterPass").value = "";
     }
 
     function renderizar() {
         const order = document.getElementById("sortOrder").value;
         let lista = [...listaProductos];
-
         if(order === "priceAsc") lista.sort((a,b) => a.price - b.price);
         if(order === "priceDesc") lista.sort((a,b) => b.price - a.price);
         if(order === "recent") lista.sort((a,b) => b.date - a.date);
