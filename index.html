@@ -3,136 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosas | Digital Inventory</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Cosas | Aleix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --accent: #6366f1;
-            --bg: #030712;
-            --surface: rgba(17, 24, 39, 0.8);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #f9fafb;
-        }
+        :root { --accent: #6366f1; --bg: #030712; --surf: #111827; --text: #f9fafb; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        
+        /* Notificación de Error */
+        #debug-log { background: #450a0a; color: #f87171; padding: 10px; border-radius: 8px; margin-bottom: 20px; display: none; font-size: 12px; border: 1px solid #7f1d1d; }
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 50% -20%, rgba(99, 102, 241, 0.15), transparent);
-            color: var(--text);
-            margin: 0; padding: 40px 20px;
-        }
-
-        .container { max-width: 1000px; margin: auto; }
-
-        /* Dashboard Header */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
-        }
-
-        h1 { font-size: 2.5rem; margin: 0; letter-spacing: -1px; }
-        .stats { background: var(--surface); padding: 10px 20px; border-radius: 50px; border: 1px solid var(--border); }
-        #totalPrice { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
-
-        /* Control Panel */
-        .controls {
-            display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;
-        }
-
-        input, select {
-            background: var(--surface); border: 1px solid var(--border);
-            color: white; padding: 12px 15px; border-radius: 12px; outline: none;
-        }
-
-        .btn {
-            background: var(--accent); color: white; border: none; padding: 12px 25px;
-            border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .stats { background: var(--surf); padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); }
 
         /* Formulario */
-        #formPanel {
-            background: var(--surface); padding: 25px; border-radius: 20px;
-            border: 1px solid var(--border); margin-bottom: 30px; display: none;
-        }
+        .admin-card { background: var(--surf); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input { background: #1f2937; border: 1px solid #374151; color: white; padding: 12px; border-radius: 10px; outline: none; }
+        
+        .btn { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn:hover { opacity: 0.8; }
 
-        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-
-        /* Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-
-        .card {
-            background: var(--surface); border-radius: 24px; border: 1px solid var(--border);
-            overflow: hidden; position: relative; transition: 0.3s;
-        }
-
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-
-        .card-img { width: 100%; height: 200px; object-fit: cover; }
-        .card-content { padding: 20px; }
-        .card-name { font-weight: 700; font-size: 1.1rem; display: block; margin-bottom: 5px; }
-        .card-price { font-size: 1.6rem; font-weight: 800; }
-
-        .card-actions {
-            position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; opacity: 0;
-        }
-
-        .card:hover .card-actions { opacity: 1; }
-
-        .action-btn {
-            width: 35px; height: 35px; border-radius: 10px; border: none; cursor: pointer; color: white;
-        }
-
-        #toast {
-            position: fixed; bottom: 20px; right: 20px; background: white; color: black;
-            padding: 15px 25px; border-radius: 10px; font-weight: bold; display: none; z-index: 1000;
-        }
+        /* Grid Productos */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: var(--surf); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-info { padding: 15px; }
+        .card-name { font-weight: bold; font-size: 1.1rem; display: block; }
+        .card-price { font-size: 1.4rem; color: var(--accent); font-weight: 800; margin: 5px 0; }
+        
+        .actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .mini-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div id="debug-log"></div>
+
     <div class="header">
         <h1>Cosas</h1>
         <div class="stats">Total: <span id="totalPrice">0.00 €</span></div>
     </div>
 
-    <div class="controls">
-        <input type="text" id="searchInput" placeholder="Buscar..." oninput="renderizar()" style="flex: 1;">
-        <select id="sortOrder" onchange="renderizar()">
-            <option value="recent">Recientes</option>
-            <option value="priceDesc">Más caro</option>
-            <option value="priceAsc">Más barato</option>
-        </select>
-        <button class="btn" onclick="toggleForm()">+ Nuevo</button>
-    </div>
-
-    <div id="formPanel">
-        <div class="grid-form">
+    <div class="admin-card">
+        <div class="grid-inputs">
             <input id="name" placeholder="Nombre">
-            <input id="price" type="number" step="0.01" placeholder="Precio (€)">
-            <input id="link" placeholder="Enlace web">
+            <input id="price" type="number" step="0.01" placeholder="Precio €">
+            <input id="link" placeholder="Enlace Web">
             <input id="image" placeholder="URL Imagen">
         </div>
         <div style="display: flex; gap: 10px;">
-            <input id="masterPass" type="password" placeholder="Contraseña Admin" style="width: 150px;">
-            <button class="btn" onclick="validarYGuardar()" style="flex: 1;">Guardar Producto</button>
-            <button class="btn" onclick="toggleForm()" style="background: #374151;">Cerrar</button>
+            <input id="pass" type="password" placeholder="Pass (1234)" style="width: 120px;">
+            <button class="btn" onclick="guardar()">Guardar Producto</button>
         </div>
         <input type="hidden" id="editId">
     </div>
 
-    <div id="productContainer" class="grid"></div>
+    <div id="productContainer" class="grid">
+        <p id="loading-text">Cargando productos desde Firebase...</p>
+    </div>
 </div>
 
-<div id="toast"></div>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-    // CONFIGURACIÓN (Verifica que sea la tuya)
+    // 1. Configuración (Asegúrate de que estos datos son los tuyos)
     const firebaseConfig = {
         apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
         authDomain: "cosas-af46c.firebaseapp.com",
@@ -142,110 +79,103 @@
         appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
     };
 
+    // 2. Inicializar
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const MASTER_KEY = "1234"; 
-    let listaItems = [];
+    const PASS = "1234";
 
-    // Cargar datos en tiempo real
-    db.collection("productos").onSnapshot(snap => {
-        listaItems = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderizar();
-    }, error => {
-        console.error("Error de Firebase:", error);
-        alert("Error de conexión: Revisa las Reglas de Firebase");
+    // Función para mostrar errores en pantalla
+    function logError(err) {
+        const div = document.getElementById('debug-log');
+        div.style.display = 'block';
+        div.innerHTML = "<b>ERROR:</b> " + err;
+        console.error(err);
+    }
+
+    // 3. Escuchar Datos (Nombre de colección: productos)
+    db.collection("productos").onSnapshot((snapshot) => {
+        const container = document.getElementById("productContainer");
+        let html = "";
+        let total = 0;
+
+        if (snapshot.empty) {
+            container.innerHTML = "<p>No hay productos en la base de datos.</p>";
+            document.getElementById("totalPrice").innerText = "0.00 €";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const p = doc.data();
+            const id = doc.id;
+            total += parseFloat(p.price || 0);
+            
+            html += `
+                <div class="card">
+                    <div class="actions">
+                        <button class="mini-btn" style="background:#f1c40f" onclick="editar('${id}')">✏️</button>
+                        <button class="mini-btn" style="background:#e74c3c" onclick="eliminar('${id}')">×</button>
+                    </div>
+                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/300x200?text=Error+Imagen'">
+                    <div class="card-info">
+                        <span class="card-name">${p.name || 'Sin nombre'}</span>
+                        <div class="card-price">${parseFloat(p.price).toFixed(2)}€</div>
+                        <a href="${p.link}" target="_blank" style="color:var(--accent); text-decoration:none; font-size:12px;">🔗 Ver enlace</a>
+                    </div>
+                </div>`;
+        });
+
+        container.innerHTML = html;
+        document.getElementById("totalPrice").innerText = total.toFixed(2) + " €";
+    }, (error) => {
+        logError("Firebase dice: " + error.message);
     });
 
-    function toggleForm() {
-        const panel = document.getElementById('formPanel');
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function msg(text) {
-        const t = document.getElementById('toast');
-        t.innerText = text; t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
-    }
-
-    async function validarYGuardar() {
-        const pass = document.getElementById("masterPass").value;
-        if (pass !== MASTER_KEY) return alert("Contraseña incorrecta");
+    // 4. Guardar / Editar
+    async function guardar() {
+        if (document.getElementById("pass").value !== PASS) return alert("Contraseña incorrecta");
         
         const id = document.getElementById("editId").value;
-        const pVal = parseFloat(document.getElementById("price").value) || 0;
-        
         const datos = {
-            name: document.getElementById("name").value || "Sin nombre",
-            price: pVal,
+            name: document.getElementById("name").value,
+            price: parseFloat(document.getElementById("price").value) || 0,
             link: document.getElementById("link").value,
             image: document.getElementById("image").value,
-            date: id ? listaItems.find(p => p.id === id).date : new Date()
+            fecha: new Date()
         };
 
         try {
-            if(id) await db.collection("productos").doc(id).update(datos);
-            else await db.collection("productos").add(datos);
-            
-            msg("¡Guardado!");
+            if (id) {
+                await db.collection("productos").doc(id).update(datos);
+            } else {
+                await db.collection("productos").add(datos);
+            }
             limpiar();
-            toggleForm();
         } catch (e) {
-            console.error(e);
-            alert("Error al guardar en la base de datos");
+            logError("Error al guardar: " + e.message);
         }
     }
 
     function eliminar(id) {
-        if (prompt("Contraseña:") === MASTER_KEY) {
-            db.collection("productos").doc(id).delete();
-            msg("Eliminado");
+        if (prompt("Contraseña:") === PASS) {
+            db.collection("productos").doc(id).delete().catch(e => logError(e.message));
         }
     }
 
-    function prepararEdicion(id) {
-        const p = listaItems.find(prod => prod.id === id);
-        document.getElementById("name").value = p.name;
-        document.getElementById("price").value = p.price;
-        document.getElementById("link").value = p.link;
-        document.getElementById("image").value = p.image;
-        document.getElementById("editId").value = p.id;
-        document.getElementById("formPanel").style.display = 'block';
-        window.scrollTo(0,0);
+    function editar(id) {
+        // Buscamos los datos en la pantalla para no llamar a Firebase otra vez
+        db.collection("productos").doc(id).get().then(doc => {
+            const p = doc.data();
+            document.getElementById("name").value = p.name;
+            document.getElementById("price").value = p.price;
+            document.getElementById("link").value = p.link;
+            document.getElementById("image").value = p.image;
+            document.getElementById("editId").value = id;
+            window.scrollTo(0,0);
+        });
     }
 
     function limpiar() {
-        ['name','price','link','image','masterPass','editId'].forEach(id => document.getElementById(id).value = "");
-    }
-
-    function renderizar() {
-        const query = document.getElementById("searchInput").value.toLowerCase();
-        const order = document.getElementById("sortOrder").value;
-        
-        let filtrados = listaItems.filter(item => item.name.toLowerCase().includes(query));
-        
-        if(order === "priceAsc") filtrados.sort((a,b) => a.price - b.price);
-        if(order === "priceDesc") filtrados.sort((a,b) => b.price - a.price);
-        
-        let html = ""; let total = 0;
-        filtrados.forEach(p => {
-            total += p.price;
-            html += `
-                <div class="card">
-                    <div class="card-actions">
-                        <button class="action-btn" style="background:#f1c40f" onclick="prepararEdicion('${p.id}')">✏️</button>
-                        <button class="action-btn" style="background:#e74c3c" onclick="eliminar('${p.id}')">🗑️</button>
-                    </div>
-                    <img class="card-img" src="${p.image}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
-                    <div class="card-content">
-                        <span class="card-name">${p.name}</span>
-                        <div class="card-price">${p.price.toFixed(2)}€</div>
-                        <a href="${p.link}" target="_blank" class="btn" style="display:block; text-align:center; margin-top:10px; background:rgba(255,255,255,0.1); text-decoration:none;">Abrir Web</a>
-                    </div>
-                </div>
-            `;
-        });
-        document.getElementById("productContainer").innerHTML = html;
-        document.getElementById("totalPrice").innerText = `${total.toFixed(2)} €`;
+        ["name", "price", "link", "image", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
     }
 </script>
 </body>
