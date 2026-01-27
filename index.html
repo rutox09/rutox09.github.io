@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aleix Universe</title>
+
+  <!-- ✅ Título de la pestaña -->
+  <title>RUTOX UNIVERSE</title>
+
+  <!-- ✅ “Favicon” con emoji (data URL SVG) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -32,7 +37,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 20px;
-      padding: 30px;
+      padding: 10px 30px 30px 30px; /* ✅ ajustado para dejar sitio al título */
     }
 
     .app {
@@ -333,6 +338,11 @@
 
 <body>
 
+  <!-- ✅ TÍTULO EN LA PORTADA -->
+  <div class="container" style="padding: 28px 30px 0 30px;">
+    <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
+  </div>
+
   <!-- HOME -->
   <div id="home">
     <div class="app" onclick="openSection('wishlist')">
@@ -362,7 +372,6 @@
         <div class="total-badge" id="totalPrice">0.00 €</div>
         <button class="order-btn" onclick="toggleOrden()">⇅ Ordenar por Precio</button>
 
-        <!-- ✅ filtros -->
         <button id="fAll" class="filter-btn active" onclick="setFiltro('all')">Todos</button>
         <button id="fChecked" class="filter-btn" onclick="setFiltro('checked')">Marcados</button>
         <button id="fUnchecked" class="filter-btn" onclick="setFiltro('unchecked')">Sin marcar</button>
@@ -472,7 +481,7 @@
     AOS.init({ duration: 800 });
 
     // ============================================================
-    // ✅ MEDIA (se ejecuta SIEMPRE aunque Firebase falle)
+    // MEDIA
     // ============================================================
     const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
@@ -617,13 +626,12 @@
     loadExams();
 
     // ============================================================
-    // ✅ WISHLIST (aislada para que si Firebase falla no rompa Media)
+    // WISHLIST (aislada)
     // ============================================================
     let db = null;
     const PASS_KEY = "1234";
     let ordenAscendente = true;
 
-    // filtros
     let filtro = "all"; // all | checked | unchecked
     let lastSnap = null;
 
@@ -689,7 +697,6 @@
         const p = doc.data();
         const checked = !!p.checked;
 
-        // aplicar filtro
         if (filtro === "checked" && !checked) return;
         if (filtro === "unchecked" && checked) return;
 
@@ -732,7 +739,7 @@
         image: document.getElementById("image").value
       };
 
-      if (!id) data.checked = false; // por defecto sin marcar
+      if (!id) data.checked = false;
 
       if (id) await db.collection("productos").doc(id).update(data);
       else await db.collection("productos").add(data);
