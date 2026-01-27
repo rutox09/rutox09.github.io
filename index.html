@@ -1,372 +1,819 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Aleix Universe</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aleix Universe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-<style>
-:root {
-    --bg: #020617;
-    --glass: rgba(255,255,255,0.08);
-    --border: rgba(255,255,255,0.15);
-    --neon: #00f2ff;
-}
+  <style>
+    :root {
+      --bg: #020617;
+      --glass: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.15);
+      --neon: #00f2ff;
+      --primary: #6366f1;
+    }
 
-* { box-sizing: border-box; }
+    * { box-sizing: border-box; }
 
-body {
-    margin: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: radial-gradient(circle, #0f172a, #020617);
-    color: white;
-}
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: white;
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+      background-attachment: fixed;
+    }
 
-/* ---------- PANTALLA APPS ---------- */
+    /* ---------- HOME ---------- */
+    #home {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
 
-#home {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 20px;
-    padding: 30px;
-}
+    .app {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-.app {
-    background: var(--glass);
-    border: 1px solid var(--border);
-    border-radius: 25px;
-    height: 90px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.3s;
-}
+    .app:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.15);
+    }
 
-.app:hover {
-    transform: scale(1.05);
-    background: rgba(255,255,255,0.15);
-}
+    .app span {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
 
-.app span {
-    margin-top: 6px;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
+    .app-icon { font-size: 1.8rem; }
 
-.app-icon {
-    font-size: 1.8rem;
-}
+    /* ---------- SECCIONES ---------- */
+    .section {
+      display: none;
+      padding: 20px;
+    }
 
-/* ---------- SECCIONES ---------- */
+    .back {
+      margin-bottom: 20px;
+      background: none;
+      border: none;
+      color: var(--neon);
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
-.section {
-    display: none;
-    padding: 20px;
-}
+    /* ---------- COMÚN ---------- */
+    .container { max-width: 1200px; margin: auto; }
 
-.back {
-    margin-bottom: 20px;
-    background: none;
-    border: none;
-    color: var(--neon);
-    font-size: 1rem;
-    cursor: pointer;
-}
-</style>
+    .title {
+      font-size: 4rem;
+      font-weight: 800;
+      text-align: center;
+      margin: 0 0 20px 0;
+      background: linear-gradient(90deg, #fff, var(--neon));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .total-badge {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 30px;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--neon);
+      backdrop-filter: blur(10px);
+    }
+
+    .order-btn, .filter-btn {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.3s;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .order-btn:hover, .filter-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .admin-panel {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 30px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .grid-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    input {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 15px;
+      color: white;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    input[type="file"]{
+      padding: 12px;
+      background: rgba(0,0,0,0.85);
+    }
+
+    .btn-main {
+      background: white;
+      color: black;
+      border: none;
+      padding: 18px;
+      border-radius: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1.1rem;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      border-radius: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      flex: 1;
+      min-width: 180px;
+      transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: 0.25s;
+    }
+
+    .card.checked {
+      border-color: rgba(0, 242, 255, 0.6);
+      box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.25);
+      opacity: 0.92;
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      pointer-events: none;
+    }
+
+    .card-name {
+      font-weight: 800;
+      font-size: 1.3rem;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+
+    .card-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--neon);
+      margin-bottom: 15px;
+    }
+
+    .card-actions {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+
+    .circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .btn-link {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--neon);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    /* ---------- MEDIA ---------- */
+    .media-sub {
+      text-align: center;
+      opacity: 0.85;
+      margin-top: 10px;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    .hint { text-align: center; font-weight: 700; opacity: 0.85; }
+
+    .warning {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: 800;
+      color: var(--neon);
+      opacity: 0.95;
+    }
+
+    .exam-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .exam-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .big-grade {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--neon);
+      margin-top: 12px;
+    }
+
+    .muted { opacity: 0.8; font-weight: 700; }
+
+    .soft-note {
+      text-align: center;
+      opacity: 0.85;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- HOME -->
-<div id="home">
-    <div class="app" onclick="openSection('cosas')">
-        <div class="app-icon">🧠</div>
-        <span>Cosas</span>
+  <!-- HOME -->
+  <div id="home">
+    <div class="app" onclick="openSection('wishlist')">
+      <div class="app-icon">🧠</div>
+      <span>Wishlist</span>
     </div>
 
-    <!-- Futuras apps -->
+    <div class="app" onclick="openSection('media')">
+      <div class="app-icon">📚</div>
+      <span>Media</span>
+    </div>
+
     <div class="app">
-        <div class="app-icon">🚧</div>
-        <span>Próximamente</span>
+      <div class="app-icon">🚧</div>
+      <span>Próximamente</span>
     </div>
-</div>
+  </div>
 
-<!-- SECCIÓN COSAS -->
-<div id="cosas" class="section">
+  <!-- WISHLIST -->
+  <div id="wishlist" class="section">
     <button class="back" onclick="goHome()">← Volver</button>
-    <h1>Cosas</h1>
-    <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosas | Aleix Universe</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --neon: #00f2ff;
-            --bg: #020617;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
 
-        * { box-sizing: border-box; }
+    <div class="container">
+      <h1 class="title" data-aos="fade-down">Wishlist</h1>
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            color: white;
-            margin: 0; padding: 40px 20px;
-            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            background-attachment: fixed;
-        }
-
-        .container { max-width: 1200px; margin: auto; }
-
-        h1 {
-            font-size: 4rem; font-weight: 800; text-align: center; margin: 0;
-            background: linear-gradient(90deg, #fff, var(--neon));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-
-        .controls-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-
-        .total-badge {
-            background: var(--glass);
-            padding: 10px 30px; border-radius: 100px; border: 1px solid var(--border);
-            font-size: 1.5rem; font-weight: 800; color: var(--neon);
-            backdrop-filter: blur(10px);
-        }
-
-        .order-btn {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .order-btn:hover { background: var(--primary); border-color: var(--primary); }
-
-        /* Panel de Control */
-        .admin-panel {
-            background: rgba(15, 23, 42, 0.9);
-            padding: 30px; border-radius: 30px; border: 1px solid var(--border);
-            margin-bottom: 60px; position: relative; z-index: 100;
-        }
-
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-
-        input {
-            background: #000; border: 1px solid var(--border);
-            padding: 15px; border-radius: 15px; color: white; font-size: 1rem;
-            width: 100%;
-        }
-
-        .btn-main {
-            background: white; color: black; border: none; padding: 18px;
-            border-radius: 15px; font-weight: 800; cursor: pointer;
-            margin-top: 20px; width: 100%; font-size: 1.1rem;
-        }
-
-        /* Grid de Cartas */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-
-        .card {
-            background: var(--glass); border-radius: 30px; border: 1px solid var(--border);
-            padding: 20px; position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .card img { 
-            width: 100%; height: 220px; object-fit: cover; border-radius: 20px; 
-            margin-bottom: 15px; pointer-events: none;
-        }
-
-        .card-name { font-weight: 800; font-size: 1.3rem; margin-bottom: 5px; color: #fff; }
-        .card-price { font-size: 2rem; font-weight: 800; color: var(--neon); margin-bottom: 15px; }
-
-        .card-actions {
-            position: absolute; top: 15px; right: 15px; display: flex; gap: 8px;
-            z-index: 50;
-        }
-
-        .circle-btn {
-            width: 38px; height: 38px; border-radius: 10px; border: none; cursor: pointer;
-            background: rgba(0,0,0,0.7); color: white;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .btn-link {
-            display: block; text-align: center; padding: 12px; border-radius: 12px;
-            background: rgba(255,255,255,0.05); color: var(--neon);
-            text-decoration: none; font-weight: 700; font-size: 0.8rem;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1 data-aos="fade-down">Cosas</h1>
-    
-    <div class="controls-row" data-aos="fade-up">
+      <div class="controls-row" data-aos="fade-up">
         <div class="total-badge" id="totalPrice">0.00 €</div>
         <button class="order-btn" onclick="toggleOrden()">⇅ Ordenar por Precio</button>
-    </div>
 
-    <div class="admin-panel" data-aos="fade-up">
+        <button id="fAll" class="filter-btn active" onclick="setFiltro('all')">Todos</button>
+        <button id="fChecked" class="filter-btn" onclick="setFiltro('checked')">Marcados</button>
+        <button id="fUnchecked" class="filter-btn" onclick="setFiltro('unchecked')">Sin marcar</button>
+      </div>
+
+      <div class="admin-panel" data-aos="fade-up">
         <div class="grid-inputs">
-            <input id="name" type="text" placeholder="¿Qué es?">
-            <input id="price" type="number" step="0.01" placeholder="Precio (€)">
-            <input id="link" placeholder="URL Producto">
-            <input id="image" placeholder="URL Imagen">
+          <input id="name" type="text" placeholder="¿Qué es?">
+          <input id="price" type="number" step="0.01" placeholder="Precio (€)">
+          <input id="link" placeholder="Enlace del producto (URL)">
+
+          <!-- ✅ imagen por archivo -->
+          <input id="imageFile" type="file" accept="image/*">
+
+          <!-- ✅ o imagen por URL -->
+          <input id="imageUrl" placeholder="O pega URL de imagen (opcional)">
         </div>
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <input id="pass" type="password" placeholder="Pass" style="width: 140px;">
-            <button id="saveBtn" class="btn-main" onclick="guardar()">GUARDAR</button>
+
+        <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+          <input id="pass" type="password" placeholder="Pass" style="width: 140px;">
+          <button id="saveBtn" class="btn-main" onclick="guardar()">GUARDAR</button>
         </div>
+
         <input type="hidden" id="editId">
+      </div>
+
+      <div id="wishlistNote" class="soft-note" style="display:none;"></div>
+      <div id="productContainer" class="grid"></div>
     </div>
+  </div>
 
-    <div id="productContainer" class="grid"></div>
-</div>
+  <!-- MEDIA -->
+  <div id="media" class="section">
+    <button class="back" onclick="goHome()">← Volver</button>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <div class="container">
+      <h1 class="title" data-aos="fade-down">Media</h1>
+      <div class="media-sub" data-aos="fade-up">
+        Calcula tu <b>media ponderada</b> según el porcentaje de cada examen.
+      </div>
 
-<script>
+      <div class="controls-row" data-aos="fade-up">
+        <div class="total-badge" id="weightedAvg">--</div>
+        <div class="total-badge" id="weightTotal">0%</div>
+
+        <!-- ✅ botón de añadir exámenes -->
+        <button class="filter-btn" onclick="focusExamForm()">+ Añadir examen</button>
+      </div>
+
+      <div class="hint muted" data-aos="fade-up">
+        Media = (Σ nota × peso) / (Σ peso) · mínimo 2 exámenes
+      </div>
+      <div class="warning" id="weightWarning" style="display:none;"></div>
+
+      <div id="examPanel" class="admin-panel" data-aos="fade-up">
+        <div class="grid-inputs">
+          <input id="examName" type="text" placeholder="Nombre (opcional)">
+          <input id="examGrade" type="number" step="0.01" placeholder="Nota (0–10)">
+          <input id="examWeight" type="number" step="0.01" placeholder="Peso (%) (p. ej. 30)">
+        </div>
+
+        <div class="exam-row">
+          <button id="examSaveBtn" class="btn-main" onclick="addOrUpdateExam()">AÑADIR</button>
+          <button class="btn-secondary" onclick="resetExams()">RESET</button>
+        </div>
+
+        <input type="hidden" id="examEditIndex" value="">
+      </div>
+
+      <div id="examContainer" class="grid"></div>
+    </div>
+  </div>
+
+  <!-- LIBRERÍAS -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+
+  <script>
+    // ---------- Navegación ----------
+    function openSection(id) {
+      document.getElementById("home").style.display = "none";
+      document.getElementById(id).style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goHome() {
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+      document.getElementById("home").style.display = "grid";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ---------- Helpers ----------
+    function formatNum(n) {
+      const x = Number(n);
+      if (Number.isNaN(x)) return "0.00";
+      return x.toFixed(2);
+    }
+    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
     AOS.init({ duration: 800 });
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-        authDomain: "cosas-af46c.firebaseapp.com",
-        projectId: "cosas-af46c",
-        storageBucket: "cosas-af46c.firebasestorage.app",
-        messagingSenderId: "145996030094",
-        appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
-    };
+    // ============================================================
+    // ✅ MEDIA (siempre funciona)
+    // ============================================================
+    const EXAMS_KEY = "aleix_exams_v2";
+    let exams = [];
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    function focusExamForm(){
+      const panel = document.getElementById("examPanel");
+      panel.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => document.getElementById("examGrade").focus(), 250);
+    }
+
+    function loadExams() {
+      try {
+        exams = JSON.parse(localStorage.getItem(EXAMS_KEY) || "[]");
+        if (!Array.isArray(exams)) exams = [];
+      } catch { exams = []; }
+      renderExams();
+      updateStats();
+    }
+
+    function saveExams() { localStorage.setItem(EXAMS_KEY, JSON.stringify(exams)); }
+
+    function addOrUpdateExam() {
+      const name = (document.getElementById("examName").value || "").trim(); // opcional
+      const gradeRaw = parseFloat(document.getElementById("examGrade").value);
+      const weightRaw = parseFloat(document.getElementById("examWeight").value);
+
+      if (Number.isNaN(gradeRaw)) return alert("Pon una nota válida.");
+      if (Number.isNaN(weightRaw)) return alert("Pon un peso (%) válido.");
+
+      const grade = clamp(gradeRaw, 0, 10);
+      const weight = clamp(weightRaw, 0, 100);
+
+      const idx = document.getElementById("examEditIndex").value;
+      const payload = { name, grade, weight };
+
+      if (idx !== "" && !Number.isNaN(parseInt(idx, 10))) {
+        exams[parseInt(idx, 10)] = payload;
+      } else {
+        exams.push(payload);
+      }
+
+      saveExams();
+      clearExamForm();
+      renderExams();
+      updateStats();
+    }
+
+    function editExam(index) {
+      const e = exams[index];
+      if (!e) return;
+
+      document.getElementById("examName").value = e.name || "";
+      document.getElementById("examGrade").value = e.grade;
+      document.getElementById("examWeight").value = e.weight;
+      document.getElementById("examEditIndex").value = index;
+      document.getElementById("examSaveBtn").innerText = "ACTUALIZAR";
+      focusExamForm();
+    }
+
+    function deleteExam(index) {
+      if (!exams[index]) return;
+      exams.splice(index, 1);
+      saveExams();
+      renderExams();
+      updateStats();
+    }
+
+    function clearExamForm() {
+      document.getElementById("examName").value = "";
+      document.getElementById("examGrade").value = "";
+      document.getElementById("examWeight").value = "";
+      document.getElementById("examEditIndex").value = "";
+      document.getElementById("examSaveBtn").innerText = "AÑADIR";
+    }
+
+    function resetExams() {
+      if (!confirm("¿Seguro que quieres borrar todos los exámenes?")) return;
+      exams = [];
+      saveExams();
+      clearExamForm();
+      renderExams();
+      updateStats();
+    }
+
+    function renderExams() {
+      const container = document.getElementById("examContainer");
+      let html = "";
+
+      exams.forEach((e, i) => {
+        const title = (e.name && e.name.trim()) ? escapeHtml(e.name) : `Examen #${i + 1}`;
+        html += `
+          <div class="card" data-tilt data-tilt-max="8">
+            <div class="card-actions">
+              <button class="circle-btn" onclick="editExam(${i})">✏️</button>
+              <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="deleteExam(${i})">🗑️</button>
+            </div>
+
+            <div class="card-name">${title}</div>
+            <div class="exam-meta">
+              <div class="pill">Peso: ${formatNum(e.weight)}%</div>
+              <div class="pill">Aporta: ${formatNum((e.grade * e.weight) / 100)}</div>
+            </div>
+
+            <div class="big-grade">${formatNum(e.grade)}</div>
+            <div class="muted">Nota</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      VanillaTilt.init(document.querySelectorAll(".card"));
+    }
+
+    function updateStats() {
+      const totalWeight = exams.reduce((acc, e) => acc + (parseFloat(e.weight) || 0), 0);
+      const weightedSum = exams.reduce((acc, e) => acc + ((parseFloat(e.grade) || 0) * (parseFloat(e.weight) || 0)), 0);
+
+      document.getElementById("weightTotal").innerText = formatNum(totalWeight) + "%";
+      const warn = document.getElementById("weightWarning");
+      warn.style.display = "block";
+
+      if (exams.length < 2) {
+        document.getElementById("weightedAvg").innerText = "--";
+        warn.innerText = "Añade mínimo 2 exámenes para calcular la media.";
+        return;
+      }
+
+      const avg = totalWeight > 0 ? (weightedSum / totalWeight) : 0;
+      document.getElementById("weightedAvg").innerText = formatNum(avg);
+
+      const diff = 100 - totalWeight;
+      if (Math.abs(diff) > 0.001) {
+        warn.innerText = diff > 0
+          ? `Te falta ${formatNum(diff)}% para llegar a 100%`
+          : `Te sobra ${formatNum(-diff)}% (superas 100%)`;
+      } else {
+        warn.innerText = "Perfecto: el peso total suma 100% ✅";
+      }
+    }
+
+    loadExams();
+
+    // ============================================================
+    // ✅ WISHLIST (Firestore + Storage, aislado)
+    // ============================================================
+    let db = null;
+    let storage = null;
     const PASS_KEY = "1234";
-    
-    let ordenAscendente = true; // Estado del orden
+    let ordenAscendente = true;
+
+    // filtros
+    let filtro = "all"; // all | checked | unchecked
+    let lastSnap = null;
+
+    function setFiltro(mode) {
+      filtro = mode;
+      document.getElementById("fAll").classList.toggle("active", mode === "all");
+      document.getElementById("fChecked").classList.toggle("active", mode === "checked");
+      document.getElementById("fUnchecked").classList.toggle("active", mode === "unchecked");
+      if (lastSnap) renderizar(lastSnap);
+    }
+
+    function initWishlist() {
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+          authDomain: "cosas-af46c.firebaseapp.com",
+          projectId: "cosas-af46c",
+          storageBucket: "cosas-af46c.firebasestorage.app",
+          messagingSenderId: "145996030094",
+          appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
+        };
+
+        if (!window.firebase) throw new Error("Firebase no cargó");
+
+        // Evita doble init si recargas scripts
+        if (!firebase.apps || firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
+
+        db = firebase.firestore();
+        storage = firebase.storage();
+
+        cargarProductos();
+      } catch (e) {
+        const note = document.getElementById("wishlistNote");
+        note.style.display = "block";
+        note.innerText = "Wishlist: no se pudo conectar a Firebase/Storage. (Media sigue funcionando).";
+        console.error(e);
+      }
+    }
 
     function cargarProductos() {
-        // Ordenamos en la consulta de Firebase
-        db.collection("productos")
-          .orderBy("price", ordenAscendente ? "asc" : "desc")
-          .onSnapshot((snap) => {
-            renderizar(snap);
+      if (!db) return;
+      db.collection("productos")
+        .orderBy("price", ordenAscendente ? "asc" : "desc")
+        .onSnapshot((snap) => {
+          lastSnap = snap;
+          renderizar(snap);
         });
     }
 
     function toggleOrden() {
-        ordenAscendente = !ordenAscendente;
-        cargarProductos(); // Recarga con el nuevo orden
+      ordenAscendente = !ordenAscendente;
+      cargarProductos();
+    }
+
+    function toggleMarcado(id, current) {
+      if (!db) return;
+      db.collection("productos").doc(id).update({ checked: !current });
     }
 
     function renderizar(snap) {
-        const container = document.getElementById("productContainer");
-        let html = ""; let total = 0; let count = 1;
+      const container = document.getElementById("productContainer");
+      let html = "";
+      let total = 0;
+      let count = 1;
 
-        snap.forEach((doc) => {
-            const p = doc.data();
-            total += parseFloat(p.price || 0);
-            const name = p.name || `Objeto #${count}`;
-            
-            html += `
-                <div class="card" data-tilt data-tilt-max="8">
-                    <div class="card-actions">
-                        <button class="circle-btn" onclick="prepararEdicion('${doc.id}')">✏️</button>
-                        <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
-                    </div>
-                    <img src="${p.image}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
-                    <div class="card-name">${name}</div>
-                    <div class="card-price">${parseFloat(p.price).toFixed(2)}€</div>
-                    <a href="${p.link}" target="_blank" class="btn-link">VER DETALLES</a>
-                </div>`;
-            count++;
-        });
-        container.innerHTML = html;
-        document.getElementById("totalPrice").innerText = total.toFixed(2) + " €";
-        VanillaTilt.init(document.querySelectorAll(".card"));
+      snap.forEach((doc) => {
+        const p = doc.data();
+        const checked = !!p.checked;
+
+        if (filtro === "checked" && !checked) return;
+        if (filtro === "unchecked" && checked) return;
+
+        total += parseFloat(p.price || 0);
+        const name = p.name || `Objeto #${count}`;
+
+        html += `
+          <div class="card ${checked ? "checked" : ""}" data-tilt data-tilt-max="8">
+            <div class="card-actions">
+              <button class="circle-btn" title="Marcar" onclick="toggleMarcado('${doc.id}', ${checked})">
+                ${checked ? "☑️" : "⬜"}
+              </button>
+              <button class="circle-btn" onclick="prepararEdicion('${doc.id}')">✏️</button>
+              <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
+            </div>
+
+            <img src="${p.image || ""}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
+            <div class="card-name">${escapeHtml(name)}</div>
+            <div class="card-price">${parseFloat(p.price || 0).toFixed(2)}€</div>
+            <a href="${p.link || "#"}" target="_blank" class="btn-link">VER DETALLES</a>
+          </div>
+        `;
+        count++;
+      });
+
+      container.innerHTML = html;
+      document.getElementById("totalPrice").innerText = total.toFixed(2) + " €";
+      VanillaTilt.init(document.querySelectorAll(".card"));
+    }
+
+    async function uploadImageIfNeeded(file) {
+      if (!file) return null;
+      if (!storage) throw new Error("Storage no disponible");
+
+      // ruta única
+      const safeName = (file.name || "img").replace(/[^\w.\-]/g, "_");
+      const path = `productos/${Date.now()}_${safeName}`;
+      const ref = storage.ref().child(path);
+
+      // sube archivo
+      await ref.put(file, { contentType: file.type || "image/jpeg" });
+
+      // url pública
+      return await ref.getDownloadURL();
     }
 
     async function guardar() {
-        if (document.getElementById("pass").value !== PASS_KEY) return alert("Pass incorrecto");
-        const id = document.getElementById("editId").value;
-        const data = {
-            name: document.getElementById("name").value,
-            price: parseFloat(document.getElementById("price").value) || 0,
-            link: document.getElementById("link").value,
-            image: document.getElementById("image").value
-        };
+      if (!db) return alert("Firebase no está conectado.");
+      if (document.getElementById("pass").value !== PASS_KEY) return alert("Pass incorrecto");
 
-        if (id) await db.collection("productos").doc(id).update(data);
-        else await db.collection("productos").add(data);
-        limpiar();
+      const id = document.getElementById("editId").value;
+
+      const name = document.getElementById("name").value;
+      const price = parseFloat(document.getElementById("price").value) || 0;
+      const link = document.getElementById("link").value;
+
+      const file = document.getElementById("imageFile").files[0] || null;
+      const imageUrlTyped = (document.getElementById("imageUrl").value || "").trim();
+
+      // ✅ prioridad: archivo > url pegada > (si editando, mantener actual)
+      let imageUrlFinal = null;
+
+      try {
+        if (file) {
+          imageUrlFinal = await uploadImageIfNeeded(file);
+        } else if (imageUrlTyped) {
+          imageUrlFinal = imageUrlTyped;
+        } else if (id) {
+          const current = await db.collection("productos").doc(id).get();
+          const currentData = current.data() || {};
+          imageUrlFinal = currentData.image || "";
+        } else {
+          imageUrlFinal = "";
+        }
+      } catch (e) {
+        console.error(e);
+        return alert("No se pudo subir la imagen (Storage/Reglas). Prueba con URL de imagen.");
+      }
+
+      const data = { name, price, link, image: imageUrlFinal };
+
+      if (!id) data.checked = false;
+
+      if (id) await db.collection("productos").doc(id).update(data);
+      else await db.collection("productos").add(data);
+
+      limpiar();
     }
 
     function prepararEdicion(id) {
-        db.collection("productos").doc(id).get().then(doc => {
-            const p = doc.data();
-            document.getElementById("name").value = p.name || "";
-            document.getElementById("price").value = p.price || 0;
-            document.getElementById("link").value = p.link || "";
-            document.getElementById("image").value = p.image || "";
-            document.getElementById("editId").value = id;
-            document.getElementById("saveBtn").innerText = "ACTUALIZAR";
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        });
+      if (!db) return;
+      db.collection("productos").doc(id).get().then(doc => {
+        const p = doc.data() || {};
+        document.getElementById("name").value = p.name || "";
+        document.getElementById("price").value = p.price || 0;
+        document.getElementById("link").value = p.link || "";
+        document.getElementById("imageUrl").value = p.image || "";
+        document.getElementById("imageFile").value = ""; // no se puede precargar
+        document.getElementById("editId").value = id;
+        document.getElementById("saveBtn").innerText = "ACTUALIZAR";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
     }
 
     function eliminar(id) {
-        if (prompt("Contraseña:") === PASS_KEY) db.collection("productos").doc(id).delete();
+      if (!db) return;
+      if (prompt("Contraseña:") === PASS_KEY) db.collection("productos").doc(id).delete();
     }
 
     function limpiar() {
-        ["name", "price", "link", "image", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
-        document.getElementById("saveBtn").innerText = "GUARDAR";
+      ["name", "price", "link", "imageUrl", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
+      document.getElementById("imageFile").value = "";
+      document.getElementById("saveBtn").innerText = "GUARDAR";
     }
 
-    // Inicio inicial
-    cargarProductos();
-</script>
-</body>
-</html>
-    <!-- AQUÍ VA TU CÓDIGO ACTUAL -->
-</div>
-
-<script>
-function openSection(id) {
-    document.getElementById("home").style.display = "none";
-    document.getElementById(id).style.display = "block";
-}
-
-function goHome() {
-    document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-    document.getElementById("home").style.display = "grid";
-}
-</script>
-
+    initWishlist();
+  </script>
 </body>
 </html>
