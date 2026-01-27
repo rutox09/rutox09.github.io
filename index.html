@@ -1,6 +1,107 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aleix Universe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #020617;
+    --glass: rgba(255,255,255,0.08);
+    --border: rgba(255,255,255,0.15);
+    --neon: #00f2ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: radial-gradient(circle, #0f172a, #020617);
+    color: white;
+}
+
+/* ---------- PANTALLA APPS ---------- */
+
+#home {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.app {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.app:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.15);
+}
+
+.app span {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.app-icon {
+    font-size: 1.8rem;
+}
+
+/* ---------- SECCIONES ---------- */
+
+.section {
+    display: none;
+    padding: 20px;
+}
+
+.back {
+    margin-bottom: 20px;
+    background: none;
+    border: none;
+    color: var(--neon);
+    font-size: 1rem;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOME -->
+<div id="home">
+    <div class="app" onclick="openSection('cosas')">
+        <div class="app-icon">🧠</div>
+        <span>Cosas</span>
+    </div>
+
+    <!-- Futuras apps -->
+    <div class="app">
+        <div class="app-icon">🚧</div>
+        <span>Próximamente</span>
+    </div>
+</div>
+
+<!-- SECCIÓN COSAS -->
+<div id="cosas" class="section">
+    <button class="back" onclick="goHome()">← Volver</button>
+    <h1>Cosas</h1>
+    <!DOCTYPE html>
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosas | Aleix Universe</title>
@@ -250,5 +351,22 @@
     // Inicio inicial
     cargarProductos();
 </script>
+</body>
+</html>
+    <!-- AQUÍ VA TU CÓDIGO ACTUAL -->
+</div>
+
+<script>
+function openSection(id) {
+    document.getElementById("home").style.display = "none";
+    document.getElementById(id).style.display = "block";
+}
+
+function goHome() {
+    document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+    document.getElementById("home").style.display = "grid";
+}
+</script>
+
 </body>
 </html>
