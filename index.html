@@ -119,7 +119,6 @@
       font-weight: 700;
       transition: 0.3s;
       font-size: 0.9rem;
-      white-space: nowrap;
     }
 
     .order-btn:hover, .filter-btn:hover {
@@ -158,11 +157,6 @@
       width: 100%;
     }
 
-    input[type="file"]{
-      padding: 12px;
-      background: rgba(0,0,0,0.85);
-    }
-
     .btn-main {
       background: white;
       color: black;
@@ -173,23 +167,6 @@
       cursor: pointer;
       width: 100%;
       font-size: 1.1rem;
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 18px;
-      border-radius: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      flex: 1;
-      min-width: 180px;
-      transition: 0.3s;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.15);
     }
 
     .grid {
@@ -281,7 +258,11 @@
       font-weight: 600;
     }
 
-    .hint { text-align: center; font-weight: 700; opacity: 0.85; }
+    .hint {
+      text-align: center;
+      font-weight: 700;
+      opacity: 0.85;
+    }
 
     .warning {
       text-align: center;
@@ -296,6 +277,23 @@
       gap: 10px;
       margin-top: 15px;
       flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      border-radius: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      flex: 1;
+      min-width: 180px;
+      transition: 0.3s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.15);
     }
 
     .exam-meta {
@@ -364,6 +362,7 @@
         <div class="total-badge" id="totalPrice">0.00 €</div>
         <button class="order-btn" onclick="toggleOrden()">⇅ Ordenar por Precio</button>
 
+        <!-- ✅ filtros -->
         <button id="fAll" class="filter-btn active" onclick="setFiltro('all')">Todos</button>
         <button id="fChecked" class="filter-btn" onclick="setFiltro('checked')">Marcados</button>
         <button id="fUnchecked" class="filter-btn" onclick="setFiltro('unchecked')">Sin marcar</button>
@@ -373,16 +372,11 @@
         <div class="grid-inputs">
           <input id="name" type="text" placeholder="¿Qué es?">
           <input id="price" type="number" step="0.01" placeholder="Precio (€)">
-          <input id="link" placeholder="Enlace del producto (URL)">
-
-          <!-- ✅ imagen por archivo -->
-          <input id="imageFile" type="file" accept="image/*">
-
-          <!-- ✅ o imagen por URL -->
-          <input id="imageUrl" placeholder="O pega URL de imagen (opcional)">
+          <input id="link" placeholder="URL Producto">
+          <input id="image" placeholder="URL Imagen">
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:15px; align-items:center;">
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
           <input id="pass" type="password" placeholder="Pass" style="width: 140px;">
           <button id="saveBtn" class="btn-main" onclick="guardar()">GUARDAR</button>
         </div>
@@ -408,9 +402,6 @@
       <div class="controls-row" data-aos="fade-up">
         <div class="total-badge" id="weightedAvg">--</div>
         <div class="total-badge" id="weightTotal">0%</div>
-
-        <!-- ✅ botón de añadir exámenes -->
-        <button class="filter-btn" onclick="focusExamForm()">+ Añadir examen</button>
       </div>
 
       <div class="hint muted" data-aos="fade-up">
@@ -418,7 +409,7 @@
       </div>
       <div class="warning" id="weightWarning" style="display:none;"></div>
 
-      <div id="examPanel" class="admin-panel" data-aos="fade-up">
+      <div class="admin-panel" data-aos="fade-up">
         <div class="grid-inputs">
           <input id="examName" type="text" placeholder="Nombre (opcional)">
           <input id="examGrade" type="number" step="0.01" placeholder="Nota (0–10)">
@@ -440,7 +431,6 @@
   <!-- LIBRERÍAS -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
@@ -464,7 +454,11 @@
       if (Number.isNaN(x)) return "0.00";
       return x.toFixed(2);
     }
-    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+
+    function clamp(n, min, max) {
+      return Math.min(max, Math.max(min, n));
+    }
+
     function escapeHtml(str) {
       return String(str)
         .replaceAll("&", "&amp;")
@@ -474,30 +468,29 @@
         .replaceAll("'", "&#039;");
     }
 
+    // ---------- AOS ----------
     AOS.init({ duration: 800 });
 
     // ============================================================
-    // ✅ MEDIA (siempre funciona)
+    // ✅ MEDIA (se ejecuta SIEMPRE aunque Firebase falle)
     // ============================================================
-    const EXAMS_KEY = "aleix_exams_v2";
+    const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
-
-    function focusExamForm(){
-      const panel = document.getElementById("examPanel");
-      panel.scrollIntoView({ behavior: "smooth", block: "center" });
-      setTimeout(() => document.getElementById("examGrade").focus(), 250);
-    }
 
     function loadExams() {
       try {
         exams = JSON.parse(localStorage.getItem(EXAMS_KEY) || "[]");
         if (!Array.isArray(exams)) exams = [];
-      } catch { exams = []; }
+      } catch {
+        exams = [];
+      }
       renderExams();
       updateStats();
     }
 
-    function saveExams() { localStorage.setItem(EXAMS_KEY, JSON.stringify(exams)); }
+    function saveExams() {
+      localStorage.setItem(EXAMS_KEY, JSON.stringify(exams));
+    }
 
     function addOrUpdateExam() {
       const name = (document.getElementById("examName").value || "").trim(); // opcional
@@ -532,9 +525,10 @@
       document.getElementById("examName").value = e.name || "";
       document.getElementById("examGrade").value = e.grade;
       document.getElementById("examWeight").value = e.weight;
+
       document.getElementById("examEditIndex").value = index;
       document.getElementById("examSaveBtn").innerText = "ACTUALIZAR";
-      focusExamForm();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function deleteExam(index) {
@@ -576,6 +570,7 @@
             </div>
 
             <div class="card-name">${title}</div>
+
             <div class="exam-meta">
               <div class="pill">Peso: ${formatNum(e.weight)}%</div>
               <div class="pill">Aporta: ${formatNum((e.grade * e.weight) / 100)}</div>
@@ -596,6 +591,7 @@
       const weightedSum = exams.reduce((acc, e) => acc + ((parseFloat(e.grade) || 0) * (parseFloat(e.weight) || 0)), 0);
 
       document.getElementById("weightTotal").innerText = formatNum(totalWeight) + "%";
+
       const warn = document.getElementById("weightWarning");
       warn.style.display = "block";
 
@@ -621,10 +617,9 @@
     loadExams();
 
     // ============================================================
-    // ✅ WISHLIST (Firestore + Storage, aislado)
+    // ✅ WISHLIST (aislada para que si Firebase falla no rompa Media)
     // ============================================================
     let db = null;
-    let storage = null;
     const PASS_KEY = "1234";
     let ordenAscendente = true;
 
@@ -653,17 +648,13 @@
 
         if (!window.firebase) throw new Error("Firebase no cargó");
 
-        // Evita doble init si recargas scripts
-        if (!firebase.apps || firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-
+        firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
-        storage = firebase.storage();
-
         cargarProductos();
       } catch (e) {
         const note = document.getElementById("wishlistNote");
         note.style.display = "block";
-        note.innerText = "Wishlist: no se pudo conectar a Firebase/Storage. (Media sigue funcionando).";
+        note.innerText = "Wishlist: no se pudo conectar a Firebase. (Media sigue funcionando).";
         console.error(e);
       }
     }
@@ -698,6 +689,7 @@
         const p = doc.data();
         const checked = !!p.checked;
 
+        // aplicar filtro
         if (filtro === "checked" && !checked) return;
         if (filtro === "unchecked" && checked) return;
 
@@ -714,10 +706,10 @@
               <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
             </div>
 
-            <img src="${p.image || ""}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
+            <img src="${p.image}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
             <div class="card-name">${escapeHtml(name)}</div>
             <div class="card-price">${parseFloat(p.price || 0).toFixed(2)}€</div>
-            <a href="${p.link || "#"}" target="_blank" class="btn-link">VER DETALLES</a>
+            <a href="${p.link}" target="_blank" class="btn-link">VER DETALLES</a>
           </div>
         `;
         count++;
@@ -728,58 +720,19 @@
       VanillaTilt.init(document.querySelectorAll(".card"));
     }
 
-    async function uploadImageIfNeeded(file) {
-      if (!file) return null;
-      if (!storage) throw new Error("Storage no disponible");
-
-      // ruta única
-      const safeName = (file.name || "img").replace(/[^\w.\-]/g, "_");
-      const path = `productos/${Date.now()}_${safeName}`;
-      const ref = storage.ref().child(path);
-
-      // sube archivo
-      await ref.put(file, { contentType: file.type || "image/jpeg" });
-
-      // url pública
-      return await ref.getDownloadURL();
-    }
-
     async function guardar() {
       if (!db) return alert("Firebase no está conectado.");
       if (document.getElementById("pass").value !== PASS_KEY) return alert("Pass incorrecto");
 
       const id = document.getElementById("editId").value;
+      const data = {
+        name: document.getElementById("name").value,
+        price: parseFloat(document.getElementById("price").value) || 0,
+        link: document.getElementById("link").value,
+        image: document.getElementById("image").value
+      };
 
-      const name = document.getElementById("name").value;
-      const price = parseFloat(document.getElementById("price").value) || 0;
-      const link = document.getElementById("link").value;
-
-      const file = document.getElementById("imageFile").files[0] || null;
-      const imageUrlTyped = (document.getElementById("imageUrl").value || "").trim();
-
-      // ✅ prioridad: archivo > url pegada > (si editando, mantener actual)
-      let imageUrlFinal = null;
-
-      try {
-        if (file) {
-          imageUrlFinal = await uploadImageIfNeeded(file);
-        } else if (imageUrlTyped) {
-          imageUrlFinal = imageUrlTyped;
-        } else if (id) {
-          const current = await db.collection("productos").doc(id).get();
-          const currentData = current.data() || {};
-          imageUrlFinal = currentData.image || "";
-        } else {
-          imageUrlFinal = "";
-        }
-      } catch (e) {
-        console.error(e);
-        return alert("No se pudo subir la imagen (Storage/Reglas). Prueba con URL de imagen.");
-      }
-
-      const data = { name, price, link, image: imageUrlFinal };
-
-      if (!id) data.checked = false;
+      if (!id) data.checked = false; // por defecto sin marcar
 
       if (id) await db.collection("productos").doc(id).update(data);
       else await db.collection("productos").add(data);
@@ -790,12 +743,11 @@
     function prepararEdicion(id) {
       if (!db) return;
       db.collection("productos").doc(id).get().then(doc => {
-        const p = doc.data() || {};
+        const p = doc.data();
         document.getElementById("name").value = p.name || "";
         document.getElementById("price").value = p.price || 0;
         document.getElementById("link").value = p.link || "";
-        document.getElementById("imageUrl").value = p.image || "";
-        document.getElementById("imageFile").value = ""; // no se puede precargar
+        document.getElementById("image").value = p.image || "";
         document.getElementById("editId").value = id;
         document.getElementById("saveBtn").innerText = "ACTUALIZAR";
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -808,8 +760,7 @@
     }
 
     function limpiar() {
-      ["name", "price", "link", "imageUrl", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
-      document.getElementById("imageFile").value = "";
+      ["name", "price", "link", "image", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
       document.getElementById("saveBtn").innerText = "GUARDAR";
     }
 
