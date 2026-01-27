@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- ✅ Título de la pestaña -->
   <title>RUTOX UNIVERSE</title>
 
-  <!-- ✅ “Favicon” con emoji (data URL SVG) -->
+  <!-- Favicon emoji -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -32,12 +31,12 @@
       background-attachment: fixed;
     }
 
-    /* ---------- HOME ---------- */
-    #home {
+    /* ---------- LOBBY (HOME) ---------- */
+    #lobby {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 20px;
-      padding: 10px 30px 30px 30px; /* ✅ ajustado para dejar sitio al título */
+      padding: 10px 30px 30px 30px; /* deja sitio al título */
     }
 
     .app {
@@ -333,18 +332,71 @@
       font-weight: 700;
       margin-top: 10px;
     }
+
+    /* ✅ BOTÓN COMPARTIR (Lobby) */
+    #shareFab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0, 0, 0, 0.55);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+      transition: 0.25s;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      font-size: 1.2rem;
+    }
+    #shareFab:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,242,255,0.45);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
+    }
+    #shareFab:active { transform: translateY(0px) scale(0.98); }
+
+    /* Tooltip mini */
+    #shareFab::after {
+      content: "Compartir";
+      position: absolute;
+      right: 64px;
+      bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.6);
+      color: white;
+      font-weight: 800;
+      font-size: 0.85rem;
+      opacity: 0;
+      transform: translateX(6px);
+      pointer-events: none;
+      transition: 0.2s;
+      white-space: nowrap;
+      backdrop-filter: blur(12px);
+    }
+    #shareFab:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- ✅ TÍTULO EN LA PORTADA -->
+  <!-- TÍTULO EN LA PORTADA -->
   <div class="container" style="padding: 28px 30px 0 30px;">
     <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
   </div>
 
-  <!-- HOME -->
-  <div id="home">
+  <!-- ✅ LOBBY -->
+  <div id="lobby">
     <div class="app" onclick="openSection('wishlist')">
       <div class="app-icon">🧠</div>
       <span>Wishlist</span>
@@ -360,6 +412,9 @@
       <span>Próximamente</span>
     </div>
   </div>
+
+  <!-- ✅ BOTÓN COMPARTIR (solo lobby) -->
+  <button id="shareFab" onclick="shareSite()" aria-label="Compartir web" title="Compartir">🔗</button>
 
   <!-- WISHLIST -->
   <div id="wishlist" class="section">
@@ -444,16 +499,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
   <script>
-    // ---------- Navegación ----------
+    // ---------- Navegación (lobby <-> secciones) ----------
     function openSection(id) {
-      document.getElementById("home").style.display = "none";
+      document.getElementById("lobby").style.display = "none";
+      document.getElementById("shareFab").style.display = "none"; // ✅ ocultar fuera del lobby
       document.getElementById(id).style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function goHome() {
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-      document.getElementById("home").style.display = "grid";
+      document.getElementById("lobby").style.display = "grid";
+      document.getElementById("shareFab").style.display = "flex"; // ✅ mostrar en lobby
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -479,6 +536,32 @@
 
     // ---------- AOS ----------
     AOS.init({ duration: 800 });
+
+    // ✅ Compartir web (Web Share API + fallback copiar)
+    async function shareSite() {
+      const url = window.location.href;
+      const title = "RUTOX UNIVERSE";
+      const text = "Mira mi web:";
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, text, url });
+          return;
+        }
+
+        // fallback: copiar
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(url);
+          alert("Enlace copiado ✅");
+        } else {
+          // fallback viejo: prompt
+          prompt("Copia el enlace:", url);
+        }
+      } catch (e) {
+        // si cancelan share, no pasa nada
+        console.log(e);
+      }
+    }
 
     // ============================================================
     // MEDIA
