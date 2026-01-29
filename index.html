@@ -6,7 +6,7 @@
 
   <title>RUTOX UNIVERSE</title>
 
-  <!-- Favicon emoji -->
+  <!-- Favicon emoji universo -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -31,19 +31,19 @@
       background-attachment: fixed;
     }
 
-    /* ---------- LOBBY (HOME) ---------- */
+    /* ---------- LOBBY ---------- */
     #lobby {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 20px;
-      padding: 10px 30px 30px 30px; /* deja sitio al título */
+      padding: 10px 30px 30px 30px;
     }
 
     .app {
       background: var(--glass);
       border: 1px solid var(--border);
       border-radius: 25px;
-      height: 90px;
+      height: 98px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -66,10 +66,7 @@
     .app-icon { font-size: 1.8rem; }
 
     /* ---------- SECCIONES ---------- */
-    .section {
-      display: none;
-      padding: 20px;
-    }
+    .section { display: none; padding: 20px; }
 
     .back {
       margin-bottom: 20px;
@@ -261,13 +258,7 @@
       margin-bottom: 30px;
       font-weight: 600;
     }
-
-    .hint {
-      text-align: center;
-      font-weight: 700;
-      opacity: 0.85;
-    }
-
+    .hint { text-align: center; font-weight: 700; opacity: 0.85; }
     .warning {
       text-align: center;
       margin-top: 10px;
@@ -275,13 +266,7 @@
       color: var(--neon);
       opacity: 0.95;
     }
-
-    .exam-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
+    .exam-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 
     .btn-secondary {
       background: rgba(255,255,255,0.08);
@@ -295,10 +280,7 @@
       min-width: 180px;
       transition: 0.3s;
     }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.15);
-    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
     .exam-meta {
       display: flex;
@@ -307,7 +289,6 @@
       margin-top: 10px;
       flex-wrap: wrap;
     }
-
     .pill {
       padding: 8px 12px;
       border-radius: 999px;
@@ -316,16 +297,13 @@
       font-weight: 800;
       font-size: 0.9rem;
     }
-
     .big-grade {
       font-size: 2.2rem;
       font-weight: 900;
       color: var(--neon);
       margin-top: 12px;
     }
-
     .muted { opacity: 0.8; font-weight: 700; }
-
     .soft-note {
       text-align: center;
       opacity: 0.85;
@@ -333,7 +311,7 @@
       margin-top: 10px;
     }
 
-    /* ✅ BOTÓN COMPARTIR (Lobby) */
+    /* ---------- BOTÓN COMPARTIR (solo lobby) ---------- */
     #shareFab {
       position: fixed;
       right: 18px;
@@ -359,43 +337,46 @@
       border-color: rgba(0,242,255,0.45);
       box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
     }
-    #shareFab:active { transform: translateY(0px) scale(0.98); }
 
-    /* Tooltip mini */
-    #shareFab::after {
-      content: "Compartir";
-      position: absolute;
-      right: 64px;
-      bottom: 12px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.6);
-      color: white;
-      font-weight: 800;
-      font-size: 0.85rem;
-      opacity: 0;
-      transform: translateX(6px);
-      pointer-events: none;
-      transition: 0.2s;
-      white-space: nowrap;
+    /* ---------- WIDGET TIEMPO (arriba derecha, solo lobby) ---------- */
+    #wxTop {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 9999;
+      padding: 10px 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: 0.25s;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      min-width: 92px;
+      user-select: none;
     }
-    #shareFab:hover::after {
-      opacity: 1;
-      transform: translateX(0);
+    #wxTop:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,242,255,0.45);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
     }
+    #wxTopMain { font-weight: 900; font-size: 1rem; }
+    #wxTopSub  { font-weight: 800; font-size: 0.72rem; color: var(--neon); opacity: 0.92; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   </style>
 </head>
 
 <body>
 
-  <!-- TÍTULO EN LA PORTADA -->
+  <!-- TÍTULO -->
   <div class="container" style="padding: 28px 30px 0 30px;">
     <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
   </div>
 
-  <!-- ✅ LOBBY -->
+  <!-- LOBBY -->
   <div id="lobby">
     <div class="app" onclick="openSection('wishlist')">
       <div class="app-icon">🧠</div>
@@ -413,7 +394,13 @@
     </div>
   </div>
 
-  <!-- ✅ BOTÓN COMPARTIR (solo lobby) -->
+  <!-- WIDGET TIEMPO (solo lobby) -->
+  <div id="wxTop" onclick="wxConfigure()" title="Click para cambiar ciudad / usar ubicación">
+    <div id="wxTopMain">—</div>
+    <div id="wxTopSub">Pulsa para elegir</div>
+  </div>
+
+  <!-- BOTÓN COMPARTIR (solo lobby) -->
   <button id="shareFab" onclick="shareSite()" aria-label="Compartir web" title="Compartir">🔗</button>
 
   <!-- WISHLIST -->
@@ -499,10 +486,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
   <script>
-    // ---------- Navegación (lobby <-> secciones) ----------
+    AOS.init({ duration: 800 });
+
+    // ---------- Navegación ----------
     function openSection(id) {
       document.getElementById("lobby").style.display = "none";
-      document.getElementById("shareFab").style.display = "none"; // ✅ ocultar fuera del lobby
+      document.getElementById("shareFab").style.display = "none";
+      document.getElementById("wxTop").style.display = "none";
       document.getElementById(id).style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -510,34 +500,14 @@
     function goHome() {
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       document.getElementById("lobby").style.display = "grid";
-      document.getElementById("shareFab").style.display = "flex"; // ✅ mostrar en lobby
+      document.getElementById("shareFab").style.display = "flex";
+      document.getElementById("wxTop").style.display = "flex";
       window.scrollTo({ top: 0, behavior: "smooth" });
+
+      wxAutoUpdate(); // ✅ actualiza al volver al lobby
     }
 
-    // ---------- Helpers ----------
-    function formatNum(n) {
-      const x = Number(n);
-      if (Number.isNaN(x)) return "0.00";
-      return x.toFixed(2);
-    }
-
-    function clamp(n, min, max) {
-      return Math.min(max, Math.max(min, n));
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    // ---------- AOS ----------
-    AOS.init({ duration: 800 });
-
-    // ✅ Compartir web (Web Share API + fallback copiar)
+    // ---------- Compartir ----------
     async function shareSite() {
       const url = window.location.href;
       const title = "RUTOX UNIVERSE";
@@ -548,19 +518,27 @@
           await navigator.share({ title, text, url });
           return;
         }
-
-        // fallback: copiar
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(url);
           alert("Enlace copiado ✅");
         } else {
-          // fallback viejo: prompt
           prompt("Copia el enlace:", url);
         }
       } catch (e) {
-        // si cancelan share, no pasa nada
         console.log(e);
       }
+    }
+
+    // ---------- Helpers ----------
+    function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
+    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     // ============================================================
@@ -573,19 +551,15 @@
       try {
         exams = JSON.parse(localStorage.getItem(EXAMS_KEY) || "[]");
         if (!Array.isArray(exams)) exams = [];
-      } catch {
-        exams = [];
-      }
+      } catch { exams = []; }
       renderExams();
       updateStats();
     }
 
-    function saveExams() {
-      localStorage.setItem(EXAMS_KEY, JSON.stringify(exams));
-    }
+    function saveExams() { localStorage.setItem(EXAMS_KEY, JSON.stringify(exams)); }
 
     function addOrUpdateExam() {
-      const name = (document.getElementById("examName").value || "").trim(); // opcional
+      const name = (document.getElementById("examName").value || "").trim();
       const gradeRaw = parseFloat(document.getElementById("examGrade").value);
       const weightRaw = parseFloat(document.getElementById("examWeight").value);
 
@@ -598,11 +572,8 @@
       const idx = document.getElementById("examEditIndex").value;
       const payload = { name, grade, weight };
 
-      if (idx !== "" && !Number.isNaN(parseInt(idx, 10))) {
-        exams[parseInt(idx, 10)] = payload;
-      } else {
-        exams.push(payload);
-      }
+      if (idx !== "" && !Number.isNaN(parseInt(idx, 10))) exams[parseInt(idx, 10)] = payload;
+      else exams.push(payload);
 
       saveExams();
       clearExamForm();
@@ -611,13 +582,10 @@
     }
 
     function editExam(index) {
-      const e = exams[index];
-      if (!e) return;
-
+      const e = exams[index]; if (!e) return;
       document.getElementById("examName").value = e.name || "";
       document.getElementById("examGrade").value = e.grade;
       document.getElementById("examWeight").value = e.weight;
-
       document.getElementById("examEditIndex").value = index;
       document.getElementById("examSaveBtn").innerText = "ACTUALIZAR";
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -651,7 +619,6 @@
     function renderExams() {
       const container = document.getElementById("examContainer");
       let html = "";
-
       exams.forEach((e, i) => {
         const title = (e.name && e.name.trim()) ? escapeHtml(e.name) : `Examen #${i + 1}`;
         html += `
@@ -673,9 +640,8 @@
           </div>
         `;
       });
-
       container.innerHTML = html;
-      VanillaTilt.init(document.querySelectorAll(".card"));
+      if (window.VanillaTilt) VanillaTilt.init(document.querySelectorAll("#examContainer .card"));
     }
 
     function updateStats() {
@@ -709,13 +675,142 @@
     loadExams();
 
     // ============================================================
-    // WISHLIST (aislada)
+    // TIEMPO (widget arriba derecha, sin sección)
+    // ============================================================
+    const WX_LOC_KEY  = "rutox_weather_loc_v1";  // {type:'city'|'geo', label, lat, lon}
+    const WX_LAST_KEY = "rutox_weather_last_v1"; // {main, sub, updatedAt}
+
+    function wxEl(id){ return document.getElementById(id); }
+
+    function wxSetTop(main, sub){
+      wxEl("wxTopMain").innerText = main || "—";
+      wxEl("wxTopSub").innerText = sub || "Pulsa para elegir";
+      try {
+        localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() }));
+      } catch {}
+    }
+
+    function wxLoadLast(){
+      try {
+        const x = JSON.parse(localStorage.getItem(WX_LAST_KEY) || "null");
+        if (x?.main || x?.sub) wxSetTop(x.main, x.sub);
+      } catch {}
+    }
+
+    function wxSaveLoc(obj){ try { localStorage.setItem(WX_LOC_KEY, JSON.stringify(obj)); } catch {} }
+    function wxGetLoc(){
+      try {
+        const x = JSON.parse(localStorage.getItem(WX_LOC_KEY) || "null");
+        return x && typeof x === "object" ? x : null;
+      } catch { return null; }
+    }
+
+    function wxEmoji(code){
+      if (code === 0) return "☀️";
+      if ([1,2,3].includes(code)) return "⛅";
+      if ([45,48].includes(code)) return "🌫️";
+      if ([51,53,55,56,57].includes(code)) return "🌦️";
+      if ([61,63,65,66,67].includes(code)) return "🌧️";
+      if ([71,73,75,77].includes(code)) return "❄️";
+      if ([80,81,82].includes(code)) return "🌧️";
+      if ([95,96,99].includes(code)) return "⛈️";
+      return "🌥️";
+    }
+
+    async function wxFetchJson(url){
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("Tiempo no disponible");
+      return await r.json();
+    }
+
+    async function wxGeocodeCity(name){
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
+      const data = await wxFetchJson(url);
+      const hit = data?.results?.[0];
+      if (!hit) return null;
+      return {
+        label: `${hit.name}${hit.admin1 ? ", " + hit.admin1 : ""}${hit.country ? ", " + hit.country : ""}`,
+        lat: hit.latitude,
+        lon: hit.longitude
+      };
+    }
+
+    async function wxLoadByCoords(lat, lon, label, {save=true} = {}){
+      const url =
+        `https://api.open-meteo.com/v1/forecast` +
+        `?latitude=${encodeURIComponent(lat)}` +
+        `&longitude=${encodeURIComponent(lon)}` +
+        `&current=temperature_2m,weather_code` +
+        `&timezone=auto`;
+
+      const data = await wxFetchJson(url);
+      const c = data.current || {};
+      const code = Number(c.weather_code);
+      const temp = c.temperature_2m;
+
+      const main = (temp == null) ? "—" : `${wxEmoji(code)} ${Math.round(Number(temp))}°`;
+      const sub  = label || "—";
+      wxSetTop(main, sub);
+
+      if (save) wxSaveLoc({ type:"city", label: sub, lat, lon });
+    }
+
+    async function wxSetCity(cityName){
+      const hit = await wxGeocodeCity(cityName);
+      if (!hit) { wxSetTop("—", "Ciudad no encontrada"); return; }
+      await wxLoadByCoords(hit.lat, hit.lon, hit.label, {save:true});
+    }
+
+    function wxUseMyLocation(){
+      if (!navigator.geolocation) { wxSetTop("—", "Sin geolocalización"); return; }
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          wxSaveLoc({ type:"geo", label:"Mi ubicación", lat, lon });
+          await wxLoadByCoords(lat, lon, "Mi ubicación", {save:false});
+        },
+        () => wxSetTop("—", "Permiso denegado")
+      );
+    }
+
+    async function wxAutoUpdate(){
+      try {
+        const loc = wxGetLoc();
+        if (loc && typeof loc.lat === "number" && typeof loc.lon === "number") {
+          if (loc.type === "geo") {
+            // no pedimos permiso automático en lobby, solo indicamos
+            wxSetTop("📍", "Pulsa para actualizar");
+            return;
+          }
+          await wxLoadByCoords(loc.lat, loc.lon, loc.label, {save:false});
+          return;
+        }
+        wxSetTop("—", "Pulsa para elegir");
+      } catch {
+        wxSetTop("—", "Pulsa para elegir");
+      }
+    }
+
+    // click widget
+    async function wxConfigure(){
+      const city = prompt("Escribe una ciudad (ej: Barcelona)\n(o deja vacío para usar tu ubicación):", "");
+      if (city === null) return;
+      if (city.trim() === "") wxUseMyLocation();
+      else await wxSetCity(city.trim());
+    }
+
+    // init
+    wxLoadLast();
+    wxAutoUpdate();
+
+    // ============================================================
+    // WISHLIST (Firebase) + filtros + tic
     // ============================================================
     let db = null;
     const PASS_KEY = "1234";
     let ordenAscendente = true;
-
-    let filtro = "all"; // all | checked | unchecked
+    let filtro = "all";
     let lastSnap = null;
 
     function setFiltro(mode) {
@@ -738,14 +833,14 @@
         };
 
         if (!window.firebase) throw new Error("Firebase no cargó");
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-        firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
         cargarProductos();
       } catch (e) {
         const note = document.getElementById("wishlistNote");
         note.style.display = "block";
-        note.innerText = "Wishlist: no se pudo conectar a Firebase. (Media sigue funcionando).";
+        note.innerText = "Wishlist: no se pudo conectar a Firebase. (Media funciona).";
         console.error(e);
       }
     }
@@ -807,7 +902,7 @@
 
       container.innerHTML = html;
       document.getElementById("totalPrice").innerText = total.toFixed(2) + " €";
-      VanillaTilt.init(document.querySelectorAll(".card"));
+      if (window.VanillaTilt) VanillaTilt.init(document.querySelectorAll("#productContainer .card"));
     }
 
     async function guardar() {
