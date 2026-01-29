@@ -338,6 +338,45 @@
       box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
     }
 
+    /* ---------- ADMIN FAB ---------- */
+    #adminFab {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      height: 56px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0, 0, 0, 0.55);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 0 14px;
+      backdrop-filter: blur(12px);
+      transition: 0.25s;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+      font-weight: 900;
+    }
+    #adminFab:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,242,255,0.45);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
+    }
+    #adminStateDot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.35);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
+    }
+    .dotOn {
+      background: rgba(0,242,255,0.95) !important;
+      box-shadow: 0 0 0 1px rgba(0,242,255,0.4), 0 0 18px rgba(0,242,255,0.25) !important;
+    }
+
     /* ---------- WIDGET TIEMPO (arriba derecha, solo lobby) ---------- */
     #wxTop {
       position: fixed;
@@ -365,7 +404,129 @@
       box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
     }
     #wxTopMain { font-weight: 900; font-size: 1rem; }
-    #wxTopSub  { font-weight: 800; font-size: 0.72rem; color: var(--neon); opacity: 0.92; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #wxTopSub  {
+      font-weight: 800;
+      font-size: 0.72rem;
+      color: var(--neon);
+      opacity: 0.92;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ---------- MODAL BONITO (base) ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .modal.open { display: flex; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    .modalCard {
+      position: relative;
+      width: min(520px, 100%);
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+      padding: 18px;
+      z-index: 2;
+    }
+
+    .modalTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modalTitle {
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.2px;
+    }
+
+    .modalClose {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.45);
+      color: white;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+      font-weight: 900;
+      transition: 0.2s;
+    }
+    .chip:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(0,242,255,0.35);
+    }
+
+    .btnPrimary {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px;
+      border-radius: 16px;
+      border: none;
+      font-weight: 900;
+      cursor: pointer;
+      background: white;
+      color: black;
+    }
+    .btnGhost {
+      flex: 1;
+      min-width: 160px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      font-weight: 900;
+      cursor: pointer;
+      background: rgba(255,255,255,0.07);
+      color: white;
+    }
+    .small {
+      margin-top: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      opacity: 0.86;
+    }
+    .err {
+      margin-top: 10px;
+      font-weight: 900;
+      color: var(--neon);
+      display: none;
+    }
   </style>
 </head>
 
@@ -395,13 +556,79 @@
   </div>
 
   <!-- WIDGET TIEMPO (solo lobby) -->
-  <div id="wxTop" onclick="wxConfigure()" title="Click para cambiar ciudad / usar ubicación">
+  <div id="wxTop" onclick="wxOpenModal()" title="Cambiar ciudad / usar ubicación">
     <div id="wxTopMain">—</div>
     <div id="wxTopSub">Pulsa para elegir</div>
   </div>
 
+  <!-- MODAL TIEMPO -->
+  <div id="wxModal" class="modal" aria-hidden="true">
+    <div class="overlay" onclick="wxCloseModal()"></div>
+    <div class="modalCard">
+      <div class="modalTop">
+        <div class="modalTitle">Tiempo</div>
+        <button class="modalClose" onclick="wxCloseModal()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="small">Ciudad (o deja vacío y usa ubicación)</div>
+      <input id="wxCityInput" type="text" placeholder="Ej: Barcelona" />
+
+      <div class="row">
+        <button class="chip" onclick="wxQuickCity('Barcelona')">Barcelona</button>
+        <button class="chip" onclick="wxUseMyLocationFromModal()">📍 Mi ubicación</button>
+        <button class="chip" onclick="wxRefreshNow()">🔄 Actualizar</button>
+      </div>
+
+      <div class="row" style="margin-top:14px;">
+        <button class="btnPrimary" onclick="wxSaveCityFromModal()">Guardar</button>
+        <button class="btnGhost" onclick="wxCloseModal()">Cancelar</button>
+      </div>
+
+      <div id="wxModalError" class="err"></div>
+    </div>
+  </div>
+
+  <!-- MODAL ADMIN -->
+  <div id="adminModal" class="modal" aria-hidden="true">
+    <div class="overlay" onclick="adminCloseModal()"></div>
+    <div class="modalCard">
+      <div class="modalTop">
+        <div class="modalTitle">Admin</div>
+        <button class="modalClose" onclick="adminCloseModal()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div id="adminLoggedBox" style="display:none;">
+        <div class="small">Estás logueado ✅</div>
+        <div class="row">
+          <button class="chip" onclick="adminShowUID()">🆔 Ver UID</button>
+          <button class="chip" onclick="adminLogout()">Salir</button>
+        </div>
+      </div>
+
+      <div id="adminLoginBox">
+        <div class="small">Email</div>
+        <input id="adminEmail" type="email" placeholder="tuemail@..." />
+        <div class="small">Contraseña</div>
+        <input id="adminPass" type="password" placeholder="••••••••" />
+
+        <div class="row" style="margin-top:14px;">
+          <button class="btnPrimary" onclick="adminLogin()">Entrar</button>
+          <button class="btnGhost" onclick="adminCloseModal()">Cancelar</button>
+        </div>
+      </div>
+
+      <div id="adminErr" class="err"></div>
+    </div>
+  </div>
+
   <!-- BOTÓN COMPARTIR (solo lobby) -->
   <button id="shareFab" onclick="shareSite()" aria-label="Compartir web" title="Compartir">🔗</button>
+
+  <!-- BOTÓN ADMIN -->
+  <button id="adminFab" onclick="adminOpenModal()" aria-label="Admin" title="Admin">
+    <span id="adminStateDot"></span>
+    <span id="adminFabText">Admin</span>
+  </button>
 
   <!-- WISHLIST -->
   <div id="wishlist" class="section">
@@ -419,7 +646,8 @@
         <button id="fUnchecked" class="filter-btn" onclick="setFiltro('unchecked')">Sin marcar</button>
       </div>
 
-      <div class="admin-panel" data-aos="fade-up">
+      <!-- Panel admin (solo si estás logueado) -->
+      <div class="admin-panel" id="wishlistAdminPanel" data-aos="fade-up" style="display:none;">
         <div class="grid-inputs">
           <input id="name" type="text" placeholder="¿Qué es?">
           <input id="price" type="number" step="0.01" placeholder="Precio (€)">
@@ -427,15 +655,17 @@
           <input id="image" placeholder="URL Imagen">
         </div>
 
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-          <input id="pass" type="password" placeholder="Pass" style="width: 140px;">
+        <div style="display:flex; gap:10px; margin-top:15px;">
           <button id="saveBtn" class="btn-main" onclick="guardar()">GUARDAR</button>
         </div>
 
         <input type="hidden" id="editId">
       </div>
 
-      <div id="wishlistNote" class="soft-note" style="display:none;"></div>
+      <div id="wishlistNote" class="soft-note" style="display:block;">
+        Modo lectura 🔒 (entra como Admin para añadir/editar/borrar/marcar)
+      </div>
+
       <div id="productContainer" class="grid"></div>
     </div>
   </div>
@@ -482,37 +712,72 @@
   <!-- LIBRERÍAS -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
   <script>
     AOS.init({ duration: 800 });
 
-    // ---------- Navegación ----------
+    // ============================================================
+    // FIREBASE (único init)
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+      authDomain: "cosas-af46c.firebaseapp.com",
+      projectId: "cosas-af46c",
+      storageBucket: "cosas-af46c.firebasestorage.app",
+      messagingSenderId: "145996030094",
+      appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
+    };
+
+    let db = null;
+    let auth = null;
+    let isAdmin = false;
+
+    function initFirebase() {
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      auth = firebase.auth();
+    }
+    initFirebase();
+
+    // ============================================================
+    // NAVEGACIÓN
+    // ============================================================
     function openSection(id) {
+      wxCloseModal();
+      adminCloseModal();
+
       document.getElementById("lobby").style.display = "none";
       document.getElementById("shareFab").style.display = "none";
       document.getElementById("wxTop").style.display = "none";
+
       document.getElementById(id).style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function goHome() {
+      wxCloseModal();
+      adminCloseModal();
+
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       document.getElementById("lobby").style.display = "grid";
       document.getElementById("shareFab").style.display = "flex";
       document.getElementById("wxTop").style.display = "flex";
       window.scrollTo({ top: 0, behavior: "smooth" });
 
-      wxAutoUpdate(); // ✅ actualiza al volver al lobby
+      wxAutoUpdate();
     }
 
-    // ---------- Compartir ----------
+    // ============================================================
+    // COMPARTIR
+    // ============================================================
     async function shareSite() {
       const url = window.location.href;
       const title = "RUTOX UNIVERSE";
       const text = "Mira mi web:";
-
       try {
         if (navigator.share) {
           await navigator.share({ title, text, url });
@@ -524,12 +789,12 @@
         } else {
           prompt("Copia el enlace:", url);
         }
-      } catch (e) {
-        console.log(e);
-      }
+      } catch (e) { console.log(e); }
     }
 
-    // ---------- Helpers ----------
+    // ============================================================
+    // HELPERS
+    // ============================================================
     function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
     function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
     function escapeHtml(str) {
@@ -542,7 +807,111 @@
     }
 
     // ============================================================
-    // MEDIA
+    // ADMIN (Firebase Auth)
+    // ============================================================
+    function adminErr(msg) {
+      const el = document.getElementById("adminErr");
+      if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
+      el.style.display = "block";
+      el.innerText = msg;
+    }
+
+    function applyAdminUI() {
+      const dot = document.getElementById("adminStateDot");
+      const txt = document.getElementById("adminFabText");
+      const panel = document.getElementById("wishlistAdminPanel");
+      const note = document.getElementById("wishlistNote");
+
+      if (isAdmin) {
+        dot.classList.add("dotOn");
+        txt.innerText = "Admin ON";
+        if (panel) panel.style.display = "block";
+        if (note) { note.style.display = "none"; }
+      } else {
+        dot.classList.remove("dotOn");
+        txt.innerText = "Admin";
+        if (panel) panel.style.display = "none";
+        if (note) {
+          note.style.display = "block";
+          note.innerText = "Modo lectura 🔒 (entra como Admin para añadir/editar/borrar/marcar)";
+        }
+      }
+
+      if (lastSnap) renderizar(lastSnap);
+    }
+
+    auth.onAuthStateChanged((user) => {
+      isAdmin = !!user;
+      adminErr("");
+      applyAdminUI();
+    });
+
+    function adminOpenModal() {
+      adminErr("");
+      const m = document.getElementById("adminModal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+
+      const user = auth.currentUser;
+      document.getElementById("adminLoggedBox").style.display = user ? "block" : "none";
+      document.getElementById("adminLoginBox").style.display = user ? "none" : "block";
+
+      setTimeout(() => {
+        if (!user) document.getElementById("adminEmail").focus();
+      }, 50);
+    }
+
+    function adminCloseModal() {
+      const m = document.getElementById("adminModal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+    }
+
+    async function adminLogin() {
+      adminErr("");
+      const email = (document.getElementById("adminEmail").value || "").trim();
+      const pass  = (document.getElementById("adminPass").value || "").trim();
+      if (!email || !pass) return adminErr("Pon email y contraseña.");
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        adminCloseModal();
+      } catch (e) {
+        adminErr("Login incorrecto.");
+        console.error(e);
+      }
+    }
+
+    async function adminLogout() {
+      adminErr("");
+      try {
+        await auth.signOut();
+        adminCloseModal();
+      } catch (e) {
+        adminErr("No pude cerrar sesión.");
+        console.error(e);
+      }
+    }
+
+    function adminShowUID() {
+      const u = auth.currentUser;
+      if (!u) return adminErr("No estás logueado.");
+      alert("TU UID:\n\n" + u.uid + "\n\n(Pégalo en las Rules de Firestore)");
+    }
+
+    function requireAdminOrOpen() {
+      if (isAdmin) return true;
+      adminOpenModal();
+      return false;
+    }
+
+    // ESC cierra modales
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); }
+    });
+
+    // ============================================================
+    // MEDIA (localStorage)
     // ============================================================
     const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
@@ -627,14 +996,11 @@
               <button class="circle-btn" onclick="editExam(${i})">✏️</button>
               <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="deleteExam(${i})">🗑️</button>
             </div>
-
             <div class="card-name">${title}</div>
-
             <div class="exam-meta">
               <div class="pill">Peso: ${formatNum(e.weight)}%</div>
               <div class="pill">Aporta: ${formatNum((e.grade * e.weight) / 100)}</div>
             </div>
-
             <div class="big-grade">${formatNum(e.grade)}</div>
             <div class="muted">Nota</div>
           </div>
@@ -675,19 +1041,22 @@
     loadExams();
 
     // ============================================================
-    // TIEMPO (widget arriba derecha, sin sección)
+    // TIEMPO (widget + modal)
     // ============================================================
-    const WX_LOC_KEY  = "rutox_weather_loc_v1";  // {type:'city'|'geo', label, lat, lon}
-    const WX_LAST_KEY = "rutox_weather_last_v1"; // {main, sub, updatedAt}
+    const WX_LOC_KEY  = "rutox_weather_loc_v1";
+    const WX_LAST_KEY = "rutox_weather_last_v1";
 
-    function wxEl(id){ return document.getElementById(id); }
+    function wxErr(msg) {
+      const el = document.getElementById("wxModalError");
+      if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
+      el.style.display = "block";
+      el.innerText = msg;
+    }
 
     function wxSetTop(main, sub){
-      wxEl("wxTopMain").innerText = main || "—";
-      wxEl("wxTopSub").innerText = sub || "Pulsa para elegir";
-      try {
-        localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() }));
-      } catch {}
+      document.getElementById("wxTopMain").innerText = main || "—";
+      document.getElementById("wxTopSub").innerText = sub || "Pulsa para elegir";
+      try { localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() })); } catch {}
     }
 
     function wxLoadLast(){
@@ -756,21 +1125,28 @@
     }
 
     async function wxSetCity(cityName){
+      wxErr("");
       const hit = await wxGeocodeCity(cityName);
-      if (!hit) { wxSetTop("—", "Ciudad no encontrada"); return; }
+      if (!hit) { wxErr("No encontré esa ciudad."); return; }
       await wxLoadByCoords(hit.lat, hit.lon, hit.label, {save:true});
+      wxCloseModal();
     }
 
     function wxUseMyLocation(){
-      if (!navigator.geolocation) { wxSetTop("—", "Sin geolocalización"); return; }
+      wxErr("");
+      if (!navigator.geolocation) { wxErr("Tu navegador no permite geolocalización."); return; }
+
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          wxSaveLoc({ type:"geo", label:"Mi ubicación", lat, lon });
-          await wxLoadByCoords(lat, lon, "Mi ubicación", {save:false});
+          try {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            wxSaveLoc({ type:"geo", label:"Mi ubicación", lat, lon });
+            await wxLoadByCoords(lat, lon, "Mi ubicación", {save:false});
+            wxCloseModal();
+          } catch { wxErr("No pude cargar el tiempo."); }
         },
-        () => wxSetTop("—", "Permiso denegado")
+        () => wxErr("Permiso denegado o no disponible.")
       );
     }
 
@@ -779,7 +1155,6 @@
         const loc = wxGetLoc();
         if (loc && typeof loc.lat === "number" && typeof loc.lon === "number") {
           if (loc.type === "geo") {
-            // no pedimos permiso automático en lobby, solo indicamos
             wxSetTop("📍", "Pulsa para actualizar");
             return;
           }
@@ -787,28 +1162,53 @@
           return;
         }
         wxSetTop("—", "Pulsa para elegir");
-      } catch {
-        wxSetTop("—", "Pulsa para elegir");
-      }
+      } catch { wxSetTop("—", "Pulsa para elegir"); }
     }
 
-    // click widget
-    async function wxConfigure(){
-      const city = prompt("Escribe una ciudad (ej: Barcelona)\n(o deja vacío para usar tu ubicación):", "");
-      if (city === null) return;
-      if (city.trim() === "") wxUseMyLocation();
-      else await wxSetCity(city.trim());
+    function wxOpenModal(){
+      wxErr("");
+      const modal = document.getElementById("wxModal");
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+
+      const loc = wxGetLoc();
+      const input = document.getElementById("wxCityInput");
+      input.value = (loc && loc.type === "city" && loc.label) ? loc.label.split(",")[0] : "";
+      setTimeout(() => input.focus(), 50);
     }
 
-    // init
+    function wxCloseModal(){
+      const modal = document.getElementById("wxModal");
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    function wxQuickCity(name){
+      document.getElementById("wxCityInput").value = name;
+      wxSaveCityFromModal();
+    }
+
+    function wxSaveCityFromModal(){
+      const city = (document.getElementById("wxCityInput").value || "").trim();
+      if (!city) { wxUseMyLocation(); return; }
+      wxSetCity(city);
+    }
+
+    function wxUseMyLocationFromModal(){ wxUseMyLocation(); }
+
+    async function wxRefreshNow(){
+      const loc = wxGetLoc();
+      if (loc?.type === "geo") { wxUseMyLocation(); return; }
+      if (loc?.type === "city") { await wxLoadByCoords(loc.lat, loc.lon, loc.label, {save:false}); return; }
+      wxSaveCityFromModal();
+    }
+
     wxLoadLast();
     wxAutoUpdate();
 
     // ============================================================
-    // WISHLIST (Firebase) + filtros + tic
+    // WISHLIST (Firestore) + filtros + tic
     // ============================================================
-    let db = null;
-    const PASS_KEY = "1234";
     let ordenAscendente = true;
     let filtro = "all";
     let lastSnap = null;
@@ -821,38 +1221,13 @@
       if (lastSnap) renderizar(lastSnap);
     }
 
-    function initWishlist() {
-      try {
-        const firebaseConfig = {
-          apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-          authDomain: "cosas-af46c.firebaseapp.com",
-          projectId: "cosas-af46c",
-          storageBucket: "cosas-af46c.firebasestorage.app",
-          messagingSenderId: "145996030094",
-          appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
-        };
-
-        if (!window.firebase) throw new Error("Firebase no cargó");
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
-        db = firebase.firestore();
-        cargarProductos();
-      } catch (e) {
-        const note = document.getElementById("wishlistNote");
-        note.style.display = "block";
-        note.innerText = "Wishlist: no se pudo conectar a Firebase. (Media funciona).";
-        console.error(e);
-      }
-    }
-
     function cargarProductos() {
-      if (!db) return;
       db.collection("productos")
         .orderBy("price", ordenAscendente ? "asc" : "desc")
         .onSnapshot((snap) => {
           lastSnap = snap;
           renderizar(snap);
-        });
+        }, (err) => console.error(err));
     }
 
     function toggleOrden() {
@@ -860,9 +1235,14 @@
       cargarProductos();
     }
 
-    function toggleMarcado(id, current) {
-      if (!db) return;
-      db.collection("productos").doc(id).update({ checked: !current });
+    async function toggleMarcado(id, current) {
+      if (!requireAdminOrOpen()) return;
+      try {
+        await db.collection("productos").doc(id).update({ checked: !current });
+      } catch (e) {
+        alert("No tienes permisos (revisa Rules).");
+        console.error(e);
+      }
     }
 
     function renderizar(snap) {
@@ -881,16 +1261,19 @@
         total += parseFloat(p.price || 0);
         const name = p.name || `Objeto #${count}`;
 
+        const actions = isAdmin ? `
+          <div class="card-actions">
+            <button class="circle-btn" title="Marcar" onclick="toggleMarcado('${doc.id}', ${checked})">
+              ${checked ? "☑️" : "⬜"}
+            </button>
+            <button class="circle-btn" onclick="prepararEdicion('${doc.id}')">✏️</button>
+            <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
+          </div>
+        ` : "";
+
         html += `
           <div class="card ${checked ? "checked" : ""}" data-tilt data-tilt-max="8">
-            <div class="card-actions">
-              <button class="circle-btn" title="Marcar" onclick="toggleMarcado('${doc.id}', ${checked})">
-                ${checked ? "☑️" : "⬜"}
-              </button>
-              <button class="circle-btn" onclick="prepararEdicion('${doc.id}')">✏️</button>
-              <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
-            </div>
-
+            ${actions}
             <img src="${p.image}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
             <div class="card-name">${escapeHtml(name)}</div>
             <div class="card-price">${parseFloat(p.price || 0).toFixed(2)}€</div>
@@ -906,8 +1289,7 @@
     }
 
     async function guardar() {
-      if (!db) return alert("Firebase no está conectado.");
-      if (document.getElementById("pass").value !== PASS_KEY) return alert("Pass incorrecto");
+      if (!requireAdminOrOpen()) return;
 
       const id = document.getElementById("editId").value;
       const data = {
@@ -916,17 +1298,21 @@
         link: document.getElementById("link").value,
         image: document.getElementById("image").value
       };
-
       if (!id) data.checked = false;
 
-      if (id) await db.collection("productos").doc(id).update(data);
-      else await db.collection("productos").add(data);
-
-      limpiar();
+      try {
+        if (id) await db.collection("productos").doc(id).update(data);
+        else await db.collection("productos").add(data);
+        limpiar();
+      } catch (e) {
+        alert("No tienes permisos (revisa Rules).");
+        console.error(e);
+      }
     }
 
     function prepararEdicion(id) {
-      if (!db) return;
+      if (!requireAdminOrOpen()) return;
+
       db.collection("productos").doc(id).get().then(doc => {
         const p = doc.data();
         document.getElementById("name").value = p.name || "";
@@ -939,17 +1325,28 @@
       });
     }
 
-    function eliminar(id) {
-      if (!db) return;
-      if (prompt("Contraseña:") === PASS_KEY) db.collection("productos").doc(id).delete();
+    async function eliminar(id) {
+      if (!requireAdminOrOpen()) return;
+      if (!confirm("¿Borrar este producto?")) return;
+
+      try {
+        await db.collection("productos").doc(id).delete();
+      } catch (e) {
+        alert("No tienes permisos (revisa Rules).");
+        console.error(e);
+      }
     }
 
     function limpiar() {
-      ["name", "price", "link", "image", "pass", "editId"].forEach(i => document.getElementById(i).value = "");
+      ["name", "price", "link", "image", "editId"].forEach(i => document.getElementById(i).value = "");
       document.getElementById("saveBtn").innerText = "GUARDAR";
     }
 
-    initWishlist();
+    // init wishlist
+    cargarProductos();
+
+    // estado admin inicial
+    applyAdminUI();
   </script>
 </body>
 </html>
