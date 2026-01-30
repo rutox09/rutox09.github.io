@@ -1176,8 +1176,7 @@
     async function wxGeocodeCity(name){
       const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
       const data = await wxFetchJson(url);
-      // sincroniza reloj con la zona horaria real del sitio
-    if (data && data.timezone) wxSaveTZ(data.timezone);
+      
 
       const hit = data?.results?.[0];
       if (!hit) return null;
@@ -1197,6 +1196,9 @@
         `&timezone=auto`;
 
       const data = await wxFetchJson(url);
+      // sincroniza reloj con la zona horaria real del sitio
+      if (data && data.timezone) wxSaveTZ(data.timezone);
+
       const c = data.current || {};
       const code = Number(c.weather_code);
       const temp = c.temperature_2m;
