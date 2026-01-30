@@ -715,6 +715,8 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
@@ -722,25 +724,43 @@
   <script>
     AOS.init({ duration: 800 });
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-      authDomain: "cosas-af46c.firebaseapp.com",
-      projectId: "cosas-af46c",
-      storageBucket: "cosas-af46c.firebasestorage.app",
-      messagingSenderId: "145996030094",
-      appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df"
-    };
+    // ============================================================
+// FIREBASE INIT (CDN v8)
+// ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+    authDomain: "cosas-af46c.firebaseapp.com",
+    projectId: "cosas-af46c",
+    storageBucket: "cosas-af46c.firebasestorage.app",
+    messagingSenderId: "145996030094",
+    appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
+    measurementId: "G-YCBY7FRLQW"
+  };
+  
+  let db = null;
+  let auth = null;
+  let isAdmin = false;
 
-    let db = null;
-    let auth = null;
-    let isAdmin = false;
+  
+  function initFirebase() {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  
+    // Analytics (opcional)
+    try { firebase.analytics(); } catch (e) { console.log("Analytics no disponible", e); }
+  
+    db = firebase.firestore();
+    auth = firebase.auth();
+  
+    // DEBUG: para ver el error real de auth/internal-error
+    auth.onAuthStateChanged((user) => {
+      console.log("Auth state:", user ? user.email : "NO USER");
+    });
+  }
+  
+  initFirebase();
+   
 
-    function initFirebase() {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      auth = firebase.auth();
-    }
-    initFirebase();
+
 
     function openSection(id) {
       wxCloseModal();
@@ -881,8 +901,8 @@
         await auth.signInWithEmailAndPassword(email, pass);
         adminCloseModal();
       } catch (e) {
-        adminErr(friendlyAuthError(e));
-        console.error(e);
+        adminErr(`Error: ${e.code}\n${e.message}`);
+        console.error("AUTH FULL:", e);
       }
     }
 
