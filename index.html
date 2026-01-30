@@ -310,6 +310,14 @@
       font-weight: 700;
       margin-top: 10px;
     }
+    #lobbyClock{
+      font-weight: 900;
+      letter-spacing: 0.3px;
+    }
+    #lobbyClock span{
+        color: var(--neon);
+    }
+
 
     /* ---------- BOTÓN COMPARTIR (solo lobby) ---------- */
     #shareFab {
@@ -535,6 +543,10 @@
   <!-- TÍTULO -->
   <div class="container" style="padding: 28px 30px 0 30px;">
     <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
+    <div id="lobbyClock" class="soft-note" style="margin-top:-10px; margin-bottom:14px;">
+  🕒 <span>--:--:--</span> · <span id="clockPlace">—</span>
+</div>
+
   </div>
 
   <!-- LOBBY -->
@@ -1061,6 +1073,59 @@
     // TIEMPO
     const WX_LOC_KEY  = "rutox_weather_loc_v1";
     const WX_LAST_KEY = "rutox_weather_last_v1";
+    const WX_TZ_KEY   = "rutox_weather_tz_v1";
+    let wxTimeZone = "Europe/Madrid";
+    let wxClockTimer = null;
+    
+    function wxPrettyPlace(label){
+      if (!label) return "—";
+      // deja solo el nombre principal (ej: "Barcelona" de "Barcelona, Cataluña, España")
+      return String(label).split(",")[0].trim() || label;
+    }
+    
+    function wxSaveTZ(tz){
+      if (!tz) return;
+      wxTimeZone = tz;
+      try { localStorage.setItem(WX_TZ_KEY, tz); } catch {}
+      wxStartClock();
+    }
+    
+    function wxLoadTZ(){
+      try {
+        const tz = localStorage.getItem(WX_TZ_KEY);
+        if (tz) wxTimeZone = tz;
+      } catch {}
+    }
+    
+    function wxStartClock(){
+      const el = document.getElementById("lobbyClock");
+      const placeEl = document.getElementById("clockPlace");
+      if (!el || !placeEl) return;
+    
+      if (wxClockTimer) clearInterval(wxClockTimer);
+    
+      // Lugar (sale del mismo sitio que el tiempo)
+      const loc = wxGetLoc();
+      const placeLabel = loc?.label ? wxPrettyPlace(loc.label) : "—";
+      placeEl.innerText = placeLabel;
+    
+      const fmtTime = new Intl.DateTimeFormat("es-ES", {
+        timeZone: wxTimeZone,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+      });
+    
+      const tick = () => {
+        const now = new Date();
+        // actualiza solo el primer <span> (la hora)
+        el.querySelector("span").innerText = fmtTime.format(now);
+      };
+    
+      tick();
+      wxClockTimer = setInterval(tick, 1000);
+    }
+
 
     function wxErr(msg) {
       const el = document.getElementById("wxModalError");
@@ -1111,6 +1176,9 @@
     async function wxGeocodeCity(name){
       const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
       const data = await wxFetchJson(url);
+      // sincroniza reloj con la zona horaria real del sitio
+    if (data && data.timezone) wxSaveTZ(data.timezone);
+
       const hit = data?.results?.[0];
       if (!hit) return null;
       return {
@@ -1136,6 +1204,8 @@
       const main = (temp == null) ? "—" : `${wxEmoji(code)} ${Math.round(Number(temp))}°`;
       const sub  = label || "—";
       wxSetTop(main, sub);
+      wxStartClock();
+
 
       if (save) wxSaveLoc({ type:"city", label: sub, lat, lon });
     }
@@ -1217,7 +1287,10 @@
     }
 
     wxLoadLast();
+    wxLoadTZ();
+    wxStartClock();
     wxAutoUpdate();
+
 
     // WISHLIST
     let ordenAscendente = true;
