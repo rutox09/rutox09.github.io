@@ -739,6 +739,8 @@
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
       auth = firebase.auth();
+      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(console.error);
+
     }
     initFirebase();
 
@@ -891,18 +893,11 @@
   }
   
   async function adminLogin() {
-    adminErr("");
-    const email = (document.getElementById("adminEmail").value || "").trim();
-    const pass  = (document.getElementById("adminPass").value || "").trim();
-    if (!email || !pass) return adminErr("Pon email y contraseña.");
-  
-    try {
-      await auth.signInWithEmailAndPassword(email, pass);
-      adminCloseModal();
-    } catch (e) {
-      adminErr(friendlyAuthError(e));
-      console.error(e);
-    }
+      } catch (e) {
+    adminErr(`${e.code}: ${e.message}`);
+    console.error(e);
+  }
+
   }
 
 
