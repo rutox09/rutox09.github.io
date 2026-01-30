@@ -560,6 +560,10 @@
       <div class="app-icon">📚</div>
       <span>Media</span>
     </div>
+    <div class="app" onclick="openSection('pomodoro')">
+      <div class="app-icon">🍅</div>
+      <span>Pomodoro</span>
+    </div>
 
     <div class="app">
       <div class="app-icon">🚧</div>
@@ -719,6 +723,35 @@
       <div id="examContainer" class="grid"></div>
     </div>
   </div>
+  
+  <!-- POMODORO -->
+    <div id="pomodoro" class="section">
+      <button class="back" onclick="goHome()">← Volver</button>
+    
+      <div class="container">
+        <h1 class="title">Pomodoro</h1>
+    
+        <div class="media-sub">
+          Enfócate 25 min · Descansa 5 min
+        </div>
+    
+        <div class="controls-row">
+          <div class="total-badge" id="pomoState">Trabajo</div>
+          <div class="total-badge" id="pomoCount">🍅 0</div>
+        </div>
+    
+        <div style="text-align:center; font-size:4rem; font-weight:900; margin-bottom:30px;">
+          <span id="pomoTime">25:00</span>
+        </div>
+    
+        <div class="controls-row">
+          <button class="btn-main" onclick="pomoStart()">▶ Iniciar</button>
+          <button class="btn-secondary" onclick="pomoPause()">⏸ Pausar</button>
+          <button class="btn-secondary" onclick="pomoReset()">🔄 Reset</button>
+        </div>
+      </div>
+    </div>
+
 
   <!-- LIBRERÍAS -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -1435,6 +1468,64 @@
 
     // estado admin inicial
     applyAdminUI();
+    
+    // =======================
+// POMODORO
+// =======================
+    let pomoTimer = null;
+    let pomoSeconds = 25 * 60;
+    let pomoWorking = true;
+    let pomoCount = 0;
+    
+    function updatePomoUI(){
+      const min = Math.floor(pomoSeconds / 60).toString().padStart(2, "0");
+      const sec = (pomoSeconds % 60).toString().padStart(2, "0");
+      document.getElementById("pomoTime").innerText = `${min}:${sec}`;
+      document.getElementById("pomoState").innerText = pomoWorking ? "Trabajo" : "Descanso";
+      document.getElementById("pomoCount").innerText = `🍅 ${pomoCount}`;
+    }
+    
+    function pomoTick(){
+      if (pomoSeconds > 0) {
+        pomoSeconds--;
+        updatePomoUI();
+        return;
+      }
+    
+      // Cambio de fase
+      if (pomoWorking) {
+        pomoWorking = false;
+        pomoSeconds = 5 * 60;
+        pomoCount++;
+      } else {
+        pomoWorking = true;
+        pomoSeconds = 25 * 60;
+      }
+    
+      updatePomoUI();
+    }
+    
+    function pomoStart(){
+      if (pomoTimer) return;
+      pomoTimer = setInterval(pomoTick, 1000);
+    }
+    
+    function pomoPause(){
+      clearInterval(pomoTimer);
+      pomoTimer = null;
+    }
+    
+    function pomoReset(){
+      pomoPause();
+      pomoWorking = true;
+      pomoSeconds = 25 * 60;
+      pomoCount = 0;
+      updatePomoUI();
+    }
+    
+    // Init
+    updatePomoUI();
+
   </script>
 </body>
 </html>
