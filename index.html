@@ -613,6 +613,7 @@
 
         <div class="row" style="margin-top:14px;">
           <button class="btnPrimary" onclick="adminLogin()">Entrar</button>
+          <button class="chip" onclick="adminResetPass()">He olvidado la contraseña</button>
           <button class="btnGhost" onclick="adminCloseModal()">Cancelar</button>
         </div>
       </div>
@@ -812,6 +813,19 @@
       if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
       el.style.display = "block";
       el.innerText = msg;
+    }
+
+    async function adminResetPass() {
+      adminErr("");
+      const email = (document.getElementById("adminEmail").value || "").trim();
+      if (!email) return adminErr("Escribe tu email para enviarte el reset.");
+      try {
+        await auth.sendPasswordResetEmail(email);
+        adminErr("Te he enviado un email para cambiar la contraseña ✅");
+      } catch (e) {
+        adminErr("No pude enviar el email. Revisa el email.");
+        console.error(e);
+      }
     }
 
     function applyAdminUI() {
