@@ -739,8 +739,6 @@
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
       auth = firebase.auth();
-      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(console.error);
-
     }
     initFirebase();
 
@@ -881,25 +879,20 @@
       m.setAttribute("aria-hidden", "true");
     }
 
-    function friendlyAuthError(e){
-    const code = e?.code || "";
-    if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
-    if (code === "auth/wrong-password") return "Contraseña incorrecta.";
-    if (code === "auth/invalid-email") return "Email inválido.";
-    if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
-    if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
-    if (code === "auth/network-request-failed") return "Fallo de red. Ábrelo desde un servidor (no file://).";
-    return `Error: ${code || (e?.message || "desconocido")}`;
-  }
-  
-  async function adminLogin() {
+    async function adminLogin() {
+      adminErr("");
+      const email = (document.getElementById("adminEmail").value || "").trim();
+      const pass  = (document.getElementById("adminPass").value || "").trim();
+      if (!email || !pass) return adminErr("Pon email y contraseña.");
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        adminCloseModal();
       } catch (e) {
-    adminErr(`${e.code}: ${e.message}`);
-    console.error(e);
-  }
-
-  }
-
+        adminErr("Login incorrecto.");
+        console.error(e);
+      }
+    }
 
     async function adminLogout() {
       adminErr("");
