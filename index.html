@@ -535,6 +535,59 @@
       color: var(--neon);
       display: none;
     }
+        /* ===== Pomodoro Animations (PEGAR AL FINAL DEL <style>) ===== */
+    .pomo-wrap { display:flex; flex-direction:column; align-items:center; gap: 12px; }
+    
+    #pomoTime{
+      display:inline-block;
+      will-change: transform, filter;
+      transform-origin: center;
+    }
+    
+    /* Pop cada segundo */
+    #pomoTime.pulse{
+      animation: pomoPulse 220ms ease;
+    }
+    @keyframes pomoPulse{
+      0%   { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
+      55%  { transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(0,242,255,0.35)); }
+      100% { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
+    }
+    
+    /* Estado con glow según fase */
+    #pomoState{
+      will-change: transform, box-shadow, border-color;
+    }
+    #pomoState.work{
+      border-color: rgba(0,242,255,0.45);
+      box-shadow: 0 0 0 1px rgba(0,242,255,0.18), 0 0 22px rgba(0,242,255,0.12);
+    }
+    #pomoState.break{
+      border-color: rgba(99,102,241,0.65);
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.22), 0 0 22px rgba(99,102,241,0.14);
+    }
+    
+    /* Flash cuando cambia de fase */
+    .pomo-flash{
+      animation: pomoFlash 650ms ease;
+    }
+    @keyframes pomoFlash{
+      0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
+      35%  { transform: scale(1.03); box-shadow: 0 0 0 2px rgba(0,242,255,0.22), 0 0 26px rgba(0,242,255,0.18); }
+      100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
+    }
+    
+    /* Bounce cuando sube el contador 🍅 */
+    #pomoCount{ will-change: transform; }
+    .pomo-bounce{
+      animation: pomoBounce 520ms cubic-bezier(.2,.95,.2,1);
+    }
+    @keyframes pomoBounce{
+      0%   { transform: translateY(0) scale(1); }
+      45%  { transform: translateY(-8px) scale(1.06); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
   </style>
 </head>
 
@@ -740,9 +793,12 @@
           <div class="total-badge" id="pomoCount">🍅 0</div>
         </div>
     
-        <div style="text-align:center; font-size:4rem; font-weight:900; margin-bottom:30px;">
-          <span id="pomoTime">25:00</span>
+        <div class="pomo-wrap" style="margin-bottom:30px;">
+          <div style="text-align:center; font-size:4rem; font-weight:900;">
+            <span id="pomoTime">25:00</span>
+          </div>
         </div>
+
     
         <div class="controls-row">
           <button class="btn-main" onclick="pomoStart()">▶ Iniciar</button>
@@ -1469,20 +1525,69 @@
     // estado admin inicial
     applyAdminUI();
     
-    // =======================
-// POMODORO
+   // =======================
+// POMODORO + ANIMACIONES
 // =======================
     let pomoTimer = null;
     let pomoSeconds = 25 * 60;
     let pomoWorking = true;
     let pomoCount = 0;
+    let lastSecond = null;
     
-    function updatePomoUI(){
-      const min = Math.floor(pomoSeconds / 60).toString().padStart(2, "0");
-      const sec = (pomoSeconds % 60).toString().padStart(2, "0");
-      document.getElementById("pomoTime").innerText = `${min}:${sec}`;
-      document.getElementById("pomoState").innerText = pomoWorking ? "Trabajo" : "Descanso";
-      document.getElementById("pomoCount").innerText = `🍅 ${pomoCount}`;
+    function $(id){ return document.getElementById(id); }
+    
+    function fmtMMSS(s){
+      const min = Math.floor(s / 60).toString().padStart(2, "0");
+      const sec = (s % 60).toString().padStart(2, "0");
+      return `${min}:${sec}`;
+    }
+    
+    function pulseTime(){
+      const t = $("pomoTime");
+      if (!t) return;
+      t.classList.remove("pulse");
+      // reflow para reiniciar anim
+      void t.offsetWidth;
+      t.classList.add("pulse");
+      setTimeout(() => t.classList.remove("pulse"), 220);
+    }
+    
+    function flashBadges(){
+      const a = $("pomoState"), b = $("pomoCount");
+      [a,b].forEach(el => {
+        if (!el) return;
+        el.classList.remove("pomo-flash");
+        void el.offsetWidth;
+        el.classList.add("pomo-flash");
+        setTimeout(() => el.classList.remove("pomo-flash"), 700);
+      });
+    }
+    
+    function bounceCount(){
+      const c = $("pomoCount");
+      if (!c) return;
+      c.classList.remove("pomo-bounce");
+      void c.offsetWidth;
+      c.classList.add("pomo-bounce");
+      setTimeout(() => c.classList.remove("pomo-bounce"), 520);
+    }
+    
+    function updatePomoUI({phaseChanged=false, countChanged=false} = {}){
+      $("pomoTime").innerText = fmtMMSS(pomoSeconds);
+    
+      const state = $("pomoState");
+      state.innerText = pomoWorking ? "Trabajo" : "Descanso";
+      state.classList.toggle("work", pomoWorking);
+      state.classList.toggle("break", !pomoWorking);
+    
+      $("pomoCount").innerText = `🍅 ${pomoCount}`;
+    
+      // animaciones
+      if (lastSecond !== pomoSeconds) pulseTime();
+      lastSecond = pomoSeconds;
+    
+      if (phaseChanged) flashBadges();
+      if (countChanged) bounceCount();
     }
     
     function pomoTick(){
@@ -1497,22 +1602,24 @@
         pomoWorking = false;
         pomoSeconds = 5 * 60;
         pomoCount++;
+        updatePomoUI({phaseChanged:true, countChanged:true});
       } else {
         pomoWorking = true;
         pomoSeconds = 25 * 60;
+        updatePomoUI({phaseChanged:true});
       }
-    
-      updatePomoUI();
     }
     
     function pomoStart(){
       if (pomoTimer) return;
+      flashBadges(); // feedback al iniciar
       pomoTimer = setInterval(pomoTick, 1000);
     }
     
     function pomoPause(){
       clearInterval(pomoTimer);
       pomoTimer = null;
+      flashBadges(); // feedback al pausar
     }
     
     function pomoReset(){
@@ -1520,11 +1627,13 @@
       pomoWorking = true;
       pomoSeconds = 25 * 60;
       pomoCount = 0;
-      updatePomoUI();
+      lastSecond = null;
+      updatePomoUI({phaseChanged:true, countChanged:true});
     }
     
     // Init
-    updatePomoUI();
+    updatePomoUI({phaseChanged:true});
+
 
   </script>
 </body>
