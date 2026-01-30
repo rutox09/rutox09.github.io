@@ -663,7 +663,10 @@
         <input type="hidden" id="editId">
       </div>
 
-      
+      <!-- ✅ AÑADIDO: para que no pete el JS -->
+      <div id="wishlistNote" class="soft-note" style="display:block;">
+        Modo lectura 🔒 (entra como Admin para añadir/editar/borrar/marcar)
+      </div>
 
       <div id="productContainer" class="grid"></div>
     </div>
@@ -719,9 +722,6 @@
   <script>
     AOS.init({ duration: 800 });
 
-    // ============================================================
-    // FIREBASE (único init)
-    // ============================================================
     const firebaseConfig = {
       apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
       authDomain: "cosas-af46c.firebaseapp.com",
@@ -742,17 +742,12 @@
     }
     initFirebase();
 
-    // ============================================================
-    // NAVEGACIÓN
-    // ============================================================
     function openSection(id) {
       wxCloseModal();
       adminCloseModal();
-
       document.getElementById("lobby").style.display = "none";
       document.getElementById("shareFab").style.display = "none";
       document.getElementById("wxTop").style.display = "none";
-
       document.getElementById(id).style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -760,19 +755,14 @@
     function goHome() {
       wxCloseModal();
       adminCloseModal();
-
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       document.getElementById("lobby").style.display = "grid";
       document.getElementById("shareFab").style.display = "flex";
       document.getElementById("wxTop").style.display = "flex";
       window.scrollTo({ top: 0, behavior: "smooth" });
-
       wxAutoUpdate();
     }
 
-    // ============================================================
-    // COMPARTIR
-    // ============================================================
     async function shareSite() {
       const url = window.location.href;
       const title = "RUTOX UNIVERSE";
@@ -791,9 +781,6 @@
       } catch (e) { console.log(e); }
     }
 
-    // ============================================================
-    // HELPERS
-    // ============================================================
     function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
     function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
     function escapeHtml(str) {
@@ -805,9 +792,7 @@
         .replaceAll("'", "&#039;");
     }
 
-    // ============================================================
-    // ADMIN (Firebase Auth)
-    // ============================================================
+    // ADMIN
     function adminErr(msg) {
       const el = document.getElementById("adminErr");
       if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
@@ -863,14 +848,10 @@
       const m = document.getElementById("adminModal");
       m.classList.add("open");
       m.setAttribute("aria-hidden", "false");
-
       const user = auth.currentUser;
       document.getElementById("adminLoggedBox").style.display = user ? "block" : "none";
       document.getElementById("adminLoginBox").style.display = user ? "none" : "block";
-
-      setTimeout(() => {
-        if (!user) document.getElementById("adminEmail").focus();
-      }, 50);
+      setTimeout(() => { if (!user) document.getElementById("adminEmail").focus(); }, 50);
     }
 
     function adminCloseModal() {
@@ -879,32 +860,31 @@
       m.setAttribute("aria-hidden", "true");
     }
 
-   function friendlyAuthError(e){
-    const code = e?.code || "";
-    if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
-    if (code === "auth/wrong-password") return "Contraseña incorrecta.";
-    if (code === "auth/invalid-email") return "Email inválido.";
-    if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
-    if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
-    if (code === "auth/network-request-failed") return "Fallo de red. Ábrelo desde un servidor (no file://).";
-    return `Error: ${code || (e?.message || "desconocido")}`;
-  }
-  
-  async function adminLogin() {
-    adminErr("");
-    const email = (document.getElementById("adminEmail").value || "").trim();
-    const pass  = (document.getElementById("adminPass").value || "").trim();
-    if (!email || !pass) return adminErr("Pon email y contraseña.");
-  
-    try {
-      await auth.signInWithEmailAndPassword(email, pass);
-      adminCloseModal();
-    } catch (e) {
-      adminErr(friendlyAuthError(e));
-      console.error(e);
+    function friendlyAuthError(e){
+      const code = e?.code || "";
+      if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
+      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
+      if (code === "auth/invalid-email") return "Email inválido.";
+      if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
+      if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
+      if (code === "auth/network-request-failed") return "Fallo de red.";
+      return `Error: ${code || (e?.message || "desconocido")}`;
     }
-  }
 
+    async function adminLogin() {
+      adminErr("");
+      const email = (document.getElementById("adminEmail").value || "").trim();
+      const pass  = (document.getElementById("adminPass").value || "").trim();
+      if (!email || !pass) return adminErr("Pon email y contraseña.");
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        adminCloseModal();
+      } catch (e) {
+        adminErr(friendlyAuthError(e));
+        console.error(e);
+      }
+    }
 
     async function adminLogout() {
       adminErr("");
@@ -929,14 +909,11 @@
       return false;
     }
 
-    // ESC cierra modales
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); }
     });
 
-    // ============================================================
-    // MEDIA (localStorage)
-    // ============================================================
+    // MEDIA
     const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
 
@@ -1064,9 +1041,7 @@
 
     loadExams();
 
-    // ============================================================
-    // TIEMPO (widget + modal)
-    // ============================================================
+    // TIEMPO
     const WX_LOC_KEY  = "rutox_weather_loc_v1";
     const WX_LAST_KEY = "rutox_weather_last_v1";
 
@@ -1178,10 +1153,7 @@
       try {
         const loc = wxGetLoc();
         if (loc && typeof loc.lat === "number" && typeof loc.lon === "number") {
-          if (loc.type === "geo") {
-            wxSetTop("📍", "Pulsa para actualizar");
-            return;
-          }
+          if (loc.type === "geo") { wxSetTop("📍", "Pulsa para actualizar"); return; }
           await wxLoadByCoords(loc.lat, loc.lon, loc.label, {save:false});
           return;
         }
@@ -1230,9 +1202,7 @@
     wxLoadLast();
     wxAutoUpdate();
 
-    // ============================================================
-    // WISHLIST (Firestore) + filtros + tic
-    // ============================================================
+    // WISHLIST
     let ordenAscendente = true;
     let filtro = "all";
     let lastSnap = null;
