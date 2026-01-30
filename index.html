@@ -1102,12 +1102,12 @@
       const placeEl = document.getElementById("clockPlace");
       if (!el || !placeEl) return;
     
-      if (wxClockTimer) clearInterval(wxClockTimer);
-    
-      // Lugar (sale del mismo sitio que el tiempo)
+      // ✅ actualizar lugar SIEMPRE
       const loc = wxGetLoc();
       const placeLabel = loc?.label ? wxPrettyPlace(loc.label) : "—";
       placeEl.innerText = placeLabel;
+    
+      if (wxClockTimer) clearInterval(wxClockTimer);
     
       const fmtTime = new Intl.DateTimeFormat("es-ES", {
         timeZone: wxTimeZone,
@@ -1118,13 +1118,13 @@
     
       const tick = () => {
         const now = new Date();
-        // actualiza solo el primer <span> (la hora)
         el.querySelector("span").innerText = fmtTime.format(now);
       };
     
       tick();
       wxClockTimer = setInterval(tick, 1000);
     }
+
 
 
     function wxErr(msg) {
@@ -1218,7 +1218,9 @@
       if (!hit) { wxErr("No encontré esa ciudad."); return; }
       await wxLoadByCoords(hit.lat, hit.lon, hit.label, {save:true});
       wxCloseModal();
+      wxStartClock(); // ✅
     }
+
 
     function wxUseMyLocation(){
       wxErr("");
