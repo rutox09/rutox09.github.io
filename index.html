@@ -3,43 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>RUTOX UNIVERSE</title>
 
   <!-- Favicon emoji universo -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
-  
+
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- FullCalendar -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 
-
   <style>
-  /* ===== CALENDAR (FullCalendar) ===== */
-#calView {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 22px;
-  padding: 14px;
-}
-
-/* FullCalendar: textos claros */
-.fc, .fc * { color: #e9eefc; }
-.fc .fc-toolbar-title { font-weight: 900; letter-spacing: .2px; }
-.fc .fc-button {
-  background: rgba(255,255,255,0.08) !important;
-  border: 1px solid rgba(255,255,255,0.14) !important;
-  border-radius: 14px !important;
-  font-weight: 900 !important;
-}
-.fc .fc-button:hover { filter: brightness(1.15); }
-.fc .fc-button-primary:not(:disabled).fc-button-active {
-  background: rgba(99,102,241,0.85) !important;
-  border-color: rgba(99,102,241,0.9) !important;
-}
-.fc .fc-daygrid-day-number { opacity: .9; font-weight: 800; }
-.fc .fc-event { border-radius: 10px; border: 0 !important; padding: 2px 6px; }
+    /* ===== CALENDAR (FullCalendar) ===== */
+    #calView {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 22px;
+      padding: 14px;
+    }
+    .fc, .fc * { color: #e9eefc; }
+    .fc .fc-toolbar-title { font-weight: 900; letter-spacing: .2px; }
+    .fc .fc-button {
+      background: rgba(255,255,255,0.08) !important;
+      border: 1px solid rgba(255,255,255,0.14) !important;
+      border-radius: 14px !important;
+      font-weight: 900 !important;
+    }
+    .fc .fc-button:hover { filter: brightness(1.15); }
+    .fc .fc-button-primary:not(:disabled).fc-button-active {
+      background: rgba(99,102,241,0.85) !important;
+      border-color: rgba(99,102,241,0.9) !important;
+    }
+    .fc .fc-daygrid-day-number { opacity: .9; font-weight: 800; }
+    .fc .fc-event { border-radius: 10px; border: 0 !important; padding: 2px 6px; }
 
     :root {
       --bg: #020617;
@@ -48,9 +46,7 @@
       --neon: #00f2ff;
       --primary: #6366f1;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -66,7 +62,6 @@
       gap: 20px;
       padding: 10px 30px 30px 30px;
     }
-
     .app {
       background: var(--glass);
       border: 1px solid var(--border);
@@ -79,23 +74,15 @@
       cursor: pointer;
       transition: 0.3s;
     }
-
     .app:hover {
       transform: scale(1.05);
       background: rgba(255,255,255,0.15);
     }
-
-    .app span {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-
+    .app span { margin-top: 6px; font-size: 0.8rem; font-weight: 700; }
     .app-icon { font-size: 1.8rem; }
 
     /* ---------- SECCIONES ---------- */
     .section { display: none; padding: 20px; }
-
     .back {
       margin-bottom: 20px;
       background: none;
@@ -107,7 +94,6 @@
 
     /* ---------- COMÚN ---------- */
     .container { max-width: 1200px; margin: auto; }
-
     .title {
       font-size: 4rem;
       font-weight: 800;
@@ -117,7 +103,6 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
     .controls-row {
       display: flex;
       justify-content: center;
@@ -126,7 +111,6 @@
       margin-bottom: 40px;
       flex-wrap: wrap;
     }
-
     .total-badge {
       background: rgba(255, 255, 255, 0.05);
       padding: 10px 30px;
@@ -137,7 +121,6 @@
       color: var(--neon);
       backdrop-filter: blur(10px);
     }
-
     .order-btn, .filter-btn {
       background: rgba(255,255,255,0.1);
       color: white;
@@ -149,16 +132,11 @@
       transition: 0.3s;
       font-size: 0.9rem;
     }
-
     .order-btn:hover, .filter-btn:hover {
       background: rgba(255,255,255,0.15);
       border-color: rgba(255,255,255,0.2);
     }
-
-    .filter-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-    }
+    .filter-btn.active { background: var(--primary); border-color: var(--primary); }
 
     .admin-panel {
       background: rgba(15, 23, 42, 0.9);
@@ -169,13 +147,11 @@
       position: relative;
       z-index: 100;
     }
-
     .grid-inputs {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
     }
-
     input {
       background: #000;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -185,7 +161,6 @@
       font-size: 1rem;
       width: 100%;
     }
-
     .btn-main {
       background: white;
       color: black;
@@ -197,105 +172,6 @@
       width: 100%;
       font-size: 1.1rem;
     }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: 0.25s;
-    }
-
-    .card.checked {
-      border-color: rgba(0, 242, 255, 0.6);
-      box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.25);
-      opacity: 0.92;
-    }
-
-    .card img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 20px;
-      margin-bottom: 15px;
-      pointer-events: none;
-    }
-
-    .card-name {
-      font-weight: 800;
-      font-size: 1.3rem;
-      margin-bottom: 5px;
-      color: #fff;
-    }
-
-    .card-price {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--neon);
-      margin-bottom: 15px;
-    }
-
-    .card-actions {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      display: flex;
-      gap: 8px;
-      z-index: 50;
-    }
-
-    .circle-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-    }
-
-    .btn-link {
-      display: block;
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      color: var(--neon);
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.8rem;
-    }
-
-    /* ---------- MEDIA ---------- */
-    .media-sub {
-      text-align: center;
-      opacity: 0.85;
-      margin-top: 10px;
-      margin-bottom: 30px;
-      font-weight: 600;
-    }
-    .hint { text-align: center; font-weight: 700; opacity: 0.85; }
-    .warning {
-      text-align: center;
-      margin-top: 10px;
-      font-weight: 800;
-      color: var(--neon);
-      opacity: 0.95;
-    }
-    .exam-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-
     .btn-secondary {
       background: rgba(255,255,255,0.08);
       color: white;
@@ -310,13 +186,74 @@
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
-    .exam-meta {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
     }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: 0.25s;
+    }
+    .card.checked {
+      border-color: rgba(0, 242, 255, 0.6);
+      box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.25);
+      opacity: 0.92;
+    }
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      pointer-events: none;
+    }
+    .card-name { font-weight: 800; font-size: 1.3rem; margin-bottom: 5px; color: #fff; }
+    .card-price { font-size: 2rem; font-weight: 800; color: var(--neon); margin-bottom: 15px; }
+    .card-actions {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+    .circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .btn-link {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--neon);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    /* ---------- MEDIA ---------- */
+    .media-sub { text-align:center; opacity:0.85; margin:10px 0 30px; font-weight:600; }
+    .hint { text-align:center; font-weight:700; opacity:0.85; }
+    .warning { text-align:center; margin-top:10px; font-weight:800; color:var(--neon); opacity:0.95; }
+    .exam-row { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
+    .exam-meta { display:flex; justify-content:space-between; gap:10px; margin-top:10px; flex-wrap:wrap; }
     .pill {
       padding: 8px 12px;
       border-radius: 999px;
@@ -325,29 +262,14 @@
       font-weight: 800;
       font-size: 0.9rem;
     }
-    .big-grade {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--neon);
-      margin-top: 12px;
-    }
-    .muted { opacity: 0.8; font-weight: 700; }
-    .soft-note {
-      text-align: center;
-      opacity: 0.85;
-      font-weight: 700;
-      margin-top: 10px;
-    }
-    #lobbyClock{
-      font-weight: 900;
-      letter-spacing: 0.3px;
-    }
-    #lobbyClock span{
-        color: var(--neon);
-    }
+    .big-grade { font-size:2.2rem; font-weight:900; color:var(--neon); margin-top:12px; }
+    .muted { opacity:0.8; font-weight:700; }
+    .soft-note { text-align:center; opacity:0.85; font-weight:700; margin-top:10px; }
 
+    #lobbyClock { font-weight: 900; letter-spacing: 0.3px; }
+    #lobbyClock span { color: var(--neon); }
 
-    /* ---------- BOTÓN COMPARTIR (solo lobby) ---------- */
+    /* ---------- FABs ---------- */
     #shareFab {
       position: fixed;
       right: 18px;
@@ -374,7 +296,6 @@
       box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
     }
 
-    /* ---------- ADMIN FAB ---------- */
     #adminFab {
       position: fixed;
       left: 18px;
@@ -413,7 +334,7 @@
       box-shadow: 0 0 0 1px rgba(0,242,255,0.4), 0 0 18px rgba(0,242,255,0.25) !important;
     }
 
-    /* ---------- WIDGET TIEMPO (arriba derecha, solo lobby) ---------- */
+    /* ---------- WIDGET TIEMPO ---------- */
     #wxTop {
       position: fixed;
       top: 18px;
@@ -451,7 +372,7 @@
       white-space: nowrap;
     }
 
-    /* ---------- MODAL BONITO (base) ---------- */
+    /* ---------- MODAL ---------- */
     .modal {
       display: none;
       position: fixed;
@@ -462,14 +383,12 @@
       padding: 18px;
     }
     .modal.open { display: flex; }
-
     .overlay {
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.6);
       backdrop-filter: blur(6px);
     }
-
     .modalCard {
       position: relative;
       width: min(520px, 100%);
@@ -481,21 +400,14 @@
       padding: 18px;
       z-index: 2;
     }
-
     .modalTop {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:12px;
     }
-
-    .modalTitle {
-      font-weight: 900;
-      font-size: 1.1rem;
-      letter-spacing: 0.2px;
-    }
-
+    .modalTitle { font-weight: 900; font-size: 1.1rem; letter-spacing: 0.2px; }
     .modalClose {
       width: 38px;
       height: 38px;
@@ -506,14 +418,7 @@
       cursor: pointer;
       font-weight: 900;
     }
-
-    .row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
+    .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
     .chip {
       padding: 10px 12px;
       border-radius: 999px;
@@ -524,11 +429,7 @@
       font-weight: 900;
       transition: 0.2s;
     }
-    .chip:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(0,242,255,0.35);
-    }
-
+    .chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(0,242,255,0.35); }
     .btnPrimary {
       flex: 1;
       min-width: 160px;
@@ -551,41 +452,19 @@
       background: rgba(255,255,255,0.07);
       color: white;
     }
-    .small {
-      margin-top: 10px;
-      font-weight: 800;
-      font-size: 0.85rem;
-      opacity: 0.86;
-    }
-    .err {
-      margin-top: 10px;
-      font-weight: 900;
-      color: var(--neon);
-      display: none;
-    }
-        /* ===== Pomodoro Animations (PEGAR AL FINAL DEL <style>) ===== */
+    .small { margin-top:10px; font-weight:800; font-size:0.85rem; opacity:0.86; }
+    .err { margin-top:10px; font-weight:900; color:var(--neon); display:none; }
+
+    /* ===== Pomodoro Animations ===== */
     .pomo-wrap { display:flex; flex-direction:column; align-items:center; gap: 12px; }
-    
-    #pomoTime{
-      display:inline-block;
-      will-change: transform, filter;
-      transform-origin: center;
-    }
-    
-    /* Pop cada segundo */
-    #pomoTime.pulse{
-      animation: pomoPulse 220ms ease;
-    }
+    #pomoTime{ display:inline-block; will-change: transform, filter; transform-origin: center; }
+    #pomoTime.pulse{ animation: pomoPulse 220ms ease; }
     @keyframes pomoPulse{
       0%   { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
       55%  { transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(0,242,255,0.35)); }
       100% { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
     }
-    
-    /* Estado con glow según fase */
-    #pomoState{
-      will-change: transform, box-shadow, border-color;
-    }
+    #pomoState{ will-change: transform, box-shadow, border-color; }
     #pomoState.work{
       border-color: rgba(0,242,255,0.45);
       box-shadow: 0 0 0 1px rgba(0,242,255,0.18), 0 0 22px rgba(0,242,255,0.12);
@@ -594,40 +473,29 @@
       border-color: rgba(99,102,241,0.65);
       box-shadow: 0 0 0 1px rgba(99,102,241,0.22), 0 0 22px rgba(99,102,241,0.14);
     }
-    
-    /* Flash cuando cambia de fase */
-    .pomo-flash{
-      animation: pomoFlash 650ms ease;
-    }
+    .pomo-flash{ animation: pomoFlash 650ms ease; }
     @keyframes pomoFlash{
       0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
       35%  { transform: scale(1.03); box-shadow: 0 0 0 2px rgba(0,242,255,0.22), 0 0 26px rgba(0,242,255,0.18); }
       100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
     }
-    
-    /* Bounce cuando sube el contador 🍅 */
     #pomoCount{ will-change: transform; }
-    .pomo-bounce{
-      animation: pomoBounce 520ms cubic-bezier(.2,.95,.2,1);
-    }
+    .pomo-bounce{ animation: pomoBounce 520ms cubic-bezier(.2,.95,.2,1); }
     @keyframes pomoBounce{
       0%   { transform: translateY(0) scale(1); }
       45%  { transform: translateY(-8px) scale(1.06); }
       100% { transform: translateY(0) scale(1); }
     }
-
   </style>
 </head>
 
 <body>
-
   <!-- TÍTULO -->
   <div class="container" style="padding: 28px 30px 0 30px;">
     <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
     <div id="lobbyClock" class="soft-note" style="margin-top:-10px; margin-bottom:14px;">
-  🕒 <span>--:--:--</span> · <span id="clockPlace">—</span>
-</div>
-
+      🕒 <span>--:--:--</span> · <span id="clockPlace">—</span>
+    </div>
   </div>
 
   <!-- LOBBY -->
@@ -641,13 +509,15 @@
       <div class="app-icon">📚</div>
       <span>Media</span>
     </div>
+
     <div class="app" onclick="openSection('pomodoro')">
       <div class="app-icon">🍅</div>
       <span>Pomodoro</span>
     </div>
-        <div class="app" onclick="openSection('calendar')">
-        <div class="app-icon">📅</div>
-    <span>Calendario</span>
+
+    <div class="app" onclick="openSection('calendar')">
+      <div class="app-icon">📅</div>
+      <span>Calendario</span>
     </div>
 
     <div class="app">
@@ -764,8 +634,6 @@
         <input type="hidden" id="editId">
       </div>
 
-      
-
       <div id="productContainer" class="grid"></div>
     </div>
   </div>
@@ -788,7 +656,7 @@
       <div class="hint muted" data-aos="fade-up">
         Media = (Σ nota × peso) / (Σ peso) · mínimo 2 exámenes
       </div>
-      <div class="warning" id="weightWarning" style="display:none;"></div>
+      <div class="warning" id="weightWarning"></div>
 
       <div class="admin-panel" data-aos="fade-up">
         <div class="grid-inputs">
@@ -808,88 +676,72 @@
       <div id="examContainer" class="grid"></div>
     </div>
   </div>
-  
+
   <!-- POMODORO -->
-    <div id="pomodoro" class="section">
-      <button class="back" onclick="goHome()">← Volver</button>
-    
-      <div class="container">
-        <h1 class="title">Pomodoro</h1>
-    
-        <div class="media-sub">
-          Enfócate 25 min · Descansa 5 min
-        </div>
-    
-        <div class="controls-row">
-          <div class="total-badge" id="pomoState">Trabajo</div>
-          <div class="total-badge" id="pomoCount">🍅 0</div>
-        </div>
-    
-        <div class="pomo-wrap" style="margin-bottom:30px;">
-          <div style="text-align:center; font-size:4rem; font-weight:900;">
-            <span id="pomoTime">25:00</span>
-          </div>
-        </div>
+  <div id="pomodoro" class="section">
+    <button class="back" onclick="goHome()">← Volver</button>
 
-    
-        <div class="controls-row">
-          <button class="btn-main" onclick="pomoStart()">▶ Iniciar</button>
-          <button class="btn-secondary" onclick="pomoPause()">⏸ Pausar</button>
-          <button class="btn-secondary" onclick="pomoReset()">🔄 Reset</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- CALENDARIO -->
-<div id="calendar" class="section">
-  <button class="back" onclick="goHome()">← Volver</button>
+    <div class="container">
+      <h1 class="title">Pomodoro</h1>
 
-  <div class="container">
-    <h1 class="title" data-aos="fade-down">Calendario</h1>
+      <div class="media-sub">Enfócate 25 min · Descansa 5 min</div>
 
-    <!-- Login/Register dentro de la sección -->
-    <div class="admin-panel" id="calAuthBox" data-aos="fade-up">
-  <div class="grid-inputs">
-    <input id="calEmail" type="email" placeholder="Email" />
-    <input id="calPass" type="password" placeholder="Contraseña" />
-  </div>
-
-  <div class="exam-row">
-    <button class="btn-main" onclick="calLoginFb()">Entrar</button>
-    <button class="btn-secondary" onclick="calRegisterFb()">Crear cuenta</button>
-    <button class="btn-secondary" onclick="calLogoutFb()" id="calLogoutBtn" style="display:none;">Salir</button>
-  </div>
-
-  <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
-</div>
-
-
-      <div class="exam-row">
-        <button class="btn-main" onclick="calLogin()">Entrar</button>
-        <button class="btn-secondary" onclick="calRegister()">Crear cuenta</button>
-        <button class="btn-secondary" onclick="calLogout()" id="calLogoutBtn" style="display:none;">Salir</button>
+      <div class="controls-row">
+        <div class="total-badge" id="pomoState">Trabajo</div>
+        <div class="total-badge" id="pomoCount">🍅 0</div>
       </div>
 
-      <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
-    </div>
+      <div class="pomo-wrap" style="margin-bottom:30px;">
+        <div style="text-align:center; font-size:4rem; font-weight:900;">
+          <span id="pomoTime">25:00</span>
+        </div>
+      </div>
 
-    <!-- Filtros -->
-    <div class="controls-row" id="calFilters" data-aos="fade-up" style="display:none;">
-      <button class="filter-btn active" data-type="all" onclick="calSetFilter('all', this)">Todos</button>
-      <button class="filter-btn" data-type="exam" onclick="calSetFilter('exam', this)">Exámenes</button>
-      <button class="filter-btn" data-type="homework" onclick="calSetFilter('homework', this)">Deberes</button>
-      <button class="filter-btn" data-type="activity" onclick="calSetFilter('activity', this)">Actividades</button>
-      <button class="order-btn" onclick="calOpenCreate()">＋ Añadir</button>
-    </div>
-
-    <!-- Calendario -->
-    <div class="admin-panel" data-aos="fade-up" id="calWrap" style="display:none;">
-      <div id="calView"></div>
+      <div class="controls-row">
+        <button class="btn-main" onclick="pomoStart()">▶ Iniciar</button>
+        <button class="btn-secondary" onclick="pomoPause()">⏸ Pausar</button>
+        <button class="btn-secondary" onclick="pomoReset()">🔄 Reset</button>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- CALENDARIO -->
+  <div id="calendar" class="section">
+    <button class="back" onclick="goHome()">← Volver</button>
 
+    <div class="container">
+      <h1 class="title" data-aos="fade-down">Calendario</h1>
+
+      <div class="admin-panel" id="calAuthBox" data-aos="fade-up">
+        <div class="grid-inputs">
+          <input id="calEmail" type="email" placeholder="Email" />
+          <input id="calPass" type="password" placeholder="Contraseña" />
+        </div>
+
+        <div class="exam-row">
+          <button class="btn-main" onclick="calLoginFb()">Entrar</button>
+          <button class="btn-secondary" onclick="calRegisterFb()">Crear cuenta</button>
+          <button class="btn-secondary" onclick="calLogoutFb()" id="calLogoutBtn" style="display:none;">Salir</button>
+        </div>
+
+        <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="controls-row" id="calFilters" data-aos="fade-up" style="display:none;">
+        <button class="filter-btn active" onclick="calSetFilter('all', this)">Todos</button>
+        <button class="filter-btn" onclick="calSetFilter('exam', this)">Exámenes</button>
+        <button class="filter-btn" onclick="calSetFilter('homework', this)">Deberes</button>
+        <button class="filter-btn" onclick="calSetFilter('activity', this)">Actividades</button>
+        <button class="order-btn" onclick="calOpenCreate()">＋ Añadir</button>
+      </div>
+
+      <!-- Calendario -->
+      <div class="admin-panel" data-aos="fade-up" id="calWrap" style="display:none;">
+        <div id="calView"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- LIBRERÍAS -->
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
@@ -897,95 +749,112 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
 
-
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
   <script>
+    // ============================================================
+    // INIT UI LIBS
+    // ============================================================
     AOS.init({ duration: 800 });
 
     // ============================================================
-// FIREBASE INIT (CDN v8)
-// ============================================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-    authDomain: "cosas-af46c.firebaseapp.com",
-    projectId: "cosas-af46c",
-    storageBucket: "cosas-af46c.firebasestorage.app",
-    messagingSenderId: "145996030094",
-    appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
-    measurementId: "G-YCBY7FRLQW"
-  };
-  
-  let db = null;
-  let auth = null;
-  let isAdmin = false;
+    // HELPERS
+    // ============================================================
+    function $(id){ return document.getElementById(id); }
+    function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
+    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-  
-  function initFirebase() {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    // ============================================================
+    // FIREBASE INIT (CDN v8)
+    // ============================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+      authDomain: "cosas-af46c.firebaseapp.com",
+      projectId: "cosas-af46c",
+      storageBucket: "cosas-af46c.firebasestorage.app",
+      messagingSenderId: "145996030094",
+      appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
+      measurementId: "G-YCBY7FRLQW"
+    };
 
-  try { firebase.analytics(); } catch (e) { console.log("Analytics no disponible", e); }
+    let db = null;
+    let auth = null;
+    let isAdmin = false;
 
-  db = firebase.firestore();
-  auth = firebase.auth();
+    function initFirebase() {
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      try { firebase.analytics(); } catch(e) {}
 
-  // DEBUG (ya lo tenías)
-  auth.onAuthStateChanged((user) => {
-    console.log("Auth state:", user ? user.email : "NO USER");
+      db = firebase.firestore();
+      auth = firebase.auth();
 
-    // ✅ y aquí mismo actualizas admin UI
-    isAdmin = !!user;
-    adminErr("");
-    applyAdminUI();
-  });
-}
+      // Un solo listener central para todo
+      auth.onAuthStateChanged((user) => {
+        console.log("Auth state:", user ? user.email : "NO USER");
 
-initFirebase();
+        // Admin mode (wishlist)
+        isAdmin = !!user;
+        adminErr("");
+        applyAdminUI();
 
-   
+        // Calendario UI
+        if (user) {
+          calSetUIAuthed(true);
+          calInitCalendarIfNeeded();
+          calLoadEvents();
+          calMsg("Sesión iniciada ✅");
+        } else {
+          calClearListener();
+          if (calCalendar) calCalendar.removeAllEvents();
+          calSetUIAuthed(false);
+          calMsg("");
+        }
+      });
+    }
 
+    initFirebase();
 
-
+    // ============================================================
+    // NAV
+    // ============================================================
     function openSection(id) {
-  wxCloseModal();
-  adminCloseModal();
+      wxCloseModal();
+      adminCloseModal();
 
-  document.getElementById("lobby").style.display = "none";
-  document.getElementById("shareFab").style.display = "none";
-  document.getElementById("wxTop").style.display = "none";
+      $("lobby").style.display = "none";
+      $("shareFab").style.display = "none";
+      $("wxTop").style.display = "none";
 
-  document.getElementById(id).style.display = "block";
-  window.scrollTo({ top: 0, behavior: "smooth" });
-    if (id === "calendar") {
-  calInitCalendarIfNeeded();
-  setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 80);
-}
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+      $(id).style.display = "block";
 
-  // ✅ Calendario: inicializa cuando entras a la sección
-  if (id === "calendar") {
-  if (calToken) {
-    calSetUIAuthed(true);
-    calInitCalendarIfNeeded();
-    calRefetch();
-    setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 50);
-  } else {
-    calSetUIAuthed(false);
-  }
-}
+      window.scrollTo({ top: 0, behavior: "smooth" });
 
-}
-
-    
-
+      // FullCalendar necesita updateSize si lo abres oculto
+      if (id === "calendar") {
+        calInitCalendarIfNeeded();
+        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 100);
+      }
+    }
 
     function goHome() {
       wxCloseModal();
       adminCloseModal();
+
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-      document.getElementById("lobby").style.display = "grid";
-      document.getElementById("shareFab").style.display = "flex";
-      document.getElementById("wxTop").style.display = "flex";
+      $("lobby").style.display = "grid";
+      $("shareFab").style.display = "flex";
+      $("wxTop").style.display = "flex";
+
       window.scrollTo({ top: 0, behavior: "smooth" });
       wxAutoUpdate();
     }
@@ -1008,20 +877,16 @@ initFirebase();
       } catch (e) { console.log(e); }
     }
 
-    function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
-    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); }
+    });
 
-    // ADMIN
+    // ============================================================
+    // ADMIN (Wishlist)
+    // ============================================================
     function adminErr(msg) {
-      const el = document.getElementById("adminErr");
+      const el = $("adminErr");
+      if (!el) return;
       if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
       el.style.display = "block";
       el.innerText = msg;
@@ -1029,7 +894,7 @@ initFirebase();
 
     async function adminResetPass() {
       adminErr("");
-      const email = (document.getElementById("adminEmail").value || "").trim();
+      const email = ($("adminEmail").value || "").trim();
       if (!email) return adminErr("Escribe tu email para enviarte el reset.");
       try {
         await auth.sendPasswordResetEmail(email);
@@ -1038,48 +903,6 @@ initFirebase();
         adminErr("No pude enviar el email. Revisa el email.");
         console.error(e);
       }
-    }
-
-    function applyAdminUI() {
-      const dot = document.getElementById("adminStateDot");
-      const txt = document.getElementById("adminFabText");
-      const panel = document.getElementById("wishlistAdminPanel");
-      const note = document.getElementById("wishlistNote");
-
-      if (isAdmin) {
-        dot.classList.add("dotOn");
-        txt.innerText = "Admin ON";
-        if (panel) panel.style.display = "block";
-        if (note) { note.style.display = "none"; }
-      } else {
-        dot.classList.remove("dotOn");
-        txt.innerText = "Admin";
-        if (panel) panel.style.display = "none";
-        if (note) {
-          note.style.display = "block";
-          note.innerText = "Modo lectura 🔒 (entra como Admin para añadir/editar/borrar/marcar)";
-        }
-      }
-
-      if (lastSnap) renderizar(lastSnap);
-    }
-
-
-    function adminOpenModal() {
-      adminErr("");
-      const m = document.getElementById("adminModal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-      const user = auth.currentUser;
-      document.getElementById("adminLoggedBox").style.display = user ? "block" : "none";
-      document.getElementById("adminLoginBox").style.display = user ? "none" : "block";
-      setTimeout(() => { if (!user) document.getElementById("adminEmail").focus(); }, 50);
-    }
-
-    function adminCloseModal() {
-      const m = document.getElementById("adminModal");
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
     }
 
     function friendlyAuthError(e){
@@ -1093,17 +916,52 @@ initFirebase();
       return `Error: ${code || (e?.message || "desconocido")}`;
     }
 
+    function applyAdminUI() {
+      const dot = $("adminStateDot");
+      const txt = $("adminFabText");
+      const panel = $("wishlistAdminPanel");
+
+      if (isAdmin) {
+        dot.classList.add("dotOn");
+        txt.innerText = "Admin ON";
+        if (panel) panel.style.display = "block";
+      } else {
+        dot.classList.remove("dotOn");
+        txt.innerText = "Admin";
+        if (panel) panel.style.display = "none";
+      }
+
+      if (lastSnap) renderizar(lastSnap);
+    }
+
+    function adminOpenModal() {
+      adminErr("");
+      const m = $("adminModal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      const user = auth.currentUser;
+      $("adminLoggedBox").style.display = user ? "block" : "none";
+      $("adminLoginBox").style.display = user ? "none" : "block";
+      setTimeout(() => { if (!user) $("adminEmail").focus(); }, 50);
+    }
+
+    function adminCloseModal() {
+      const m = $("adminModal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+    }
+
     async function adminLogin() {
       adminErr("");
-      const email = (document.getElementById("adminEmail").value || "").trim();
-      const pass  = (document.getElementById("adminPass").value || "").trim();
+      const email = ($("adminEmail").value || "").trim();
+      const pass  = ($("adminPass").value || "").trim();
       if (!email || !pass) return adminErr("Pon email y contraseña.");
 
       try {
         await auth.signInWithEmailAndPassword(email, pass);
         adminCloseModal();
       } catch (e) {
-        adminErr(`Error: ${e.code}\n${e.message}`);
+        adminErr(`${friendlyAuthError(e)}\n${e?.message || ""}`);
         console.error("AUTH FULL:", e);
       }
     }
@@ -1122,7 +980,7 @@ initFirebase();
     function adminShowUID() {
       const u = auth.currentUser;
       if (!u) return adminErr("No estás logueado.");
-      alert("TU UID:\n\n" + u.uid + "\n\n(Pégalo en las Rules de Firestore)");
+      alert("TU UID:\n\n" + u.uid + "\n\n(Pégalo en las Rules de Firestore si quieres restringir)");
     }
 
     function requireAdminOrOpen() {
@@ -1131,11 +989,9 @@ initFirebase();
       return false;
     }
 
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); }
-    });
-
-    // MEDIA
+    // ============================================================
+    // MEDIA (LocalStorage)
+    // ============================================================
     const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
 
@@ -1147,13 +1003,12 @@ initFirebase();
       renderExams();
       updateStats();
     }
-
     function saveExams() { localStorage.setItem(EXAMS_KEY, JSON.stringify(exams)); }
 
     function addOrUpdateExam() {
-      const name = (document.getElementById("examName").value || "").trim();
-      const gradeRaw = parseFloat(document.getElementById("examGrade").value);
-      const weightRaw = parseFloat(document.getElementById("examWeight").value);
+      const name = ($("examName").value || "").trim();
+      const gradeRaw = parseFloat($("examGrade").value);
+      const weightRaw = parseFloat($("examWeight").value);
 
       if (Number.isNaN(gradeRaw)) return alert("Pon una nota válida.");
       if (Number.isNaN(weightRaw)) return alert("Pon un peso (%) válido.");
@@ -1161,7 +1016,7 @@ initFirebase();
       const grade = clamp(gradeRaw, 0, 10);
       const weight = clamp(weightRaw, 0, 100);
 
-      const idx = document.getElementById("examEditIndex").value;
+      const idx = $("examEditIndex").value;
       const payload = { name, grade, weight };
 
       if (idx !== "" && !Number.isNaN(parseInt(idx, 10))) exams[parseInt(idx, 10)] = payload;
@@ -1175,11 +1030,11 @@ initFirebase();
 
     function editExam(index) {
       const e = exams[index]; if (!e) return;
-      document.getElementById("examName").value = e.name || "";
-      document.getElementById("examGrade").value = e.grade;
-      document.getElementById("examWeight").value = e.weight;
-      document.getElementById("examEditIndex").value = index;
-      document.getElementById("examSaveBtn").innerText = "ACTUALIZAR";
+      $("examName").value = e.name || "";
+      $("examGrade").value = e.grade;
+      $("examWeight").value = e.weight;
+      $("examEditIndex").value = index;
+      $("examSaveBtn").innerText = "ACTUALIZAR";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -1192,11 +1047,11 @@ initFirebase();
     }
 
     function clearExamForm() {
-      document.getElementById("examName").value = "";
-      document.getElementById("examGrade").value = "";
-      document.getElementById("examWeight").value = "";
-      document.getElementById("examEditIndex").value = "";
-      document.getElementById("examSaveBtn").innerText = "AÑADIR";
+      $("examName").value = "";
+      $("examGrade").value = "";
+      $("examWeight").value = "";
+      $("examEditIndex").value = "";
+      $("examSaveBtn").innerText = "AÑADIR";
     }
 
     function resetExams() {
@@ -1209,7 +1064,7 @@ initFirebase();
     }
 
     function renderExams() {
-      const container = document.getElementById("examContainer");
+      const container = $("examContainer");
       let html = "";
       exams.forEach((e, i) => {
         const title = (e.name && e.name.trim()) ? escapeHtml(e.name) : `Examen #${i + 1}`;
@@ -1237,19 +1092,18 @@ initFirebase();
       const totalWeight = exams.reduce((acc, e) => acc + (parseFloat(e.weight) || 0), 0);
       const weightedSum = exams.reduce((acc, e) => acc + ((parseFloat(e.grade) || 0) * (parseFloat(e.weight) || 0)), 0);
 
-      document.getElementById("weightTotal").innerText = formatNum(totalWeight) + "%";
-
-      const warn = document.getElementById("weightWarning");
+      $("weightTotal").innerText = formatNum(totalWeight) + "%";
+      const warn = $("weightWarning");
       warn.style.display = "block";
 
       if (exams.length < 2) {
-        document.getElementById("weightedAvg").innerText = "--";
+        $("weightedAvg").innerText = "--";
         warn.innerText = "Añade mínimo 2 exámenes para calcular la media.";
         return;
       }
 
       const avg = totalWeight > 0 ? (weightedSum / totalWeight) : 0;
-      document.getElementById("weightedAvg").innerText = formatNum(avg);
+      $("weightedAvg").innerText = formatNum(avg);
 
       const diff = 100 - totalWeight;
       if (Math.abs(diff) > 0.001) {
@@ -1263,73 +1117,71 @@ initFirebase();
 
     loadExams();
 
-    // TIEMPO
+    // ============================================================
+    // TIEMPO (Open-Meteo)
+    // ============================================================
     const WX_LOC_KEY  = "rutox_weather_loc_v1";
     const WX_LAST_KEY = "rutox_weather_last_v1";
     const WX_TZ_KEY   = "rutox_weather_tz_v1";
     let wxTimeZone = "Europe/Madrid";
     let wxClockTimer = null;
-    
+
     function wxPrettyPlace(label){
       if (!label) return "—";
-      // deja solo el nombre principal (ej: "Barcelona" de "Barcelona, Cataluña, España")
       return String(label).split(",")[0].trim() || label;
     }
-    
+
     function wxSaveTZ(tz){
       if (!tz) return;
       wxTimeZone = tz;
       try { localStorage.setItem(WX_TZ_KEY, tz); } catch {}
       wxStartClock();
     }
-    
+
     function wxLoadTZ(){
       try {
         const tz = localStorage.getItem(WX_TZ_KEY);
         if (tz) wxTimeZone = tz;
       } catch {}
     }
-    
+
     function wxStartClock(){
-      const el = document.getElementById("lobbyClock");
-      const placeEl = document.getElementById("clockPlace");
+      const el = $("lobbyClock");
+      const placeEl = $("clockPlace");
       if (!el || !placeEl) return;
-    
-      // ✅ actualizar lugar SIEMPRE
+
       const loc = wxGetLoc();
       const placeLabel = loc?.label ? wxPrettyPlace(loc.label) : "—";
       placeEl.innerText = placeLabel;
-    
+
       if (wxClockTimer) clearInterval(wxClockTimer);
-    
+
       const fmtTime = new Intl.DateTimeFormat("es-ES", {
         timeZone: wxTimeZone,
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit"
       });
-    
+
       const tick = () => {
         const now = new Date();
         el.querySelector("span").innerText = fmtTime.format(now);
       };
-    
+
       tick();
       wxClockTimer = setInterval(tick, 1000);
     }
 
-
-
     function wxErr(msg) {
-      const el = document.getElementById("wxModalError");
+      const el = $("wxModalError");
       if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
       el.style.display = "block";
       el.innerText = msg;
     }
 
     function wxSetTop(main, sub){
-      document.getElementById("wxTopMain").innerText = main || "—";
-      document.getElementById("wxTopSub").innerText = sub || "Pulsa para elegir";
+      $("wxTopMain").innerText = main || "—";
+      $("wxTopSub").innerText = sub || "Pulsa para elegir";
       try { localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() })); } catch {}
     }
 
@@ -1369,8 +1221,6 @@ initFirebase();
     async function wxGeocodeCity(name){
       const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
       const data = await wxFetchJson(url);
-      
-
       const hit = data?.results?.[0];
       if (!hit) return null;
       return {
@@ -1389,7 +1239,6 @@ initFirebase();
         `&timezone=auto`;
 
       const data = await wxFetchJson(url);
-      // sincroniza reloj con la zona horaria real del sitio
       if (data && data.timezone) wxSaveTZ(data.timezone);
 
       const c = data.current || {};
@@ -1401,7 +1250,6 @@ initFirebase();
       wxSetTop(main, sub);
       wxStartClock();
 
-
       if (save) wxSaveLoc({ type:"city", label: sub, lat, lon });
     }
 
@@ -1411,9 +1259,8 @@ initFirebase();
       if (!hit) { wxErr("No encontré esa ciudad."); return; }
       await wxLoadByCoords(hit.lat, hit.lon, hit.label, {save:true});
       wxCloseModal();
-      wxStartClock(); // ✅
+      wxStartClock();
     }
-
 
     function wxUseMyLocation(){
       wxErr("");
@@ -1447,29 +1294,29 @@ initFirebase();
 
     function wxOpenModal(){
       wxErr("");
-      const modal = document.getElementById("wxModal");
+      const modal = $("wxModal");
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
 
       const loc = wxGetLoc();
-      const input = document.getElementById("wxCityInput");
+      const input = $("wxCityInput");
       input.value = (loc && loc.type === "city" && loc.label) ? loc.label.split(",")[0] : "";
       setTimeout(() => input.focus(), 50);
     }
 
     function wxCloseModal(){
-      const modal = document.getElementById("wxModal");
+      const modal = $("wxModal");
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
     }
 
     function wxQuickCity(name){
-      document.getElementById("wxCityInput").value = name;
+      $("wxCityInput").value = name;
       wxSaveCityFromModal();
     }
 
     function wxSaveCityFromModal(){
-      const city = (document.getElementById("wxCityInput").value || "").trim();
+      const city = ($("wxCityInput").value || "").trim();
       if (!city) { wxUseMyLocation(); return; }
       wxSetCity(city);
     }
@@ -1488,27 +1335,34 @@ initFirebase();
     wxStartClock();
     wxAutoUpdate();
 
-
-    // WISHLIST
+    // ============================================================
+    // WISHLIST (Firestore collection: productos)
+    // ============================================================
     let ordenAscendente = true;
     let filtro = "all";
     let lastSnap = null;
+    let wishlistUnsub = null;
 
     function setFiltro(mode) {
       filtro = mode;
-      document.getElementById("fAll").classList.toggle("active", mode === "all");
-      document.getElementById("fChecked").classList.toggle("active", mode === "checked");
-      document.getElementById("fUnchecked").classList.toggle("active", mode === "unchecked");
+      $("fAll").classList.toggle("active", mode === "all");
+      $("fChecked").classList.toggle("active", mode === "checked");
+      $("fUnchecked").classList.toggle("active", mode === "unchecked");
       if (lastSnap) renderizar(lastSnap);
     }
 
     function cargarProductos() {
-      db.collection("productos")
+      if (!db) return;
+      if (wishlistUnsub) { wishlistUnsub(); wishlistUnsub = null; }
+
+      wishlistUnsub = db.collection("productos")
         .orderBy("price", ordenAscendente ? "asc" : "desc")
         .onSnapshot((snap) => {
           lastSnap = snap;
           renderizar(snap);
-        }, (err) => console.error(err));
+        }, (err) => {
+          console.error(err);
+        });
     }
 
     function toggleOrden() {
@@ -1527,7 +1381,7 @@ initFirebase();
     }
 
     function renderizar(snap) {
-      const container = document.getElementById("productContainer");
+      const container = $("productContainer");
       let html = "";
       let total = 0;
       let count = 1;
@@ -1552,32 +1406,35 @@ initFirebase();
           </div>
         ` : "";
 
+        const img = (p.image || "").trim();
+
         html += `
           <div class="card ${checked ? "checked" : ""}" data-tilt data-tilt-max="8">
             ${actions}
-            <img src="${p.image}" onerror="this.src='https://via.placeholder.com/400x300/020617/fff?text=Sin+Imagen'">
+            <img src="${img ? img : "https://placehold.co/400x300/020617/ffffff?text=Sin+Imagen"}"
+                 onerror="this.src='https://placehold.co/400x300/020617/ffffff?text=Sin+Imagen'">
             <div class="card-name">${escapeHtml(name)}</div>
             <div class="card-price">${parseFloat(p.price || 0).toFixed(2)}€</div>
-            <a href="${p.link}" target="_blank" class="btn-link">VER DETALLES</a>
+            <a href="${p.link || "#"}" target="_blank" class="btn-link">VER DETALLES</a>
           </div>
         `;
         count++;
       });
 
       container.innerHTML = html;
-      document.getElementById("totalPrice").innerText = total.toFixed(2) + " €";
+      $("totalPrice").innerText = total.toFixed(2) + " €";
       if (window.VanillaTilt) VanillaTilt.init(document.querySelectorAll("#productContainer .card"));
     }
 
     async function guardar() {
       if (!requireAdminOrOpen()) return;
 
-      const id = document.getElementById("editId").value;
+      const id = $("editId").value;
       const data = {
-        name: document.getElementById("name").value,
-        price: parseFloat(document.getElementById("price").value) || 0,
-        link: document.getElementById("link").value,
-        image: document.getElementById("image").value
+        name: ($("name").value || "").trim(),
+        price: parseFloat($("price").value) || 0,
+        link: ($("link").value || "").trim(),
+        image: ($("image").value || "").trim()
       };
       if (!id) data.checked = false;
 
@@ -1595,13 +1452,13 @@ initFirebase();
       if (!requireAdminOrOpen()) return;
 
       db.collection("productos").doc(id).get().then(doc => {
-        const p = doc.data();
-        document.getElementById("name").value = p.name || "";
-        document.getElementById("price").value = p.price || 0;
-        document.getElementById("link").value = p.link || "";
-        document.getElementById("image").value = p.image || "";
-        document.getElementById("editId").value = id;
-        document.getElementById("saveBtn").innerText = "ACTUALIZAR";
+        const p = doc.data() || {};
+        $("name").value = p.name || "";
+        $("price").value = p.price || 0;
+        $("link").value = p.link || "";
+        $("image").value = p.image || "";
+        $("editId").value = id;
+        $("saveBtn").innerText = "ACTUALIZAR";
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     }
@@ -1619,43 +1476,37 @@ initFirebase();
     }
 
     function limpiar() {
-      ["name", "price", "link", "image", "editId"].forEach(i => document.getElementById(i).value = "");
-      document.getElementById("saveBtn").innerText = "GUARDAR";
+      ["name", "price", "link", "image", "editId"].forEach(i => $(i).value = "");
+      $("saveBtn").innerText = "GUARDAR";
     }
 
-    // init wishlist
+    // Cargar wishlist
     cargarProductos();
 
-    // estado admin inicial
-    applyAdminUI();
-    
-   // =======================
-// POMODORO + ANIMACIONES
-// =======================
+    // ============================================================
+    // POMODORO + ANIMACIONES
+    // ============================================================
     let pomoTimer = null;
     let pomoSeconds = 25 * 60;
     let pomoWorking = true;
     let pomoCount = 0;
     let lastSecond = null;
-    
-    function $(id){ return document.getElementById(id); }
-    
+
     function fmtMMSS(s){
       const min = Math.floor(s / 60).toString().padStart(2, "0");
       const sec = (s % 60).toString().padStart(2, "0");
       return `${min}:${sec}`;
     }
-    
+
     function pulseTime(){
       const t = $("pomoTime");
       if (!t) return;
       t.classList.remove("pulse");
-      // reflow para reiniciar anim
       void t.offsetWidth;
       t.classList.add("pulse");
       setTimeout(() => t.classList.remove("pulse"), 220);
     }
-    
+
     function flashBadges(){
       const a = $("pomoState"), b = $("pomoCount");
       [a,b].forEach(el => {
@@ -1666,7 +1517,7 @@ initFirebase();
         setTimeout(() => el.classList.remove("pomo-flash"), 700);
       });
     }
-    
+
     function bounceCount(){
       const c = $("pomoCount");
       if (!c) return;
@@ -1675,33 +1526,31 @@ initFirebase();
       c.classList.add("pomo-bounce");
       setTimeout(() => c.classList.remove("pomo-bounce"), 520);
     }
-    
+
     function updatePomoUI({phaseChanged=false, countChanged=false} = {}){
       $("pomoTime").innerText = fmtMMSS(pomoSeconds);
-    
+
       const state = $("pomoState");
       state.innerText = pomoWorking ? "Trabajo" : "Descanso";
       state.classList.toggle("work", pomoWorking);
       state.classList.toggle("break", !pomoWorking);
-    
+
       $("pomoCount").innerText = `🍅 ${pomoCount}`;
-    
-      // animaciones
+
       if (lastSecond !== pomoSeconds) pulseTime();
       lastSecond = pomoSeconds;
-    
+
       if (phaseChanged) flashBadges();
       if (countChanged) bounceCount();
     }
-    
+
     function pomoTick(){
       if (pomoSeconds > 0) {
         pomoSeconds--;
         updatePomoUI();
         return;
       }
-    
-      // Cambio de fase
+
       if (pomoWorking) {
         pomoWorking = false;
         pomoSeconds = 5 * 60;
@@ -1713,19 +1562,19 @@ initFirebase();
         updatePomoUI({phaseChanged:true});
       }
     }
-    
+
     function pomoStart(){
       if (pomoTimer) return;
-      flashBadges(); // feedback al iniciar
+      flashBadges();
       pomoTimer = setInterval(pomoTick, 1000);
     }
-    
+
     function pomoPause(){
       clearInterval(pomoTimer);
       pomoTimer = null;
-      flashBadges(); // feedback al pausar
+      flashBadges();
     }
-    
+
     function pomoReset(){
       pomoPause();
       pomoWorking = true;
@@ -1734,257 +1583,251 @@ initFirebase();
       lastSecond = null;
       updatePomoUI({phaseChanged:true, countChanged:true});
     }
-    
-    // Init
+
     updatePomoUI({phaseChanged:true});
 
- // =======================
-// CALENDARIO (Firebase Auth + Firestore) ✅ GitHub Pages compatible
-// =======================
-let calCalendar = null;
-let calFilter = "all";
-let calUnsub = null;
+    // ============================================================
+    // CALENDARIO (Firebase Auth + Firestore) ✅ GitHub Pages compatible
+    // Estructura: users/{uid}/events/{eventId}
+    // ============================================================
+    let calCalendar = null;
+    let calFilter = "all";
+    let calUnsub = null;
 
-function calMsg(text){
-  const el = document.getElementById("calMsg");
-  if (el) el.innerText = text || "";
-}
-
-function calSetUIAuthed(authed){
-  const filters = document.getElementById("calFilters");
-  const wrap = document.getElementById("calWrap");
-  const logoutBtn = document.getElementById("calLogoutBtn");
-
-  if (authed) {
-    filters.style.display = "flex";
-    wrap.style.display = "block";
-    logoutBtn.style.display = "inline-flex";
-  } else {
-    filters.style.display = "none";
-    wrap.style.display = "none";
-    logoutBtn.style.display = "none";
-  }
-}
-
-function calColorByType(type){
-  if (type === "exam") return "#b44545";
-  if (type === "homework") return "#3b5fb8";
-  return "#3d8a5a";
-}
-
-function calInitCalendarIfNeeded(){
-  if (calCalendar) return;
-
-  const el = document.getElementById("calView");
-  calCalendar = new FullCalendar.Calendar(el, {
-    initialView: "dayGridMonth",
-    height: "auto",
-    headerToolbar: {
-      left: "prev,next today",
-      center: "title",
-      right: "dayGridMonth,timeGridWeek,listWeek"
-    },
-    dateClick: (info) => {
-      calOpenCreate(new Date(info.dateStr + "T09:00:00"));
-    },
-    eventClick: async (info) => {
-      const raw = info.event.extendedProps.__raw;
-      await calOpenEdit(raw);
+    function calMsg(text){
+      const el = $("calMsg");
+      if (el) el.innerText = text || "";
     }
-  });
 
-  calCalendar.render();
-}
+    function calSetUIAuthed(authed){
+      const filters = $("calFilters");
+      const wrap = $("calWrap");
+      const logoutBtn = $("calLogoutBtn");
 
-function calSetFilter(type, btn){
-  calFilter = type;
-  document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  calLoadEvents(); // recarga desde Firestore
-}
-
-// ---- Auth Firebase ----
-async function calRegisterFb(){
-  calMsg("");
-  const email = (document.getElementById("calEmail").value || "").trim();
-  const pass  = (document.getElementById("calPass").value || "").trim();
-  if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-  try {
-    await auth.createUserWithEmailAndPassword(email, pass);
-    calMsg("Cuenta creada ✅");
-  } catch(e){
-    calMsg(friendlyAuthError(e));
-  }
-}
-
-async function calLoginFb(){
-  calMsg("");
-  const email = (document.getElementById("calEmail").value || "").trim();
-  const pass  = (document.getElementById("calPass").value || "").trim();
-  if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-  try {
-    await auth.signInWithEmailAndPassword(email, pass);
-    calMsg("Sesión iniciada ✅");
-  } catch(e){
-    calMsg(friendlyAuthError(e));
-  }
-}
-
-async function calLogoutFb(){
-  calMsg("");
-  try {
-    await auth.signOut();
-    calMsg("Sesión cerrada.");
-  } catch(e){
-    calMsg("No pude cerrar sesión.");
-  }
-}
-
-// ---- Firestore ----
-// Estructura: users/{uid}/events/{eventId}
-function calEventsRef(){
-  const u = auth.currentUser;
-  if (!u) return null;
-  return db.collection("users").doc(u.uid).collection("events");
-}
-
-function calClearListener(){
-  if (calUnsub) { calUnsub(); calUnsub = null; }
-}
-
-function calLoadEvents(){
-  if (!calCalendar) return;
-  const ref = calEventsRef();
-  if (!ref) return;
-
-  calClearListener();
-
-  calCalendar.removeAllEvents();
-
-  calUnsub = ref.onSnapshot((snap) => {
-    calCalendar.removeAllEvents();
-
-    snap.forEach((doc) => {
-      const r = doc.data();
-      if (!r) return;
-
-      // filtro tipo
-      if (calFilter !== "all" && r.type !== calFilter) return;
-
-      const c = calColorByType(r.type);
-      calCalendar.addEvent({
-        id: doc.id,
-        title: r.title,
-        start: r.start,         // ISO string
-        end: r.end || null,     // ISO string opcional
-        backgroundColor: c,
-        borderColor: c,
-        extendedProps: { __raw: { id: doc.id, ...r } }
-      });
-    });
-
-    setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 50);
-  }, (err) => {
-    console.error(err);
-    calMsg("Error cargando eventos (revisa reglas de Firestore).");
-  });
-}
-
-async function calOpenCreate(defaultDate = new Date()){
-  const u = auth.currentUser;
-  if (!u) return calMsg("Haz login primero.");
-
-  const title = prompt("Título del evento (ej: Examen mates):");
-  if (!title) return;
-
-  const type = prompt("Tipo: exam | homework | activity", "exam") || "exam";
-  const startLocal = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(defaultDate));
-  if (!startLocal) return;
-
-  const endLocal = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)", "");
-  const desc = prompt("Descripción (opcional):", "") || "";
-
-  try{
-    await calEventsRef().add({
-      title: title.trim(),
-      type,
-      start: calIsoFromLocalInput(startLocal),
-      end: endLocal ? calIsoFromLocalInput(endLocal) : null,
-      description: desc.trim() || null,
-      createdAt: new Date().toISOString()
-    });
-    calMsg("Evento creado ✅");
-  } catch(e){
-    console.error(e);
-    calMsg("No pude guardar el evento (revisa reglas).");
-  }
-}
-
-async function calOpenEdit(ev){
-  const u = auth.currentUser;
-  if (!u) return;
-
-  const newTitle = prompt("Título:", ev.title);
-  if (!newTitle) return;
-
-  const newType = prompt("Tipo: exam | homework | activity", ev.type) || ev.type;
-  const newStart = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(new Date(ev.start)));
-  if (!newStart) return;
-
-  const newEnd = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)",
-                        ev.end ? calToLocalInputValue(new Date(ev.end)) : "");
-  const newDesc = prompt("Descripción (opcional):", ev.description || "") || "";
-
-  const del = confirm("¿Quieres borrar este evento?");
-  try{
-    const ref = calEventsRef().doc(ev.id);
-    if (del) {
-      await ref.delete();
-      calMsg("Evento borrado ✅");
-    } else {
-      await ref.update({
-        title: newTitle.trim(),
-        type: newType,
-        start: calIsoFromLocalInput(newStart),
-        end: newEnd ? calIsoFromLocalInput(newEnd) : null,
-        description: newDesc.trim() || null,
-        updatedAt: new Date().toISOString()
-      });
-      calMsg("Evento actualizado ✅");
+      if (authed) {
+        filters.style.display = "flex";
+        wrap.style.display = "block";
+        logoutBtn.style.display = "inline-flex";
+      } else {
+        filters.style.display = "none";
+        wrap.style.display = "none";
+        logoutBtn.style.display = "none";
+      }
     }
-  } catch(e){
-    console.error(e);
-    calMsg("No pude actualizar/borrar (revisa reglas).");
-  }
-}
 
-// Helpers de fecha (los necesitas)
-function calToLocalInputValue(date) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-function calIsoFromLocalInput(value){
-  const d = new Date(value);
-  return d.toISOString();
-}
+    function calColorByType(type){
+      if (type === "exam") return "#b44545";
+      if (type === "homework") return "#3b5fb8";
+      return "#3d8a5a";
+    }
 
-// ✅ Cuando cambie el usuario Firebase, activamos calendario
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    calSetUIAuthed(true);
-    calInitCalendarIfNeeded();
-    calLoadEvents();
-    calMsg("Sesión iniciada ✅");
-  } else {
-    calClearListener();
-    if (calCalendar) { calCalendar.removeAllEvents(); }
-    calSetUIAuthed(false);
-  }
-});
+    function calInitCalendarIfNeeded(){
+      if (calCalendar) return;
 
+      const el = $("calView");
+      calCalendar = new FullCalendar.Calendar(el, {
+        initialView: "dayGridMonth",
+        height: "auto",
+        headerToolbar: {
+          left: "prev,next today",
+          center: "title",
+          right: "dayGridMonth,timeGridWeek,listWeek"
+        },
+        dateClick: (info) => {
+          calOpenCreate(new Date(info.dateStr + "T09:00:00"));
+        },
+        eventClick: async (info) => {
+          const raw = info.event.extendedProps.__raw;
+          await calOpenEdit(raw);
+        }
+      });
 
+      calCalendar.render();
+    }
+
+    function calSetFilter(type, btn){
+      calFilter = type;
+      document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      calLoadEvents();
+    }
+
+    // ---- Auth Firebase ----
+    async function calRegisterFb(){
+      calMsg("");
+      const email = ($("calEmail").value || "").trim();
+      const pass  = ($("calPass").value || "").trim();
+      if (!email || !pass) return calMsg("Pon email y contraseña.");
+
+      try {
+        await auth.createUserWithEmailAndPassword(email, pass);
+        calMsg("Cuenta creada ✅");
+      } catch(e){
+        calMsg(friendlyAuthError(e));
+      }
+    }
+
+    async function calLoginFb(){
+      calMsg("");
+      const email = ($("calEmail").value || "").trim();
+      const pass  = ($("calPass").value || "").trim();
+      if (!email || !pass) return calMsg("Pon email y contraseña.");
+
+      try {
+        await auth.signInWithEmailAndPassword(email, pass);
+        calMsg("Sesión iniciada ✅");
+      } catch(e){
+        calMsg(friendlyAuthError(e));
+      }
+    }
+
+    async function calLogoutFb(){
+      calMsg("");
+      try {
+        await auth.signOut();
+        calMsg("Sesión cerrada.");
+      } catch(e){
+        calMsg("No pude cerrar sesión.");
+      }
+    }
+
+    // ---- Firestore ----
+    function calEventsRef(){
+      const u = auth.currentUser;
+      if (!u) return null;
+      return db.collection("users").doc(u.uid).collection("events");
+    }
+
+    function calClearListener(){
+      if (calUnsub) { calUnsub(); calUnsub = null; }
+    }
+
+    function calLoadEvents(){
+      if (!calCalendar) return;
+      const ref = calEventsRef();
+      if (!ref) return;
+
+      calClearListener();
+      calCalendar.removeAllEvents();
+
+      calUnsub = ref.onSnapshot((snap) => {
+        calCalendar.removeAllEvents();
+
+        snap.forEach((doc) => {
+          const r = doc.data();
+          if (!r) return;
+          if (calFilter !== "all" && r.type !== calFilter) return;
+
+          const c = calColorByType(r.type);
+          calCalendar.addEvent({
+            id: doc.id,
+            title: r.title,
+            start: r.start,
+            end: r.end || null,
+            backgroundColor: c,
+            borderColor: c,
+            extendedProps: { __raw: { id: doc.id, ...r } }
+          });
+        });
+
+        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 50);
+      }, (err) => {
+        console.error(err);
+        calMsg("Error cargando eventos (revisa reglas de Firestore).");
+      });
+    }
+
+    async function calOpenCreate(defaultDate = new Date()){
+      const u = auth.currentUser;
+      if (!u) return calMsg("Haz login primero.");
+
+      const title = prompt("Título del evento (ej: Examen mates):");
+      if (!title) return;
+
+      const type = prompt("Tipo: exam | homework | activity", "exam") || "exam";
+      const startLocal = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(defaultDate));
+      if (!startLocal) return;
+
+      const endLocal = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)", "");
+      const desc = prompt("Descripción (opcional):", "") || "";
+
+      try{
+        await calEventsRef().add({
+          title: title.trim(),
+          type,
+          start: calIsoFromLocalInput(startLocal),
+          end: endLocal ? calIsoFromLocalInput(endLocal) : null,
+          description: desc.trim() || null,
+          createdAt: new Date().toISOString()
+        });
+        calMsg("Evento creado ✅");
+      } catch(e){
+        console.error(e);
+        calMsg("No pude guardar el evento (revisa reglas).");
+      }
+    }
+
+    async function calOpenEdit(ev){
+      const u = auth.currentUser;
+      if (!u) return;
+
+      const newTitle = prompt("Título:", ev.title);
+      if (!newTitle) return;
+
+      const newType = prompt("Tipo: exam | homework | activity", ev.type) || ev.type;
+      const newStart = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(new Date(ev.start)));
+      if (!newStart) return;
+
+      const newEnd = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)",
+                            ev.end ? calToLocalInputValue(new Date(ev.end)) : "");
+      const newDesc = prompt("Descripción (opcional):", ev.description || "") || "";
+
+      const del = confirm("¿Quieres borrar este evento?");
+      try{
+        const ref = calEventsRef().doc(ev.id);
+        if (del) {
+          await ref.delete();
+          calMsg("Evento borrado ✅");
+        } else {
+          await ref.update({
+            title: newTitle.trim(),
+            type: newType,
+            start: calIsoFromLocalInput(newStart),
+            end: newEnd ? calIsoFromLocalInput(newEnd) : null,
+            description: newDesc.trim() || null,
+            updatedAt: new Date().toISOString()
+          });
+          calMsg("Evento actualizado ✅");
+        }
+      } catch(e){
+        console.error(e);
+        calMsg("No pude actualizar/borrar (revisa reglas).");
+      }
+    }
+
+    function calToLocalInputValue(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    }
+    function calIsoFromLocalInput(value){
+      const d = new Date(value);
+      return d.toISOString();
+    }
+
+    // ============================================================
+    // CLOCK + PLACE
+    // ============================================================
+    // Si no hay loc guardada, por defecto Barcelona (para que no salga "—")
+    (function seedDefaultCity(){
+      const loc = wxGetLoc();
+      if (loc) return;
+      wxSaveLoc({ type:"city", label:"Barcelona, España", lat: 41.3874, lon: 2.1686 });
+    })();
+
+    // ============================================================
+    // FIN: estado visual inicial
+    // ============================================================
+    applyAdminUI();
   </script>
 </body>
 </html>
