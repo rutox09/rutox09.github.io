@@ -807,13 +807,11 @@
 
   <script>
     // ============================================================
-    // FIX GitHub Pages:
-    // Si caemos en /__/auth/handler, volvemos a la carpeta correcta del repo
-    // (evita "The requested action is invalid." al abrir el handler suelto)
+    // Si por error caemos en /__/auth/handler EN GitHub Pages, volvemos a /
+    // (normalmente el handler es del dominio web.app / firebaseapp.com)
     // ============================================================
-    if (location.pathname.includes("/__/auth/handler")) {
-      const base = location.origin + location.pathname.split("/__/auth/handler")[0] + "/";
-      location.replace(base);
+    if (location.pathname.startsWith("/__/auth/handler")) {
+      location.replace("/");
     }
 
     // ============================================================
@@ -843,18 +841,17 @@
     }
 
     // ============================================================
-    // FIREBASE INIT (CDN v8)
+    // FIREBASE INIT (CDN v8)  ✅ IMPORTANTE: authDomain = web.app
     // ============================================================
-     const firebaseConfig = {
-    apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-    authDomain: "cosas-af46c.web.app",
-    projectId: "cosas-af46c",
-    storageBucket: "cosas-af46c.firebasestorage.app",
-    messagingSenderId: "145996030094",
-    appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
-    measurementId: "G-YCBY7FRLQW"
-  };
-
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
+      authDomain: "cosas-af46c.web.app",            /* ✅ CAMBIADO */
+      projectId: "cosas-af46c",
+      storageBucket: "cosas-af46c.firebasestorage.app",
+      messagingSenderId: "145996030094",
+      appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
+      measurementId: "G-YCBY7FRLQW"
+    };
 
     let db = null;
     let auth = null;
@@ -876,33 +873,40 @@
       return `Error: ${code || (e?.message || "desconocido")}`;
     }
 
-    function initFirebase() {
+    function calMsg(text){
+      const el = $("calMsg");
+      if (el) el.innerText = text || "";
+    }
+
+    // ✅ initFirebase correcto (1 solo getRedirectResult)
+    async function initFirebase() {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       try { firebase.analytics(); } catch(e) {}
 
       db = firebase.firestore();
       auth = firebase.auth();
 
-      // ✅ Persistencia local (no te pide login cada vez)
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => console.log("Auth persistence: LOCAL"))
-        .catch((e) => console.warn("Persistence error:", e));
+      // ✅ Persistencia local SIEMPRE
+      try {
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        console.log("Auth persistence: LOCAL");
+      } catch (e) {
+        console.warn("Persistence error:", e);
+      }
 
-      // ✅ SOLO UNA VEZ: Capturar retorno de Google Redirect
-      auth.getRedirectResult()
-        .then((res) => {
-          if (res && res.user) {
-            calMsg("Sesión iniciada con Google ✅");
-          }
-        })
-        .catch((e) => {
-          if (e?.code) {
-            console.warn("Redirect result error:", e);
-            calMsg(friendlyAuthError(e));
-          }
-        });
+      // ✅ Recoger resultado del redirect (UNA SOLA VEZ)
+      try {
+        const res = await auth.getRedirectResult();
+        if (res && res.user) {
+          console.log("Redirect OK:", res.user.email || res.user.uid);
+          calMsg("Sesión iniciada con Google ✅");
+        }
+      } catch (e) {
+        console.warn("Redirect result error:", e);
+        if (e?.code) calMsg(friendlyAuthError(e));
+      }
 
-      // Listener central
+      // ✅ Listener central
       auth.onAuthStateChanged((user) => {
         console.log("Auth state:", user ? (user.email || user.uid) : "NO USER");
 
@@ -916,12 +920,18 @@
           calSetUIAuthed(true);
           calInitCalendarIfNeeded();
           calLoadEvents();
-          calMsg("Sesión iniciada ✅");
+          if (!($("calMsg")?.innerText || "").includes("Google")) calMsg("Sesión iniciada ✅");
         } else {
           calClearListener();
           if (calCalendar) calCalendar.removeAllEvents();
           calSetUIAuthed(false);
-          calMsg("");
+          // Si venimos de un redirect y no hay user, mostramos algo útil
+          if (sessionStorage.getItem("rutox_google_redirect") === "1") {
+            sessionStorage.removeItem("rutox_google_redirect");
+            calMsg("No se pudo iniciar sesión. Revisa dominios autorizados o bloqueos de cookies.");
+          } else {
+            calMsg("");
+          }
         }
       });
     }
@@ -1037,7 +1047,7 @@
       const m = $("adminModal");
       m.classList.add("open");
       m.setAttribute("aria-hidden", "false");
-      const user = auth.currentUser;
+      const user = auth?.currentUser;
       $("adminLoggedBox").style.display = user ? "block" : "none";
       $("adminLoginBox").style.display = user ? "none" : "block";
       setTimeout(() => { if (!user) $("adminEmail").focus(); }, 50);
@@ -1571,7 +1581,7 @@
       if (!requireAdminOrOpen()) return;
       if (!confirm("¿Borrar este producto?")) return;
 
-      try{
+      try {
         await db.collection("productos").doc(id).delete();
       } catch (e) {
         alert("No tienes permisos (revisa Rules).");
@@ -1593,11 +1603,6 @@
     let calCalendar = null;
     let calFilter = "all";
     let calUnsub = null;
-
-    function calMsg(text){
-      const el = $("calMsg");
-      if (el) el.innerText = text || "";
-    }
 
     function calSetUIAuthed(authed){
       const filters = $("calFilters");
@@ -1701,14 +1706,22 @@
       }
     }
 
-    // ✅ Google Redirect (más estable en GitHub Pages)
+    // ✅ Google Redirect (estable para GitHub Pages)
     async function calLoginGoogle(){
       calMsg("");
       try{
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
+
+        // Marcar que venimos de redirect (para mostrar mensaje si vuelve sin user)
+        sessionStorage.setItem("rutox_google_redirect", "1");
+
+        // Asegurar persistencia antes de redirigir
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
         await auth.signInWithRedirect(provider);
       } catch(e){
+        sessionStorage.removeItem("rutox_google_redirect");
         console.error(e);
         calMsg(friendlyAuthError(e));
       }
@@ -1918,9 +1931,11 @@
     applyAdminUI();
   </script>
 
-  <!-- IMPORTANTE (Firebase Console):
-    Authentication → Sign-in method → Google → Enable
-    Authentication → Settings → Authorized domains → añade: rutox09.github.io
+  <!-- RECUERDA en Firebase Console:
+    Authentication → Settings → Authorized domains:
+      - rutox09.github.io
+      - cosas-af46c.web.app
+      - cosas-af46c.firebaseapp.com
   -->
 </body>
 </html>
