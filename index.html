@@ -455,6 +455,13 @@
     .small { margin-top:10px; font-weight:800; font-size:0.85rem; opacity:0.86; }
     .err { margin-top:10px; font-weight:900; color:var(--neon); display:none; }
 
+    /* ===== Calendar Event Modal polish ===== */
+    #calEventModal .chip.active {
+      background: rgba(99,102,241,0.85);
+      border-color: rgba(99,102,241,0.9);
+    }
+    #calEventErr.show { display:block; }
+
     /* ===== Pomodoro Animations ===== */
     .pomo-wrap { display:flex; flex-direction:column; align-items:center; gap: 12px; }
     #pomoTime{ display:inline-block; will-change: transform, filter; transform-origin: center; }
@@ -485,6 +492,18 @@
       0%   { transform: translateY(0) scale(1); }
       45%  { transform: translateY(-8px) scale(1.06); }
       100% { transform: translateY(0) scale(1); }
+    }
+
+    /* textarea del modal calendario */
+    textarea{
+      width:100%;
+      background:#000;
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:15px;
+      color:white;
+      padding:12px 14px;
+      font-family:inherit;
+      resize:vertical;
     }
   </style>
 </head>
@@ -590,6 +609,57 @@
       </div>
 
       <div id="adminErr" class="err"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CALENDARIO (Crear/Editar evento) -->
+  <div id="calEventModal" class="modal" aria-hidden="true">
+    <div class="overlay" onclick="calEventClose()"></div>
+
+    <div class="modalCard" style="width:min(620px,100%);">
+      <div class="modalTop">
+        <div class="modalTitle" id="calEventTitle">Nuevo evento</div>
+        <button class="modalClose" onclick="calEventClose()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="small">Título</div>
+      <input id="calE_title" type="text" placeholder="Ej: Examen de mates" />
+
+      <div class="small" style="margin-top:12px;">Tipo</div>
+      <div class="row" style="margin-top:8px;">
+        <button class="chip" id="calType_exam" onclick="calPickType('exam')">🧪 Examen</button>
+        <button class="chip" id="calType_homework" onclick="calPickType('homework')">📚 Deberes</button>
+        <button class="chip" id="calType_activity" onclick="calPickType('activity')">🏃 Actividad</button>
+      </div>
+
+      <div class="grid-inputs" style="margin-top:12px;">
+        <div>
+          <div class="small">Inicio</div>
+          <input id="calE_start" type="datetime-local" />
+        </div>
+        <div>
+          <div class="small">Fin (opcional)</div>
+          <input id="calE_end" type="datetime-local" />
+        </div>
+      </div>
+
+      <div class="small" style="margin-top:12px;">Descripción (opcional)</div>
+      <textarea id="calE_desc" rows="3" placeholder="Temas, recordatorios..."></textarea>
+
+      <div class="row" style="margin-top:14px;">
+        <button class="btnPrimary" onclick="calEventSave()" id="calEventSaveBtn">Guardar</button>
+        <button class="btnGhost" onclick="calEventClose()">Cancelar</button>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button class="chip" id="calEventDeleteBtn" onclick="calEventDelete()"
+                style="display:none; border-color:rgba(255,0,0,0.25);">
+          🗑️ Eliminar
+        </button>
+        <div class="small" id="calEventHint" style="margin-left:auto; opacity:.85; font-weight:800;"></div>
+      </div>
+
+      <div id="calEventErr" class="err"></div>
     </div>
   </div>
 
@@ -733,7 +803,7 @@
         <button class="filter-btn" onclick="calSetFilter('exam', this)">Exámenes</button>
         <button class="filter-btn" onclick="calSetFilter('homework', this)">Deberes</button>
         <button class="filter-btn" onclick="calSetFilter('activity', this)">Actividades</button>
-        <button class="order-btn" onclick="calOpenCreate()">＋ Añadir</button>
+        <button class="order-btn" onclick="calOpenCreateModal()">＋ Añadir</button>
       </div>
 
       <!-- Calendario -->
@@ -829,6 +899,7 @@
     function openSection(id) {
       wxCloseModal();
       adminCloseModal();
+      calEventClose(); // ✅
 
       $("lobby").style.display = "none";
       $("shareFab").style.display = "none";
@@ -842,13 +913,14 @@
       // FullCalendar necesita updateSize si lo abres oculto
       if (id === "calendar") {
         calInitCalendarIfNeeded();
-        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 100);
+        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 120);
       }
     }
 
     function goHome() {
       wxCloseModal();
       adminCloseModal();
+      calEventClose(); // ✅
 
       document.querySelectorAll(".section").forEach(s => s.style.display = "none");
       $("lobby").style.display = "grid";
@@ -878,7 +950,11 @@
     }
 
     window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); }
+      if (e.key === "Escape") {
+        wxCloseModal();
+        adminCloseModal();
+        calEventClose();
+      }
     });
 
     // ============================================================
@@ -1634,11 +1710,11 @@
           right: "dayGridMonth,timeGridWeek,listWeek"
         },
         dateClick: (info) => {
-          calOpenCreate(new Date(info.dateStr + "T09:00:00"));
+          calOpenCreateModal(new Date(info.dateStr + "T09:00:00"));
         },
-        eventClick: async (info) => {
+        eventClick: (info) => {
           const raw = info.event.extendedProps.__raw;
-          await calOpenEdit(raw);
+          calOpenEditModal(raw);
         }
       });
 
@@ -1737,74 +1813,7 @@
       });
     }
 
-    async function calOpenCreate(defaultDate = new Date()){
-      const u = auth.currentUser;
-      if (!u) return calMsg("Haz login primero.");
-
-      const title = prompt("Título del evento (ej: Examen mates):");
-      if (!title) return;
-
-      const type = prompt("Tipo: exam | homework | activity", "exam") || "exam";
-      const startLocal = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(defaultDate));
-      if (!startLocal) return;
-
-      const endLocal = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)", "");
-      const desc = prompt("Descripción (opcional):", "") || "";
-
-      try{
-        await calEventsRef().add({
-          title: title.trim(),
-          type,
-          start: calIsoFromLocalInput(startLocal),
-          end: endLocal ? calIsoFromLocalInput(endLocal) : null,
-          description: desc.trim() || null,
-          createdAt: new Date().toISOString()
-        });
-        calMsg("Evento creado ✅");
-      } catch(e){
-        console.error(e);
-        calMsg("No pude guardar el evento (revisa reglas).");
-      }
-    }
-
-    async function calOpenEdit(ev){
-      const u = auth.currentUser;
-      if (!u) return;
-
-      const newTitle = prompt("Título:", ev.title);
-      if (!newTitle) return;
-
-      const newType = prompt("Tipo: exam | homework | activity", ev.type) || ev.type;
-      const newStart = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(new Date(ev.start)));
-      if (!newStart) return;
-
-      const newEnd = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)",
-                            ev.end ? calToLocalInputValue(new Date(ev.end)) : "");
-      const newDesc = prompt("Descripción (opcional):", ev.description || "") || "";
-
-      const del = confirm("¿Quieres borrar este evento?");
-      try{
-        const ref = calEventsRef().doc(ev.id);
-        if (del) {
-          await ref.delete();
-          calMsg("Evento borrado ✅");
-        } else {
-          await ref.update({
-            title: newTitle.trim(),
-            type: newType,
-            start: calIsoFromLocalInput(newStart),
-            end: newEnd ? calIsoFromLocalInput(newEnd) : null,
-            description: newDesc.trim() || null,
-            updatedAt: new Date().toISOString()
-          });
-          calMsg("Evento actualizado ✅");
-        }
-      } catch(e){
-        console.error(e);
-        calMsg("No pude actualizar/borrar (revisa reglas).");
-      }
-    }
-
+    // ===== Helpers fecha =====
     function calToLocalInputValue(date) {
       const pad = (n) => String(n).padStart(2, "0");
       return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -1812,6 +1821,186 @@
     function calIsoFromLocalInput(value){
       const d = new Date(value);
       return d.toISOString();
+    }
+
+    // ============================================================
+    // CALENDARIO: MODAL BONITO (Crear/Editar) ✅
+    // ============================================================
+    let calModalMode = "create"; // "create" | "edit"
+    let calEditingId = null;
+    let calPickedType = "exam";
+
+    function calEventErr(msg){
+      const el = $("calEventErr");
+      if (!el) return;
+      if (!msg) { el.classList.remove("show"); el.innerText = ""; return; }
+      el.classList.add("show");
+      el.innerText = msg;
+    }
+
+    function calEventOpen(){
+      const m = $("calEventModal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+    }
+
+    function calEventClose(){
+      const m = $("calEventModal");
+      if (!m) return;
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      calEventErr("");
+    }
+
+    function calPickType(type){
+      calPickedType = type;
+      ["exam","homework","activity"].forEach(t => {
+        const b = $("calType_" + t);
+        if (b) b.classList.toggle("active", t === type);
+      });
+    }
+
+    function calLocalNowRounded(){
+      const d = new Date();
+      d.setSeconds(0);
+      d.setMilliseconds(0);
+      const m = d.getMinutes();
+      d.setMinutes(Math.round(m/5)*5);
+      return d;
+    }
+
+    function calFillModal(payload){
+      $("calE_title").value = payload.title || "";
+      $("calE_desc").value  = payload.description || "";
+
+      const startD = payload.start ? new Date(payload.start) : calLocalNowRounded();
+      $("calE_start").value = calToLocalInputValue(startD);
+
+      if (payload.end) $("calE_end").value = calToLocalInputValue(new Date(payload.end));
+      else $("calE_end").value = "";
+
+      calPickType(payload.type || "exam");
+    }
+
+    function calSetModalHeader(){
+      const title = $("calEventTitle");
+      const delBtn = $("calEventDeleteBtn");
+      const hint = $("calEventHint");
+      const saveBtn = $("calEventSaveBtn");
+
+      if (calModalMode === "create") {
+        title.innerText = "Nuevo evento";
+        delBtn.style.display = "none";
+        hint.innerText = "Crear en tu calendario";
+        saveBtn.innerText = "Guardar";
+      } else {
+        title.innerText = "Editar evento";
+        delBtn.style.display = "inline-flex";
+        hint.innerText = "Editar o eliminar";
+        saveBtn.innerText = "Guardar cambios";
+      }
+    }
+
+    function calOpenCreateModal(defaultDate = new Date()){
+      const u = auth.currentUser;
+      if (!u) return calMsg("Haz login primero.");
+
+      calModalMode = "create";
+      calEditingId = null;
+      calEventErr("");
+
+      calFillModal({
+        title: "",
+        type: "exam",
+        start: new Date(defaultDate).toISOString(),
+        end: null,
+        description: ""
+      });
+
+      calSetModalHeader();
+      calEventOpen();
+      setTimeout(() => $("calE_title").focus(), 60);
+    }
+
+    function calOpenEditModal(ev){
+      const u = auth.currentUser;
+      if (!u) return calMsg("Haz login primero.");
+
+      calModalMode = "edit";
+      calEditingId = ev.id;
+      calEventErr("");
+
+      calFillModal(ev);
+      calSetModalHeader();
+      calEventOpen();
+      setTimeout(() => $("calE_title").focus(), 60);
+    }
+
+    async function calEventSave(){
+      calEventErr("");
+      const u = auth.currentUser;
+      if (!u) return calEventErr("Haz login primero.");
+
+      const title = ($("calE_title").value || "").trim();
+      const startLocal = $("calE_start").value;
+      const endLocal   = $("calE_end").value;
+      const desc = ($("calE_desc").value || "").trim();
+
+      if (!title) return calEventErr("Pon un título.");
+      if (!startLocal) return calEventErr("Pon una fecha/hora de inicio.");
+
+      const startIso = calIsoFromLocalInput(startLocal);
+      const endIso = endLocal ? calIsoFromLocalInput(endLocal) : null;
+
+      if (endIso && new Date(endIso) < new Date(startIso)) {
+        return calEventErr("El fin no puede ser antes del inicio.");
+      }
+
+      const payload = {
+        title,
+        type: calPickedType || "exam",
+        start: startIso,
+        end: endIso,
+        description: desc || null,
+        updatedAt: new Date().toISOString()
+      };
+
+      try{
+        const ref = calEventsRef();
+        if (!ref) return calEventErr("No hay referencia a Firestore (login).");
+
+        if (calModalMode === "create") {
+          await ref.add({ ...payload, createdAt: new Date().toISOString() });
+          calMsg("Evento creado ✅");
+        } else {
+          await ref.doc(calEditingId).update(payload);
+          calMsg("Evento actualizado ✅");
+        }
+
+        calEventClose();
+      } catch(e){
+        console.error(e);
+        calEventErr("No pude guardar (revisa reglas de Firestore y dominios autorizados).");
+      }
+    }
+
+    async function calEventDelete(){
+      calEventErr("");
+      const u = auth.currentUser;
+      if (!u) return calEventErr("Haz login primero.");
+      if (!calEditingId) return;
+
+      if (!confirm("¿Eliminar este evento?")) return;
+
+      try{
+        const ref = calEventsRef();
+        await ref.doc(calEditingId).delete();
+        calMsg("Evento eliminado ✅");
+        calEventClose();
+      } catch(e){
+        console.error(e);
+        calEventErr("No pude borrar (revisa reglas).");
+      }
     }
 
     // ============================================================
