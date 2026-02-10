@@ -8,11 +8,39 @@
 
   <!-- Favicon emoji universo -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
-
+  
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
 
   <style>
+  /* ===== CALENDAR (FullCalendar) ===== */
+#calView {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 22px;
+  padding: 14px;
+}
+
+/* FullCalendar: textos claros */
+.fc, .fc * { color: #e9eefc; }
+.fc .fc-toolbar-title { font-weight: 900; letter-spacing: .2px; }
+.fc .fc-button {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  border-radius: 14px !important;
+  font-weight: 900 !important;
+}
+.fc .fc-button:hover { filter: brightness(1.15); }
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background: rgba(99,102,241,0.85) !important;
+  border-color: rgba(99,102,241,0.9) !important;
+}
+.fc .fc-daygrid-day-number { opacity: .9; font-weight: 800; }
+.fc .fc-event { border-radius: 10px; border: 0 !important; padding: 2px 6px; }
+
     :root {
       --bg: #020617;
       --glass: rgba(255,255,255,0.08);
@@ -617,6 +645,10 @@
       <div class="app-icon">🍅</div>
       <span>Pomodoro</span>
     </div>
+        <div class="app" onclick="openSection('calendar')">
+        <div class="app-icon">📅</div>
+    <span>Calendario</span>
+    </div>
 
     <div class="app">
       <div class="app-icon">🚧</div>
@@ -807,6 +839,46 @@
         </div>
       </div>
     </div>
+    
+    <!-- CALENDARIO -->
+<div id="calendar" class="section">
+  <button class="back" onclick="goHome()">← Volver</button>
+
+  <div class="container">
+    <h1 class="title" data-aos="fade-down">Calendario</h1>
+
+    <!-- Login/Register dentro de la sección -->
+    <div class="admin-panel" id="calAuthBox" data-aos="fade-up">
+      <div class="grid-inputs">
+        <input id="calEmail" type="email" placeholder="Email" />
+        <input id="calPass" type="password" placeholder="Contraseña" />
+      </div>
+
+      <div class="exam-row">
+        <button class="btn-main" onclick="calLogin()">Entrar</button>
+        <button class="btn-secondary" onclick="calRegister()">Crear cuenta</button>
+        <button class="btn-secondary" onclick="calLogout()" id="calLogoutBtn" style="display:none;">Salir</button>
+      </div>
+
+      <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="controls-row" id="calFilters" data-aos="fade-up" style="display:none;">
+      <button class="filter-btn active" data-type="all" onclick="calSetFilter('all', this)">Todos</button>
+      <button class="filter-btn" data-type="exam" onclick="calSetFilter('exam', this)">Exámenes</button>
+      <button class="filter-btn" data-type="homework" onclick="calSetFilter('homework', this)">Deberes</button>
+      <button class="filter-btn" data-type="activity" onclick="calSetFilter('activity', this)">Actividades</button>
+      <button class="order-btn" onclick="calOpenCreate()">＋ Añadir</button>
+    </div>
+
+    <!-- Calendario -->
+    <div class="admin-panel" data-aos="fade-up" id="calWrap" style="display:none;">
+      <div id="calView"></div>
+    </div>
+  </div>
+</div>
+
 
 
   <!-- LIBRERÍAS -->
@@ -869,6 +941,11 @@
       document.getElementById(id).style.display = "block";
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+    if (id === "calendar" && calToken) {
+        calInitCalendarIfNeeded();
+        calRefetch();
+    }
+
 
     function goHome() {
       wxCloseModal();
@@ -1634,6 +1711,238 @@
     // Init
     updatePomoUI({phaseChanged:true});
 
+    // =======================
+// CALENDARIO (Opción B: API + JWT + FullCalendar)
+// =======================
+const CAL_API = "http://localhost:3000/api"; // cambia a tu dominio cuando lo subas
+const CAL_TOKEN_KEY = "rutox_cal_token_v1";
+
+let calToken = localStorage.getItem(CAL_TOKEN_KEY) || null;
+let calCalendar = null;
+let calFilter = "all";
+
+function calMsg(text){
+  const el = document.getElementById("calMsg");
+  if (el) el.innerText = text || "";
+}
+
+async function calApi(path, opts = {}) {
+  const headers = { "Content-Type": "application/json", ...(opts.headers || {}) };
+  if (calToken) headers.Authorization = `Bearer ${calToken}`;
+  const res = await fetch(`${CAL_API}${path}`, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+
+function calSetUIAuthed(authed){
+  const authBox = document.getElementById("calAuthBox");
+  const filters = document.getElementById("calFilters");
+  const wrap = document.getElementById("calWrap");
+  const logoutBtn = document.getElementById("calLogoutBtn");
+
+  if (authed) {
+    filters.style.display = "flex";
+    wrap.style.display = "block";
+    logoutBtn.style.display = "inline-flex";
+    calMsg("Sesión iniciada ✅");
+  } else {
+    filters.style.display = "none";
+    wrap.style.display = "none";
+    logoutBtn.style.display = "none";
+  }
+}
+
+function calColorByType(type){
+  if (type === "exam") return "#b44545";
+  if (type === "homework") return "#3b5fb8";
+  return "#3d8a5a";
+}
+
+function calToLocalInputValue(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function calIsoFromLocalInput(value){
+  const d = new Date(value);
+  return d.toISOString();
+}
+
+async function calRegister(){
+  calMsg("");
+  const email = (document.getElementById("calEmail").value || "").trim();
+  const pass  = (document.getElementById("calPass").value || "").trim();
+  if (!email || !pass) return calMsg("Pon email y contraseña.");
+
+  try {
+    await calApi("/register", { method:"POST", body: JSON.stringify({ email, password: pass }) });
+    calMsg("Cuenta creada ✅ Ahora haz login.");
+  } catch(e){
+    calMsg(e.message);
+  }
+}
+
+async function calLogin(){
+  calMsg("");
+  const email = (document.getElementById("calEmail").value || "").trim();
+  const pass  = (document.getElementById("calPass").value || "").trim();
+  if (!email || !pass) return calMsg("Pon email y contraseña.");
+
+  try {
+    const out = await calApi("/login", { method:"POST", body: JSON.stringify({ email, password: pass }) });
+    calToken = out.token;
+    localStorage.setItem(CAL_TOKEN_KEY, calToken);
+    calSetUIAuthed(true);
+    calInitCalendarIfNeeded();
+    await calRefetch();
+  } catch(e){
+    calMsg(e.message);
+  }
+}
+
+function calLogout(){
+  calToken = null;
+  localStorage.removeItem(CAL_TOKEN_KEY);
+  calMsg("Sesión cerrada.");
+  calSetUIAuthed(false);
+  if (calCalendar) { calCalendar.destroy(); calCalendar = null; }
+}
+
+function calSetFilter(type, btn){
+  calFilter = type;
+  document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  calRefetch();
+}
+
+function calInitCalendarIfNeeded(){
+  if (calCalendar) return;
+
+  const el = document.getElementById("calView");
+  calCalendar = new FullCalendar.Calendar(el, {
+    initialView: "dayGridMonth",
+    height: "auto",
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "dayGridMonth,timeGridWeek,listWeek"
+    },
+    dateClick: (info) => {
+      calOpenCreate(new Date(info.dateStr + "T09:00:00"));
+    },
+    eventClick: async (info) => {
+      const raw = info.event.extendedProps.__raw;
+      await calOpenEdit(raw);
+    }
+  });
+
+  calCalendar.render();
+}
+
+async function calRefetch(){
+  if (!calToken || !calCalendar) return;
+
+  const view = calCalendar.view;
+  const start = view.activeStart.toISOString();
+  const end = view.activeEnd.toISOString();
+
+  const rows = await calApi(`/events?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+
+  calCalendar.removeAllEvents();
+
+  rows
+    .filter(r => calFilter === "all" ? true : r.type === calFilter)
+    .forEach(r => {
+      const c = calColorByType(r.type);
+      calCalendar.addEvent({
+        id: String(r.id),
+        title: r.title,
+        start: r.start,
+        end: r.end || null,
+        backgroundColor: c,
+        borderColor: c,
+        extendedProps: { __raw: r }
+      });
+    });
+}
+
+// Modal simple usando prompt (rápido). Si quieres, luego lo hacemos modal bonito como tus otros.
+async function calOpenCreate(defaultDate = new Date()){
+  if (!calToken) return calMsg("Haz login primero.");
+
+  const title = prompt("Título del evento (ej: Examen mates):");
+  if (!title) return;
+
+  const type = prompt("Tipo: exam | homework | activity", "exam") || "exam";
+  const startLocal = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(defaultDate));
+  if (!startLocal) return;
+
+  const endLocal = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)", "");
+  const desc = prompt("Descripción (opcional):", "") || "";
+
+  try{
+    await calApi("/events", {
+      method:"POST",
+      body: JSON.stringify({
+        title: title.trim(),
+        type,
+        start: calIsoFromLocalInput(startLocal),
+        end: endLocal ? calIsoFromLocalInput(endLocal) : null,
+        description: desc.trim() || null
+      })
+    });
+    await calRefetch();
+  } catch(e){
+    calMsg(e.message);
+  }
+}
+
+async function calOpenEdit(ev){
+  if (!calToken) return;
+
+  const newTitle = prompt("Título:", ev.title);
+  if (!newTitle) return;
+
+  const newType = prompt("Tipo: exam | homework | activity", ev.type) || ev.type;
+  const newStart = prompt("Inicio (YYYY-MM-DDTHH:mm)", calToLocalInputValue(new Date(ev.start)));
+  if (!newStart) return;
+
+  const newEnd = prompt("Fin opcional (YYYY-MM-DDTHH:mm) (vacío si no)",
+                        ev.end ? calToLocalInputValue(new Date(ev.end)) : "");
+  const newDesc = prompt("Descripción (opcional):", ev.description || "") || "";
+
+  const del = confirm("¿Quieres borrar este evento?");
+  try{
+    if (del) {
+      await calApi(`/events/${ev.id}`, { method:"DELETE" });
+    } else {
+      await calApi(`/events/${ev.id}`, {
+        method:"PUT",
+        body: JSON.stringify({
+          title: newTitle.trim(),
+          type: newType,
+          start: calIsoFromLocalInput(newStart),
+          end: newEnd ? calIsoFromLocalInput(newEnd) : null,
+          description: newDesc.trim() || null
+        })
+      });
+    }
+    await calRefetch();
+  } catch(e){
+    calMsg(e.message);
+  }
+}
+
+// Al abrir la sección, si ya hay token, auto-init
+(function calBoot(){
+  if (calToken) {
+    calSetUIAuthed(true);
+    // OJO: el calendario solo existe cuando entras a la sección.
+  } else {
+    calSetUIAuthed(false);
+  }
+})();
 
   </script>
 </body>
