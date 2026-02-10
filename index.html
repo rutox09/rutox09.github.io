@@ -806,22 +806,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
 
   <script>
-    // ============================================================
-    // Si por error caemos en /__/auth/handler EN GitHub Pages, volvemos a /
-    // (normalmente el handler es del dominio web.app / firebaseapp.com)
-    // ============================================================
+    // ✅ Evita caer en /__/auth/handler en GitHub Pages (si alguien abre esa URL)
     if (location.pathname.startsWith("/__/auth/handler")) {
       location.replace("/");
     }
 
-    // ============================================================
-    // INIT UI LIBS
-    // ============================================================
     AOS.init({ duration: 800 });
 
-    // ============================================================
-    // HELPERS
-    // ============================================================
+    // Helpers
     function $(id){ return document.getElementById(id); }
     function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
     function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
@@ -840,12 +832,10 @@
       return "https://" + u;
     }
 
-    // ============================================================
-    // FIREBASE INIT (CDN v8)  ✅ IMPORTANTE: authDomain = web.app
-    // ============================================================
+    // Firebase init
     const firebaseConfig = {
       apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-      authDomain: "cosas-af46c.web.app",            /* ✅ CAMBIADO */
+      authDomain: "cosas-af46c.firebaseapp.com",
       projectId: "cosas-af46c",
       storageBucket: "cosas-af46c.firebasestorage.app",
       messagingSenderId: "145996030094",
@@ -867,80 +857,60 @@
       if (code === "auth/network-request-failed") return "Fallo de red.";
       if (code === "auth/popup-blocked") return "El navegador bloqueó el popup. Permite popups.";
       if (code === "auth/popup-closed-by-user") return "Cerraste la ventana de login.";
-      if (code === "auth/unauthorized-domain") return "Dominio NO autorizado. Añade rutox09.github.io en Firebase Auth → Authorized domains.";
+      if (code === "auth/unauthorized-domain") return "Dominio NO autorizado. Añade rutox09.github.io en Firebase Auth → Dominios autorizados.";
       if (code === "auth/redirect-cancelled-by-user") return "Cancelaste el login.";
       if (code === "auth/redirect-operation-pending") return "Ya hay un login en proceso. Espera y vuelve a intentar.";
       return `Error: ${code || (e?.message || "desconocido")}`;
     }
 
-    function calMsg(text){
-      const el = $("calMsg");
-      if (el) el.innerText = text || "";
-    }
-
-    // ✅ initFirebase correcto (1 solo getRedirectResult)
-    async function initFirebase() {
+    function initFirebase() {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       try { firebase.analytics(); } catch(e) {}
 
       db = firebase.firestore();
       auth = firebase.auth();
 
-      // ✅ Persistencia local SIEMPRE
-      try {
-        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        console.log("Auth persistence: LOCAL");
-      } catch (e) {
-        console.warn("Persistence error:", e);
-      }
+      // Persistencia local
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => console.log("Auth persistence: LOCAL"))
+        .catch((e) => console.warn("Persistence error:", e));
 
-      // ✅ Recoger resultado del redirect (UNA SOLA VEZ)
-      try {
-        const res = await auth.getRedirectResult();
-        if (res && res.user) {
-          console.log("Redirect OK:", res.user.email || res.user.uid);
-          calMsg("Sesión iniciada con Google ✅");
-        }
-      } catch (e) {
-        console.warn("Redirect result error:", e);
-        if (e?.code) calMsg(friendlyAuthError(e));
-      }
+      // ✅ SOLO 1 redirectResult (por si usamos fallback redirect)
+      auth.getRedirectResult()
+        .then((res) => {
+          if (res && res.user) calMsg("Sesión iniciada con Google ✅");
+        })
+        .catch((e) => {
+          // Si no había redirect, normalmente no pasa nada.
+          if (e?.code) console.warn("Redirect result error:", e);
+        });
 
-      // ✅ Listener central
+      // Listener central
       auth.onAuthStateChanged((user) => {
         console.log("Auth state:", user ? (user.email || user.uid) : "NO USER");
 
-        // Admin mode (wishlist)
+        // Admin wishlist
         isAdmin = !!user;
         adminErr("");
         applyAdminUI();
 
-        // Calendario UI
+        // Calendario
         if (user) {
           calSetUIAuthed(true);
           calInitCalendarIfNeeded();
           calLoadEvents();
-          if (!($("calMsg")?.innerText || "").includes("Google")) calMsg("Sesión iniciada ✅");
+          calMsg("Sesión iniciada ✅");
         } else {
           calClearListener();
           if (calCalendar) calCalendar.removeAllEvents();
           calSetUIAuthed(false);
-          // Si venimos de un redirect y no hay user, mostramos algo útil
-          if (sessionStorage.getItem("rutox_google_redirect") === "1") {
-            sessionStorage.removeItem("rutox_google_redirect");
-            calMsg("No se pudo iniciar sesión. Revisa dominios autorizados o bloqueos de cookies.");
-          } else {
-            calMsg("");
-          }
+          calMsg("");
         }
       });
     }
-
     initFirebase();
 
-    // ============================================================
     // NAV
-    // ============================================================
     function openSection(id) {
       wxCloseModal();
       adminCloseModal();
@@ -1000,9 +970,7 @@
       if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); calCloseEventModal(); }
     });
 
-    // ============================================================
     // ADMIN (Wishlist)
-    // ============================================================
     function adminErr(msg) {
       const el = $("adminErr");
       if (!el) return;
@@ -1047,7 +1015,7 @@
       const m = $("adminModal");
       m.classList.add("open");
       m.setAttribute("aria-hidden", "false");
-      const user = auth?.currentUser;
+      const user = auth.currentUser;
       $("adminLoggedBox").style.display = user ? "block" : "none";
       $("adminLoginBox").style.display = user ? "none" : "block";
       setTimeout(() => { if (!user) $("adminEmail").focus(); }, 50);
@@ -1097,9 +1065,7 @@
       return false;
     }
 
-    // ============================================================
     // MEDIA (LocalStorage)
-    // ============================================================
     const EXAMS_KEY = "aleix_exams_v1";
     let exams = [];
 
@@ -1225,9 +1191,7 @@
 
     loadExams();
 
-    // ============================================================
     // TIEMPO (Open-Meteo)
-    // ============================================================
     const WX_LOC_KEY  = "rutox_weather_loc_v1";
     const WX_LAST_KEY = "rutox_weather_last_v1";
     const WX_TZ_KEY   = "rutox_weather_tz_v1";
@@ -1238,21 +1202,18 @@
       if (!label) return "—";
       return String(label).split(",")[0].trim() || label;
     }
-
     function wxSaveTZ(tz){
       if (!tz) return;
       wxTimeZone = tz;
       try { localStorage.setItem(WX_TZ_KEY, tz); } catch {}
       wxStartClock();
     }
-
     function wxLoadTZ(){
       try {
         const tz = localStorage.getItem(WX_TZ_KEY);
         if (tz) wxTimeZone = tz;
       } catch {}
     }
-
     function wxStartClock(){
       const el = $("lobbyClock");
       const placeEl = $("clockPlace");
@@ -1279,7 +1240,6 @@
       tick();
       wxClockTimer = setInterval(tick, 1000);
     }
-
     function wxErr(msg) {
       const el = $("wxModalError");
       if (!el) return;
@@ -1287,20 +1247,17 @@
       el.style.display = "block";
       el.innerText = msg;
     }
-
     function wxSetTop(main, sub){
       $("wxTopMain").innerText = main || "—";
       $("wxTopSub").innerText = sub || "Pulsa para elegir";
       try { localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() })); } catch {}
     }
-
     function wxLoadLast(){
       try {
         const x = JSON.parse(localStorage.getItem(WX_LAST_KEY) || "null");
         if (x?.main || x?.sub) wxSetTop(x.main, x.sub);
       } catch {}
     }
-
     function wxSaveLoc(obj){ try { localStorage.setItem(WX_LOC_KEY, JSON.stringify(obj)); } catch {} }
     function wxGetLoc(){
       try {
@@ -1308,7 +1265,6 @@
         return x && typeof x === "object" ? x : null;
       } catch { return null; }
     }
-
     function wxEmoji(code){
       if (code === 0) return "☀️";
       if ([1,2,3].includes(code)) return "⛅";
@@ -1320,13 +1276,11 @@
       if ([95,96,99].includes(code)) return "⛈️";
       return "🌥️";
     }
-
     async function wxFetchJson(url){
       const r = await fetch(url);
       if (!r.ok) throw new Error("Tiempo no disponible");
       return await r.json();
     }
-
     async function wxGeocodeCity(name){
       const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
       const data = await wxFetchJson(url);
@@ -1338,7 +1292,6 @@
         lon: hit.longitude
       };
     }
-
     async function wxLoadByCoords(lat, lon, label, {save=true} = {}){
       const url =
         `https://api.open-meteo.com/v1/forecast` +
@@ -1361,7 +1314,6 @@
 
       if (save) wxSaveLoc({ type:"city", label: sub, lat, lon });
     }
-
     async function wxSetCity(cityName){
       wxErr("");
       const hit = await wxGeocodeCity(cityName);
@@ -1370,7 +1322,6 @@
       wxCloseModal();
       wxStartClock();
     }
-
     function wxUseMyLocation(){
       wxErr("");
       if (!navigator.geolocation) { wxErr("Tu navegador no permite geolocalización."); return; }
@@ -1388,7 +1339,6 @@
         () => wxErr("Permiso denegado o no disponible.")
       );
     }
-
     async function wxAutoUpdate(){
       try {
         const loc = wxGetLoc();
@@ -1400,7 +1350,6 @@
         wxSetTop("—", "Pulsa para elegir");
       } catch { wxSetTop("—", "Pulsa para elegir"); }
     }
-
     function wxOpenModal(){
       wxErr("");
       const modal = $("wxModal");
@@ -1412,26 +1361,21 @@
       input.value = (loc && loc.type === "city" && loc.label) ? loc.label.split(",")[0] : "";
       setTimeout(() => input.focus(), 50);
     }
-
     function wxCloseModal(){
       const modal = $("wxModal");
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
     }
-
     function wxQuickCity(name){
       $("wxCityInput").value = name;
       wxSaveCityFromModal();
     }
-
     function wxSaveCityFromModal(){
       const city = ($("wxCityInput").value || "").trim();
       if (!city) { wxUseMyLocation(); return; }
       wxSetCity(city);
     }
-
     function wxUseMyLocationFromModal(){ wxUseMyLocation(); }
-
     async function wxRefreshNow(){
       const loc = wxGetLoc();
       if (loc?.type === "geo") { wxUseMyLocation(); return; }
@@ -1441,19 +1385,15 @@
 
     wxLoadLast();
     wxLoadTZ();
-
     (function seedDefaultCity(){
       const loc = wxGetLoc();
       if (loc) return;
       wxSaveLoc({ type:"city", label:"Barcelona, España", lat: 41.3874, lon: 2.1686 });
     })();
-
     wxStartClock();
     wxAutoUpdate();
 
-    // ============================================================
-    // WISHLIST (Firestore collection: productos)
-    // ============================================================
+    // WISHLIST (Firestore)
     let ordenAscendente = true;
     let filtro = "all";
     let lastSnap = null;
@@ -1596,13 +1536,15 @@
 
     cargarProductos();
 
-    // ============================================================
-    // CALENDARIO (Firebase Auth + Firestore)
-    // users/{uid}/events/{eventId}
-    // ============================================================
+    // CALENDARIO (Auth + Firestore)
     let calCalendar = null;
     let calFilter = "all";
     let calUnsub = null;
+
+    function calMsg(text){
+      const el = $("calMsg");
+      if (el) el.innerText = text || "";
+    }
 
     function calSetUIAuthed(authed){
       const filters = $("calFilters");
@@ -1675,7 +1617,7 @@
       calLoadEvents();
     }
 
-    // ---- Auth Firebase ----
+    // Auth Firebase (email/pass)
     async function calRegisterFb(){
       calMsg("");
       const email = ($("calEmail").value || "").trim();
@@ -1706,23 +1648,35 @@
       }
     }
 
-    // ✅ Google Redirect (estable para GitHub Pages)
+    // ✅ Google login: Popup primero, fallback Redirect si falla
     async function calLoginGoogle(){
       calMsg("");
       try{
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
 
-        // Marcar que venimos de redirect (para mostrar mensaje si vuelve sin user)
-        sessionStorage.setItem("rutox_google_redirect", "1");
-
-        // Asegurar persistencia antes de redirigir
-        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-        await auth.signInWithRedirect(provider);
+        const res = await auth.signInWithPopup(provider);
+        if (res && res.user) {
+          calMsg("Sesión iniciada con Google ✅");
+          return;
+        }
       } catch(e){
-        sessionStorage.removeItem("rutox_google_redirect");
-        console.error(e);
+        console.warn("Popup login failed:", e);
+
+        const code = e?.code || "";
+        if (code === "auth/popup-blocked" || code === "auth/popup-closed-by-user") {
+          try{
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: "select_account" });
+            await auth.signInWithRedirect(provider);
+            return;
+          } catch(err){
+            console.error("Redirect login failed:", err);
+            calMsg(friendlyAuthError(err));
+            return;
+          }
+        }
+
         calMsg(friendlyAuthError(e));
       }
     }
@@ -1737,7 +1691,7 @@
       }
     }
 
-    // ---- Firestore ----
+    // Firestore
     function calEventsRef(){
       const u = auth.currentUser;
       if (!u) return null;
@@ -1783,7 +1737,7 @@
       });
     }
 
-    // ---------- Modal evento (crear/editar) ----------
+    // Modal evento
     function calEventErr(msg){
       const el = $("calEventErr");
       if (!el) return;
@@ -1918,6 +1872,7 @@
       }
     }
 
+    // Autocompletar email
     (function preloadCalEmail(){
       try{
         const saved = localStorage.getItem("rutox_cal_email");
@@ -1925,17 +1880,12 @@
       } catch {}
     })();
 
-    // ============================================================
-    // FIN: estado visual inicial
-    // ============================================================
     applyAdminUI();
   </script>
 
-  <!-- RECUERDA en Firebase Console:
-    Authentication → Settings → Authorized domains:
-      - rutox09.github.io
-      - cosas-af46c.web.app
-      - cosas-af46c.firebaseapp.com
+  <!-- Firebase Console:
+    Authentication → Sign-in method → Google → Enable
+    Authentication → Settings → Authorized domains → rutox09.github.io
   -->
 </body>
 </html>
