@@ -849,10 +849,20 @@
 
     <!-- Login/Register dentro de la sección -->
     <div class="admin-panel" id="calAuthBox" data-aos="fade-up">
-      <div class="grid-inputs">
-        <input id="calEmail" type="email" placeholder="Email" />
-        <input id="calPass" type="password" placeholder="Contraseña" />
-      </div>
+  <div class="grid-inputs">
+    <input id="calEmail" type="email" placeholder="Email" />
+    <input id="calPass" type="password" placeholder="Contraseña" />
+  </div>
+
+  <div class="exam-row">
+    <button class="btn-main" onclick="calLoginFb()">Entrar</button>
+    <button class="btn-secondary" onclick="calRegisterFb()">Crear cuenta</button>
+    <button class="btn-secondary" onclick="calLogoutFb()" id="calLogoutBtn" style="display:none;">Salir</button>
+  </div>
+
+  <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
+</div>
+
 
       <div class="exam-row">
         <button class="btn-main" onclick="calLogin()">Entrar</button>
@@ -947,6 +957,10 @@ initFirebase();
 
   document.getElementById(id).style.display = "block";
   window.scrollTo({ top: 0, behavior: "smooth" });
+    if (id === "calendar") {
+  calInitCalendarIfNeeded();
+  setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 80);
+}
 
   // ✅ Calendario: inicializa cuando entras a la sección
   if (id === "calendar") {
@@ -1724,32 +1738,19 @@ initFirebase();
     // Init
     updatePomoUI({phaseChanged:true});
 
-    // =======================
-// CALENDARIO (Opción B: API + JWT + FullCalendar)
+ // =======================
+// CALENDARIO (Firebase Auth + Firestore) ✅ GitHub Pages compatible
 // =======================
-const CAL_API = "http://localhost:3000/api"; // cambia a tu dominio cuando lo subas
-const CAL_TOKEN_KEY = "rutox_cal_token_v1";
-
-let calToken = localStorage.getItem(CAL_TOKEN_KEY) || null;
 let calCalendar = null;
 let calFilter = "all";
+let calUnsub = null;
 
 function calMsg(text){
   const el = document.getElementById("calMsg");
   if (el) el.innerText = text || "";
 }
 
-async function calApi(path, opts = {}) {
-  const headers = { "Content-Type": "application/json", ...(opts.headers || {}) };
-  if (calToken) headers.Authorization = `Bearer ${calToken}`;
-  const res = await fetch(`${CAL_API}${path}`, { ...opts, headers });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Request failed");
-  return data;
-}
-
 function calSetUIAuthed(authed){
-  const authBox = document.getElementById("calAuthBox");
   const filters = document.getElementById("calFilters");
   const wrap = document.getElementById("calWrap");
   const logoutBtn = document.getElementById("calLogoutBtn");
@@ -1758,7 +1759,6 @@ function calSetUIAuthed(authed){
     filters.style.display = "flex";
     wrap.style.display = "block";
     logoutBtn.style.display = "inline-flex";
-    calMsg("Sesión iniciada ✅");
   } else {
     filters.style.display = "none";
     wrap.style.display = "none";
@@ -1770,63 +1770,6 @@ function calColorByType(type){
   if (type === "exam") return "#b44545";
   if (type === "homework") return "#3b5fb8";
   return "#3d8a5a";
-}
-
-function calToLocalInputValue(date) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function calIsoFromLocalInput(value){
-  const d = new Date(value);
-  return d.toISOString();
-}
-
-async function calRegister(){
-  calMsg("");
-  const email = (document.getElementById("calEmail").value || "").trim();
-  const pass  = (document.getElementById("calPass").value || "").trim();
-  if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-  try {
-    await calApi("/register", { method:"POST", body: JSON.stringify({ email, password: pass }) });
-    calMsg("Cuenta creada ✅ Ahora haz login.");
-  } catch(e){
-    calMsg(e.message);
-  }
-}
-
-async function calLogin(){
-  calMsg("");
-  const email = (document.getElementById("calEmail").value || "").trim();
-  const pass  = (document.getElementById("calPass").value || "").trim();
-  if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-  try {
-    const out = await calApi("/login", { method:"POST", body: JSON.stringify({ email, password: pass }) });
-    calToken = out.token;
-    localStorage.setItem(CAL_TOKEN_KEY, calToken);
-    calSetUIAuthed(true);
-    calInitCalendarIfNeeded();
-    await calRefetch();
-  } catch(e){
-    calMsg(e.message);
-  }
-}
-
-function calLogout(){
-  calToken = null;
-  localStorage.removeItem(CAL_TOKEN_KEY);
-  calMsg("Sesión cerrada.");
-  calSetUIAuthed(false);
-  if (calCalendar) { calCalendar.destroy(); calCalendar = null; }
-}
-
-function calSetFilter(type, btn){
-  calFilter = type;
-  document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  calRefetch();
 }
 
 function calInitCalendarIfNeeded(){
@@ -1853,36 +1796,105 @@ function calInitCalendarIfNeeded(){
   calCalendar.render();
 }
 
-async function calRefetch(){
-  if (!calToken || !calCalendar) return;
+function calSetFilter(type, btn){
+  calFilter = type;
+  document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  calLoadEvents(); // recarga desde Firestore
+}
 
-  const view = calCalendar.view;
-  const start = view.activeStart.toISOString();
-  const end = view.activeEnd.toISOString();
+// ---- Auth Firebase ----
+async function calRegisterFb(){
+  calMsg("");
+  const email = (document.getElementById("calEmail").value || "").trim();
+  const pass  = (document.getElementById("calPass").value || "").trim();
+  if (!email || !pass) return calMsg("Pon email y contraseña.");
 
-  const rows = await calApi(`/events?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+  try {
+    await auth.createUserWithEmailAndPassword(email, pass);
+    calMsg("Cuenta creada ✅");
+  } catch(e){
+    calMsg(friendlyAuthError(e));
+  }
+}
+
+async function calLoginFb(){
+  calMsg("");
+  const email = (document.getElementById("calEmail").value || "").trim();
+  const pass  = (document.getElementById("calPass").value || "").trim();
+  if (!email || !pass) return calMsg("Pon email y contraseña.");
+
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+    calMsg("Sesión iniciada ✅");
+  } catch(e){
+    calMsg(friendlyAuthError(e));
+  }
+}
+
+async function calLogoutFb(){
+  calMsg("");
+  try {
+    await auth.signOut();
+    calMsg("Sesión cerrada.");
+  } catch(e){
+    calMsg("No pude cerrar sesión.");
+  }
+}
+
+// ---- Firestore ----
+// Estructura: users/{uid}/events/{eventId}
+function calEventsRef(){
+  const u = auth.currentUser;
+  if (!u) return null;
+  return db.collection("users").doc(u.uid).collection("events");
+}
+
+function calClearListener(){
+  if (calUnsub) { calUnsub(); calUnsub = null; }
+}
+
+function calLoadEvents(){
+  if (!calCalendar) return;
+  const ref = calEventsRef();
+  if (!ref) return;
+
+  calClearListener();
 
   calCalendar.removeAllEvents();
 
-  rows
-    .filter(r => calFilter === "all" ? true : r.type === calFilter)
-    .forEach(r => {
+  calUnsub = ref.onSnapshot((snap) => {
+    calCalendar.removeAllEvents();
+
+    snap.forEach((doc) => {
+      const r = doc.data();
+      if (!r) return;
+
+      // filtro tipo
+      if (calFilter !== "all" && r.type !== calFilter) return;
+
       const c = calColorByType(r.type);
       calCalendar.addEvent({
-        id: String(r.id),
+        id: doc.id,
         title: r.title,
-        start: r.start,
-        end: r.end || null,
+        start: r.start,         // ISO string
+        end: r.end || null,     // ISO string opcional
         backgroundColor: c,
         borderColor: c,
-        extendedProps: { __raw: r }
+        extendedProps: { __raw: { id: doc.id, ...r } }
       });
     });
+
+    setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 50);
+  }, (err) => {
+    console.error(err);
+    calMsg("Error cargando eventos (revisa reglas de Firestore).");
+  });
 }
 
-// Modal simple usando prompt (rápido). Si quieres, luego lo hacemos modal bonito como tus otros.
 async function calOpenCreate(defaultDate = new Date()){
-  if (!calToken) return calMsg("Haz login primero.");
+  const u = auth.currentUser;
+  if (!u) return calMsg("Haz login primero.");
 
   const title = prompt("Título del evento (ej: Examen mates):");
   if (!title) return;
@@ -1895,24 +1907,24 @@ async function calOpenCreate(defaultDate = new Date()){
   const desc = prompt("Descripción (opcional):", "") || "";
 
   try{
-    await calApi("/events", {
-      method:"POST",
-      body: JSON.stringify({
-        title: title.trim(),
-        type,
-        start: calIsoFromLocalInput(startLocal),
-        end: endLocal ? calIsoFromLocalInput(endLocal) : null,
-        description: desc.trim() || null
-      })
+    await calEventsRef().add({
+      title: title.trim(),
+      type,
+      start: calIsoFromLocalInput(startLocal),
+      end: endLocal ? calIsoFromLocalInput(endLocal) : null,
+      description: desc.trim() || null,
+      createdAt: new Date().toISOString()
     });
-    await calRefetch();
+    calMsg("Evento creado ✅");
   } catch(e){
-    calMsg(e.message);
+    console.error(e);
+    calMsg("No pude guardar el evento (revisa reglas).");
   }
 }
 
 async function calOpenEdit(ev){
-  if (!calToken) return;
+  const u = auth.currentUser;
+  if (!u) return;
 
   const newTitle = prompt("Título:", ev.title);
   if (!newTitle) return;
@@ -1927,35 +1939,51 @@ async function calOpenEdit(ev){
 
   const del = confirm("¿Quieres borrar este evento?");
   try{
+    const ref = calEventsRef().doc(ev.id);
     if (del) {
-      await calApi(`/events/${ev.id}`, { method:"DELETE" });
+      await ref.delete();
+      calMsg("Evento borrado ✅");
     } else {
-      await calApi(`/events/${ev.id}`, {
-        method:"PUT",
-        body: JSON.stringify({
-          title: newTitle.trim(),
-          type: newType,
-          start: calIsoFromLocalInput(newStart),
-          end: newEnd ? calIsoFromLocalInput(newEnd) : null,
-          description: newDesc.trim() || null
-        })
+      await ref.update({
+        title: newTitle.trim(),
+        type: newType,
+        start: calIsoFromLocalInput(newStart),
+        end: newEnd ? calIsoFromLocalInput(newEnd) : null,
+        description: newDesc.trim() || null,
+        updatedAt: new Date().toISOString()
       });
+      calMsg("Evento actualizado ✅");
     }
-    await calRefetch();
   } catch(e){
-    calMsg(e.message);
+    console.error(e);
+    calMsg("No pude actualizar/borrar (revisa reglas).");
   }
 }
 
-// Al abrir la sección, si ya hay token, auto-init
-(function calBoot(){
-  if (calToken) {
+// Helpers de fecha (los necesitas)
+function calToLocalInputValue(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+function calIsoFromLocalInput(value){
+  const d = new Date(value);
+  return d.toISOString();
+}
+
+// ✅ Cuando cambie el usuario Firebase, activamos calendario
+auth.onAuthStateChanged((user) => {
+  if (user) {
     calSetUIAuthed(true);
-    // OJO: el calendario solo existe cuando entras a la sección.
+    calInitCalendarIfNeeded();
+    calLoadEvents();
+    calMsg("Sesión iniciada ✅");
   } else {
+    calClearListener();
+    if (calCalendar) { calCalendar.removeAllEvents(); }
     calSetUIAuthed(false);
   }
-})();
+});
+
 
   </script>
 </body>
