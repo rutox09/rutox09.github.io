@@ -807,11 +807,13 @@
 
   <script>
     // ============================================================
-    // FIX: si caemos en /__/auth/handler en GitHub Pages, volvemos a /
-    // (evita "The requested action is invalid." por handler abierto suelto)
+    // FIX GitHub Pages:
+    // Si caemos en /__/auth/handler, volvemos a la carpeta correcta del repo
+    // (evita "The requested action is invalid." al abrir el handler suelto)
     // ============================================================
-    if (location.pathname.startsWith("/__/auth/handler")) {
-      location.replace("/");
+    if (location.pathname.includes("/__/auth/handler")) {
+      const base = location.origin + location.pathname.split("/__/auth/handler")[0] + "/";
+      location.replace(base);
     }
 
     // ============================================================
@@ -857,6 +859,22 @@
     let auth = null;
     let isAdmin = false;
 
+    function friendlyAuthError(e){
+      const code = e?.code || "";
+      if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
+      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
+      if (code === "auth/invalid-email") return "Email inválido.";
+      if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
+      if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
+      if (code === "auth/network-request-failed") return "Fallo de red.";
+      if (code === "auth/popup-blocked") return "El navegador bloqueó el popup. Permite popups.";
+      if (code === "auth/popup-closed-by-user") return "Cerraste la ventana de login.";
+      if (code === "auth/unauthorized-domain") return "Dominio NO autorizado. Añade rutox09.github.io en Firebase Auth → Authorized domains.";
+      if (code === "auth/redirect-cancelled-by-user") return "Cancelaste el login.";
+      if (code === "auth/redirect-operation-pending") return "Ya hay un login en proceso. Espera y vuelve a intentar.";
+      return `Error: ${code || (e?.message || "desconocido")}`;
+    }
+
     function initFirebase() {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       try { firebase.analytics(); } catch(e) {}
@@ -864,19 +882,19 @@
       db = firebase.firestore();
       auth = firebase.auth();
 
-      // ✅ Persistencia local
+      // ✅ Persistencia local (no te pide login cada vez)
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         .then(() => console.log("Auth persistence: LOCAL"))
         .catch((e) => console.warn("Persistence error:", e));
 
-      // ✅ Capturar retorno de Google Redirect
+      // ✅ SOLO UNA VEZ: Capturar retorno de Google Redirect
       auth.getRedirectResult()
         .then((res) => {
-          sessionStorage.removeItem("rutox_google_redirect");
-          if (res && res.user) calMsg("Sesión iniciada con Google ✅");
+          if (res && res.user) {
+            calMsg("Sesión iniciada con Google ✅");
+          }
         })
         .catch((e) => {
-          sessionStorage.removeItem("rutox_google_redirect");
           if (e?.code) {
             console.warn("Redirect result error:", e);
             calMsg(friendlyAuthError(e));
@@ -927,7 +945,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
 
       if (id === "calendar") {
-        // UI instantánea al entrar
         if (auth && auth.currentUser) calSetUIAuthed(true);
         else calSetUIAuthed(false);
 
@@ -994,22 +1011,6 @@
         adminErr("No pude enviar el email. Revisa el email.");
         console.error(e);
       }
-    }
-
-    function friendlyAuthError(e){
-      const code = e?.code || "";
-      if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
-      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
-      if (code === "auth/invalid-email") return "Email inválido.";
-      if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
-      if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
-      if (code === "auth/network-request-failed") return "Fallo de red.";
-      if (code === "auth/popup-blocked") return "El navegador bloqueó el popup. Permite popups.";
-      if (code === "auth/popup-closed-by-user") return "Cerraste la ventana de login.";
-      if (code === "auth/unauthorized-domain") return "Dominio NO autorizado. Añade rutox09.github.io en Firebase Auth → Authorized domains.";
-      if (code === "auth/redirect-cancelled-by-user") return "Cancelaste el login.";
-      if (code === "auth/redirect-operation-pending") return "Ya hay un login en proceso. Espera y vuelve a intentar.";
-      return `Error: ${code || (e?.message || "desconocido")}`;
     }
 
     function applyAdminUI() {
@@ -1214,7 +1215,7 @@
     loadExams();
 
     // ============================================================
-    // TIEMPO (Open-Meteo) - FUNCIONAL
+    // TIEMPO (Open-Meteo)
     // ============================================================
     const WX_LOC_KEY  = "rutox_weather_loc_v1";
     const WX_LAST_KEY = "rutox_weather_last_v1";
@@ -1430,7 +1431,6 @@
     wxLoadLast();
     wxLoadTZ();
 
-    // Seed Barcelona si no hay loc guardada
     (function seedDefaultCity(){
       const loc = wxGetLoc();
       if (loc) return;
@@ -1570,7 +1570,7 @@
       if (!requireAdminOrOpen()) return;
       if (!confirm("¿Borrar este producto?")) return;
 
-      try {
+      try{
         await db.collection("productos").doc(id).delete();
       } catch (e) {
         alert("No tienes permisos (revisa Rules).");
@@ -1700,28 +1700,16 @@
       }
     }
 
-    // ✅ Login Google con Redirect (más estable en GitHub Pages que popup)
+    // ✅ Google Redirect (más estable en GitHub Pages)
     async function calLoginGoogle(){
       calMsg("");
-      const btns = document.querySelectorAll("#calAuthBox button");
-      btns.forEach(b => b.disabled = true);
-
       try{
-        if (sessionStorage.getItem("rutox_google_redirect") === "1") {
-          calMsg("Ya se está iniciando sesión…");
-          return;
-        }
-        sessionStorage.setItem("rutox_google_redirect", "1");
-
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: "select_account" });
-
         await auth.signInWithRedirect(provider);
       } catch(e){
-        sessionStorage.removeItem("rutox_google_redirect");
         console.error(e);
         calMsg(friendlyAuthError(e));
-        btns.forEach(b => b.disabled = false);
       }
     }
 
@@ -1916,7 +1904,6 @@
       }
     }
 
-    // Autocompletar email (solo comodidad si usas password)
     (function preloadCalEmail(){
       try{
         const saved = localStorage.getItem("rutox_cal_email");
