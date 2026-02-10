@@ -913,38 +913,56 @@
 
   
   function initFirebase() {
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  
-    // Analytics (opcional)
-    try { firebase.analytics(); } catch (e) { console.log("Analytics no disponible", e); }
-  
-    db = firebase.firestore();
-    auth = firebase.auth();
-  
-    // DEBUG: para ver el error real de auth/internal-error
-    auth.onAuthStateChanged((user) => {
-      console.log("Auth state:", user ? user.email : "NO USER");
-    });
-  }
-  
-  initFirebase();
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+  try { firebase.analytics(); } catch (e) { console.log("Analytics no disponible", e); }
+
+  db = firebase.firestore();
+  auth = firebase.auth();
+
+  // DEBUG (ya lo tenías)
+  auth.onAuthStateChanged((user) => {
+    console.log("Auth state:", user ? user.email : "NO USER");
+
+    // ✅ y aquí mismo actualizas admin UI
+    isAdmin = !!user;
+    adminErr("");
+    applyAdminUI();
+  });
+}
+
+initFirebase();
+
    
 
 
 
     function openSection(id) {
-      wxCloseModal();
-      adminCloseModal();
-      document.getElementById("lobby").style.display = "none";
-      document.getElementById("shareFab").style.display = "none";
-      document.getElementById("wxTop").style.display = "none";
-      document.getElementById(id).style.display = "block";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-    if (id === "calendar" && calToken) {
-        calInitCalendarIfNeeded();
-        calRefetch();
-    }
+  wxCloseModal();
+  adminCloseModal();
+
+  document.getElementById("lobby").style.display = "none";
+  document.getElementById("shareFab").style.display = "none";
+  document.getElementById("wxTop").style.display = "none";
+
+  document.getElementById(id).style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  // ✅ Calendario: inicializa cuando entras a la sección
+  if (id === "calendar") {
+  if (calToken) {
+    calSetUIAuthed(true);
+    calInitCalendarIfNeeded();
+    calRefetch();
+    setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 50);
+  } else {
+    calSetUIAuthed(false);
+  }
+}
+
+}
+
+    
 
 
     function goHome() {
@@ -1032,11 +1050,6 @@
       if (lastSnap) renderizar(lastSnap);
     }
 
-    auth.onAuthStateChanged((user) => {
-      isAdmin = !!user;
-      adminErr("");
-      applyAdminUI();
-    });
 
     function adminOpenModal() {
       adminErr("");
