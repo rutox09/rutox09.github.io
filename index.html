@@ -500,37 +500,7 @@
       .twoCol{ grid-template-columns: 1fr; }
     }
 
-    /* ===== Pomodoro Animations ===== */
-    .pomo-wrap { display:flex; flex-direction:column; align-items:center; gap: 12px; }
-    #pomoTime{ display:inline-block; will-change: transform, filter; transform-origin: center; }
-    #pomoTime.pulse{ animation: pomoPulse 220ms ease; }
-    @keyframes pomoPulse{
-      0%   { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
-      55%  { transform: scale(1.08); filter: drop-shadow(0 0 14px rgba(0,242,255,0.35)); }
-      100% { transform: scale(1);   filter: drop-shadow(0 0 0 rgba(0,242,255,0)); }
-    }
-    #pomoState{ will-change: transform, box-shadow, border-color; }
-    #pomoState.work{
-      border-color: rgba(0,242,255,0.45);
-      box-shadow: 0 0 0 1px rgba(0,242,255,0.18), 0 0 22px rgba(0,242,255,0.12);
-    }
-    #pomoState.break{
-      border-color: rgba(99,102,241,0.65);
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.22), 0 0 22px rgba(99,102,241,0.14);
-    }
-    .pomo-flash{ animation: pomoFlash 650ms ease; }
-    @keyframes pomoFlash{
-      0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
-      35%  { transform: scale(1.03); box-shadow: 0 0 0 2px rgba(0,242,255,0.22), 0 0 26px rgba(0,242,255,0.18); }
-      100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(0,242,255,0); }
-    }
-    #pomoCount{ will-change: transform; }
-    .pomo-bounce{ animation: pomoBounce 520ms cubic-bezier(.2,.95,.2,1); }
-    @keyframes pomoBounce{
-      0%   { transform: translateY(0) scale(1); }
-      45%  { transform: translateY(-8px) scale(1.06); }
-      100% { transform: translateY(0) scale(1); }
-    }
+    
   </style>
 </head>
 
@@ -555,10 +525,7 @@
       <span>Media</span>
     </div>
 
-    <div class="app" onclick="openSection('pomodoro')">
-      <div class="app-icon">🍅</div>
-      <span>Pomodoro</span>
-    </div>
+    
 
     <div class="app" onclick="openSection('calendar')">
       <div class="app-icon">📅</div>
@@ -722,33 +689,7 @@
     </div>
   </div>
 
-  <!-- POMODORO -->
-  <div id="pomodoro" class="section">
-    <button class="back" onclick="goHome()">← Volver</button>
-
-    <div class="container">
-      <h1 class="title">Pomodoro</h1>
-
-      <div class="media-sub">Enfócate 25 min · Descansa 5 min</div>
-
-      <div class="controls-row">
-        <div class="total-badge" id="pomoState">Trabajo</div>
-        <div class="total-badge" id="pomoCount">🍅 0</div>
-      </div>
-
-      <div class="pomo-wrap" style="margin-bottom:30px;">
-        <div style="text-align:center; font-size:4rem; font-weight:900;">
-          <span id="pomoTime">25:00</span>
-        </div>
-      </div>
-
-      <div class="controls-row">
-        <button class="btn-main" onclick="pomoStart()">▶ Iniciar</button>
-        <button class="btn-secondary" onclick="pomoPause()">⏸ Pausar</button>
-        <button class="btn-secondary" onclick="pomoReset()">🔄 Reset</button>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- CALENDARIO -->
   <div id="calendar" class="section">
@@ -1632,108 +1573,7 @@
 
     cargarProductos();
 
-    // ============================================================
-    // POMODORO
-    // ============================================================
-    let pomoTimer = null;
-    let pomoSeconds = 25 * 60;
-    let pomoWorking = true;
-    let pomoCount = 0;
-    let lastSecond = null;
-
-    function fmtMMSS(s){
-      const min = Math.floor(s / 60).toString().padStart(2, "0");
-      const sec = (s % 60).toString().padStart(2, "0");
-      return `${min}:${sec}`;
-    }
-
-    function pulseTime(){
-      const t = $("pomoTime");
-      if (!t) return;
-      t.classList.remove("pulse");
-      void t.offsetWidth;
-      t.classList.add("pulse");
-      setTimeout(() => t.classList.remove("pulse"), 220);
-    }
-
-    function flashBadges(){
-      const a = $("pomoState"), b = $("pomoCount");
-      [a,b].forEach(el => {
-        if (!el) return;
-        el.classList.remove("pomo-flash");
-        void el.offsetWidth;
-        el.classList.add("pomo-flash");
-        setTimeout(() => el.classList.remove("pomo-flash"), 700);
-      });
-    }
-
-    function bounceCount(){
-      const c = $("pomoCount");
-      if (!c) return;
-      c.classList.remove("pomo-bounce");
-      void c.offsetWidth;
-      c.classList.add("pomo-bounce");
-      setTimeout(() => c.classList.remove("pomo-bounce"), 520);
-    }
-
-    function updatePomoUI({phaseChanged=false, countChanged=false} = {}){
-      $("pomoTime").innerText = fmtMMSS(pomoSeconds);
-
-      const state = $("pomoState");
-      state.innerText = pomoWorking ? "Trabajo" : "Descanso";
-      state.classList.toggle("work", pomoWorking);
-      state.classList.toggle("break", !pomoWorking);
-
-      $("pomoCount").innerText = `🍅 ${pomoCount}`;
-
-      if (lastSecond !== pomoSeconds) pulseTime();
-      lastSecond = pomoSeconds;
-
-      if (phaseChanged) flashBadges();
-      if (countChanged) bounceCount();
-    }
-
-    function pomoTick(){
-      if (pomoSeconds > 0) {
-        pomoSeconds--;
-        updatePomoUI();
-        return;
-      }
-
-      if (pomoWorking) {
-        pomoWorking = false;
-        pomoSeconds = 5 * 60;
-        pomoCount++;
-        updatePomoUI({phaseChanged:true, countChanged:true});
-      } else {
-        pomoWorking = true;
-        pomoSeconds = 25 * 60;
-        updatePomoUI({phaseChanged:true});
-      }
-    }
-
-    function pomoStart(){
-      if (pomoTimer) return;
-      flashBadges();
-      pomoTimer = setInterval(pomoTick, 1000);
-    }
-
-    function pomoPause(){
-      clearInterval(pomoTimer);
-      pomoTimer = null;
-      flashBadges();
-    }
-
-    function pomoReset(){
-      pomoPause();
-      pomoWorking = true;
-      pomoSeconds = 25 * 60;
-      pomoCount = 0;
-      lastSecond = null;
-      updatePomoUI({phaseChanged:true, countChanged:true});
-    }
-
-    updatePomoUI({phaseChanged:true});
+   
 
     // ============================================================
     // CALENDARIO (Firebase Auth + Firestore)
