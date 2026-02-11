@@ -889,10 +889,14 @@
       auth.onAuthStateChanged((user) => {
         console.log("Auth state:", user ? (user.email || user.uid) : "NO USER");
 
-        // Admin wishlist
-        isAdmin = !!user;
-        adminErr("");
-        applyAdminUI();
+        // ✅ SOLO estos UID pueden ser admin
+        const ADMIN_UIDS = new Set([
+          "2aijS4elZgMqE1iWJ49PT3Sv4or1",
+          "wpRT6eJjbVemGpJtO9Day9VQmbH3"
+        ]);
+
+isAdmin = !!user && ADMIN_UIDS.has(user.uid);
+
 
         // Calendario
         if (user) {
