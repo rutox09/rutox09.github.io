@@ -887,6 +887,15 @@
 
       // Listener central
       auth.onAuthStateChanged((user) => {
+        if (user) {
+          console.log("LOGGED:", {
+            uid: user.uid,
+            email: user.email,
+            provider: user.providerData?.map(p => p.providerId)
+          });
+        } else {
+          console.log("NO USER");
+        }
         console.log("Auth state:", user ? (user.email || user.uid) : "NO USER");
 
        // ✅ SOLO estos UID pueden ser admin
