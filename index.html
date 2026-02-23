@@ -528,6 +528,12 @@
       <span>Calendario</span>
     </div>
 
+    <!-- ✅ NUEVO: RENDER -->
+    <div class="app" onclick="openSection('render')">
+      <div class="app-icon">🎬</div>
+      <span>Render</span>
+    </div>
+
     <div class="app">
       <div class="app-icon">🚧</div>
       <span>Próximamente</span>
@@ -736,6 +742,41 @@
     </div>
   </div>
 
+  <!-- ✅ NUEVA SECCIÓN: RENDER -->
+  <div id="render" class="section">
+    <button class="back" onclick="goHome()">← Volver</button>
+
+    <div class="container">
+      <h1 class="title" data-aos="fade-down">Render</h1>
+
+      <div class="admin-panel" data-aos="fade-up">
+        <div class="soft-note" style="margin-top:0;">
+          Sube <b>1 vídeo</b> y <b>1 imagen</b>. Se renderiza y se guarda el resultado.
+        </div>
+
+        <div class="grid-inputs" style="margin-top:14px;">
+          <input id="hfVideo" type="file" accept="video/*" />
+          <input id="hfImage" type="file" accept="image/*" />
+        </div>
+
+        <div class="exam-row">
+          <button class="btn-main" onclick="hfStartRender()">INICIAR RENDER</button>
+          <button class="btn-secondary" onclick="hfReset()">RESET</button>
+        </div>
+
+        <div id="hfStatus" class="soft-note" style="margin-top:10px;"></div>
+        <div id="hfErr" class="err"></div>
+
+        <div id="hfResultWrap" style="display:none; margin-top:14px;">
+          <div class="small">Resultado</div>
+          <video id="hfResultVideo" controls
+                 style="width:100%; border-radius:18px; border:1px solid rgba(255,255,255,0.14); background:#000;"></video>
+          <a id="hfResultLink" class="btn-link" target="_blank" rel="noopener">ABRIR VIDEO</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Crear/Editar evento -->
   <div id="calEventModal" class="modal" aria-hidden="true">
     <div class="overlay" onclick="calCloseEventModal()"></div>
@@ -801,6 +842,8 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+  <!-- ✅ NUEVO: Firebase Storage -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
@@ -845,6 +888,7 @@
 
     let db = null;
     let auth = null;
+    let storage = null;   // ✅ NUEVO
     let isAdmin = false;
 
     function friendlyAuthError(e){
@@ -869,6 +913,7 @@
 
       db = firebase.firestore();
       auth = firebase.auth();
+      storage = firebase.storage(); // ✅ NUEVO
 
       // Persistencia local
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
@@ -895,8 +940,7 @@
           "wpRT6eJjbVemGpJtO9Day9VQmbH3"
         ]);
 
-isAdmin = !!user && ADMIN_UIDS.has(user.uid);
-
+        isAdmin = !!user && ADMIN_UIDS.has(user.uid);
 
         // Calendario
         if (user) {
@@ -910,6 +954,9 @@ isAdmin = !!user && ADMIN_UIDS.has(user.uid);
           calSetUIAuthed(false);
           calMsg("");
         }
+
+        // ✅ actualizar UI admin
+        applyAdminUI();
       });
     }
     initFirebase();
@@ -1883,6 +1930,163 @@ isAdmin = !!user && ADMIN_UIDS.has(user.uid);
         if (saved && $("calEmail")) $("calEmail").value = saved;
       } catch {}
     })();
+
+    // =========================
+    // ✅ HIGGSFIELD RENDER (WEB)
+    // =========================
+    function hfSetErr(msg){
+      const el = $("hfErr");
+      if (!el) return;
+      if (!msg) { el.style.display="none"; el.innerText=""; return; }
+      el.style.display="block";
+      el.innerText = msg;
+    }
+
+    function hfSetStatus(msg){
+      const el = $("hfStatus");
+      if (el) el.innerText = msg || "";
+    }
+
+    function hfReset(){
+      hfSetErr("");
+      hfSetStatus("");
+      if ($("hfVideo")) $("hfVideo").value = "";
+      if ($("hfImage")) $("hfImage").value = "";
+      if ($("hfResultWrap")) $("hfResultWrap").style.display = "none";
+      if ($("hfResultVideo")) $("hfResultVideo").src = "";
+      if ($("hfResultLink")) $("hfResultLink").removeAttribute("href");
+    }
+
+    async function hfUploadToStorage(file, kind){
+      if (!auth.currentUser) throw new Error("Haz login (Calendario) para poder subir archivos.");
+      if (!storage) throw new Error("Storage no inicializado.");
+
+      const uid = auth.currentUser.uid;
+      const safeName = (file.name || `${kind}`).replace(/[^\w.\-]+/g, "_");
+      const path = `users/${uid}/higgsfield_inputs/${Date.now()}_${kind}_${safeName}`;
+
+      const ref = storage.ref().child(path);
+      const meta = { contentType: file.type || undefined };
+
+      await ref.put(file, meta);
+      return await ref.getDownloadURL();
+    }
+
+    async function hfCallStart(videoUrl, imageUrl){
+      // ✅ CAMBIA si tu región es distinta
+      const endpoint = "https://us-central1-cosas-af46c.cloudfunctions.net/higgsfieldStart";
+
+      const idToken = await auth.currentUser.getIdToken();
+
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + idToken
+        },
+        body: JSON.stringify({
+          from: auth.currentUser.email || auth.currentUser.uid,
+          video_url: videoUrl,
+          image_url: imageUrl
+        })
+      });
+
+      if (!r.ok) {
+        const t = await r.text().catch(()=> "");
+        throw new Error("Start error: " + (t || r.status));
+      }
+      return await r.json(); // { request_id }
+    }
+
+    async function hfCallStatus(requestId){
+      const endpoint = "https://us-central1-cosas-af46c.cloudfunctions.net/higgsfieldStatus";
+
+      const idToken = await auth.currentUser.getIdToken();
+
+      const r = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + idToken
+        },
+        body: JSON.stringify({ request_id: requestId })
+      });
+
+      if (!r.ok) {
+        const t = await r.text().catch(()=> "");
+        throw new Error("Status error: " + (t || r.status));
+      }
+      return await r.json(); // { status, output_url? }
+    }
+
+    function hfSleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+    async function hfStartRender(){
+      hfSetErr("");
+      if ($("hfResultWrap")) $("hfResultWrap").style.display = "none";
+
+      if (!auth.currentUser) { hfSetErr("Haz login en Calendario (Firebase Auth)."); return; }
+
+      const video = $("hfVideo")?.files?.[0];
+      const image = $("hfImage")?.files?.[0];
+
+      if (!video || !image) { hfSetErr("Selecciona 1 vídeo y 1 imagen."); return; }
+      if (!(video.type || "").startsWith("video/")) { hfSetErr("El primer archivo debe ser vídeo."); return; }
+      if (!(image.type || "").startsWith("image/")) { hfSetErr("El segundo archivo debe ser imagen."); return; }
+
+      try{
+        hfSetStatus("Subiendo archivos…");
+        const [videoUrl, imageUrl] = await Promise.all([
+          hfUploadToStorage(video, "video"),
+          hfUploadToStorage(image, "image")
+        ]);
+
+        hfSetStatus("Iniciando render…");
+        const start = await hfCallStart(videoUrl, imageUrl);
+        const requestId = start?.request_id;
+        if (!requestId) throw new Error("No request_id");
+
+        hfSetStatus("Render en cola… (" + requestId + ")");
+
+        // 60 intentos * 10s = 10 min
+        for (let i=1; i<=60; i++){
+          await hfSleep(10000);
+          hfSetStatus(`Render en proceso… intento ${i}/60`);
+
+          const st = await hfCallStatus(requestId);
+          const status = st?.status;
+
+          if (status === "failed" || status === "nsfw") throw new Error("Render falló: " + status);
+
+          if (status === "completed") {
+            const out = st?.output_url;
+            if (!out) throw new Error("Completed sin output_url");
+
+            hfSetStatus("Completado ✅");
+            $("hfResultWrap").style.display = "block";
+            $("hfResultVideo").src = out;
+            $("hfResultLink").href = out;
+
+            try{
+              await db.collection("users").doc(auth.currentUser.uid)
+                .collection("renders").add({
+                  request_id: requestId,
+                  output_url: out,
+                  createdAt: new Date().toISOString()
+                });
+            } catch {}
+
+            return;
+          }
+        }
+
+        throw new Error("Timeout: no terminó a tiempo.");
+      } catch(e){
+        console.error(e);
+        hfSetErr(String(e?.message || e));
+        hfSetStatus("");
+      }
+    }
 
     applyAdminUI();
   </script>
