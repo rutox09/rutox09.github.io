@@ -185,61 +185,46 @@ transform:translateY(-3px);
 
 .hub{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:30px;
-padding:50px;
-perspective:1000px;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:40px;
+padding:70px;
+max-width:1600px;
+margin:auto;
 }
 
 .card{
-background:rgba(10,10,10,.72);
-border:1px solid rgba(255,208,0,.15);
-border-radius:25px;
-padding:40px;
-min-height:220px;
-cursor:pointer;
+height:260px;
+display:flex;
+justify-content:center;
+align-items:center;
 position:relative;
+background:
+linear-gradient(
+145deg,
+rgba(20,20,20,.95),
+rgba(5,5,5,.92)
+);
+border:1px solid rgba(255,208,0,.15);
 overflow:hidden;
-transition:.4s;
-transform-style:preserve-3d;
-box-shadow:
-0 0 30px rgba(0,0,0,.7),
-0 0 20px rgba(0,170,255,.08);
-backdrop-filter:blur(12px);
 }
 
-.card::before{
+.card::after{
 content:"";
 position:absolute;
-inset:-100%;
-background:linear-gradient(
-120deg,
-transparent,
-rgba(255,208,0,.25),
-transparent
+inset:0;
+background:
+radial-gradient(
+circle at top,
+rgba(0,170,255,.12),
+transparent 70%
 );
-transition:.6s;
-}
-
-.card:hover::before{
-inset:100%;
-}
-
-.card:hover{
-transform:
-rotateX(6deg)
-rotateY(-6deg)
-translateY(-8px)
-scale(1.02);
-box-shadow:
-0 0 35px rgba(255,208,0,.3),
-0 0 60px rgba(0,170,255,.2);
+pointer-events:none;
 }
 
 .card h2{
-font-size:2rem;
-color:#ffd000;
-text-shadow:0 0 15px #ffd000;
+font-size:2.3rem;
+letter-spacing:4px;
+z-index:2;
 }
 
 /* SECCIONES */
@@ -486,11 +471,6 @@ color:black;
 
 <nav>
 <div class="logo">BATMANHUB</div>
-
-<div style="display:flex;gap:10px;">
-<button class="modeBtn" onclick="toggleMode()">Bruce/Batman</button>
-<button class="modeBtn" onclick="showHub()">Hub</button>
-</div>
 </nav>
 
 <div class="hub" id="hub">
@@ -503,28 +483,12 @@ color:black;
 <h2>VOTACIONES</h2>
 </div>
 
-<div class="card" onclick="openSection('notes')">
-<h2>NOTAS</h2>
-</div>
-
-<div class="card" onclick="openSection('chat')">
-<h2>GOTHAM CHAT</h2>
-</div>
-
 <div class="card" onclick="openSection('missions')">
 <h2>MISIONES</h2>
 </div>
 
 <div class="card" onclick="openSection('stats')">
 <h2>ESTADÍSTICAS</h2>
-</div>
-
-<div class="card" onclick="openSection('map')">
-<h2>MAPA GOTHAM</h2>
-</div>
-
-<div class="card" onclick="openSection('alfred')">
-<h2>ALFRED AI</h2>
 </div>
 
 </div>
@@ -615,27 +579,6 @@ color:black;
 
 </section>
 
-<!-- CHAT -->
-
-<section class="section" id="chat">
-
-<div class="counterBox">
-
-<h1 style="text-align:center;color:#ffd000;">GOTHAM CHAT</h1>
-
-<div class="chatBox" id="chatMessages"></div>
-
-<div style="display:flex;gap:10px;margin-top:15px;">
-
-<input id="chatInput" placeholder="mensaje..." style="flex:1;">
-
-<button onclick="sendMessage()">Enviar</button>
-
-</div>
-
-</div>
-
-</section>
 
 <!-- MISIONES -->
 
@@ -669,41 +612,16 @@ color:black;
 
 </section>
 
-<!-- MAPA -->
 
-<section class="section" id="map">
+<!-- REEMPLAZA LOS AUDIOS POR ESTOS -->
 
-<div class="counterBox">
+<audio id="addSound">
+<source src="sounds/add.mp3" type="audio/mpeg">
+</audio>
 
-<h1 style="text-align:center;color:#ffd000;">MAPA GOTHAM</h1>
-
-<div class="map">
-GOTHAM CITY
-</div>
-
-</div>
-
-</section>
-
-<!-- ALFRED -->
-
-<section class="section" id="alfred">
-
-<div class="counterBox">
-
-<h1 style="text-align:center;color:#ffd000;">ALFRED ASSISTANT</h1>
-
-<div id="alfredText" style="margin-top:25px;font-size:1.1rem;">
-Buenas noches, señor Wayne.
-</div>
-
-</div>
-
-</section>
-
-<audio id="addSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d4f74fcb2.mp3?filename=click-124467.mp3"></audio>
-
-<audio id="voteSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_24f51dfb31.mp3?filename=notification-124466.mp3"></audio>
+<audio id="voteSound">
+<source src="sounds/vote.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
@@ -833,13 +751,8 @@ document.getElementById("hub").style.display="grid";
 
 }
 
-/* MODO */
 
-function toggleMode(){
 
-document.body.classList.toggle("bruce");
-
-}
 
 /* VOTACIONES */
 
@@ -987,25 +900,6 @@ localStorage.setItem("notes",notes.value);
 
 });
 
-/* CHAT */
-
-function sendMessage(){
-
-const input=document.getElementById("chatInput");
-
-if(!input.value) return;
-
-const msg=document.createElement("div");
-
-msg.className="message";
-
-msg.innerText="🦇 "+input.value;
-
-document.getElementById("chatMessages").appendChild(msg);
-
-input.value="";
-
-}
 
 /* STATS */
 
