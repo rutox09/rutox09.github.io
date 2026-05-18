@@ -96,7 +96,7 @@ transform:translateY(-100vh) translateX(100px);
 }
 }
 
-/* PANTALLA LOGIN */
+/* BOOT */
 
 #boot{
 position:fixed;
@@ -164,23 +164,6 @@ letter-spacing:3px;
 text-shadow:0 0 20px #ffd000;
 }
 
-.modeBtn{
-background:linear-gradient(145deg,#1a1a1a,#333);
-border:none;
-padding:12px 20px;
-color:#ffd000;
-cursor:pointer;
-border-radius:10px;
-transition:.3s;
-box-shadow:
-0 0 15px rgba(255,208,0,.15),
-inset 0 0 10px rgba(255,255,255,.05);
-}
-
-.modeBtn:hover{
-transform:translateY(-3px);
-}
-
 /* HUB */
 
 .hub{
@@ -190,6 +173,7 @@ gap:40px;
 padding:70px;
 max-width:1600px;
 margin:auto;
+perspective:1000px;
 }
 
 .card{
@@ -206,6 +190,30 @@ rgba(5,5,5,.92)
 );
 border:1px solid rgba(255,208,0,.15);
 overflow:hidden;
+border-radius:25px;
+cursor:pointer;
+transition:.4s;
+backdrop-filter:blur(12px);
+box-shadow:
+0 0 30px rgba(0,0,0,.7),
+0 0 20px rgba(0,170,255,.08);
+}
+
+.card::before{
+content:"";
+position:absolute;
+inset:-100%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,208,0,.25),
+transparent
+);
+transition:.6s;
+}
+
+.card:hover::before{
+inset:100%;
 }
 
 .card::after{
@@ -221,10 +229,22 @@ transparent 70%
 pointer-events:none;
 }
 
+.card:hover{
+transform:
+rotateX(6deg)
+rotateY(-6deg)
+translateY(-8px)
+scale(1.02);
+box-shadow:
+0 0 35px rgba(255,208,0,.3),
+0 0 60px rgba(0,170,255,.2);
+}
+
 .card h2{
 font-size:2.3rem;
 letter-spacing:4px;
 z-index:2;
+color:#ffd000;
 }
 
 /* SECCIONES */
@@ -250,7 +270,7 @@ transform:translateY(0);
 }
 }
 
-/* CONTADOR */
+/* BOX */
 
 .counterBox{
 max-width:700px;
@@ -262,6 +282,8 @@ border:1px solid rgba(255,208,0,.2);
 backdrop-filter:blur(12px);
 box-shadow:0 0 40px rgba(255,208,0,.1);
 }
+
+/* CONTADOR */
 
 .counterDisplay{
 font-size:7rem;
@@ -290,6 +312,8 @@ opacity:.8;
 margin-bottom:30px;
 min-height:30px;
 }
+
+/* CONTROLES */
 
 .controls{
 display:flex;
@@ -406,53 +430,14 @@ background:#151515;
 border-radius:12px;
 }
 
-/* CHAT */
-
-.chatBox{
-height:250px;
-overflow:auto;
-background:#101010;
-padding:15px;
+textarea{
+width:100%;
+height:300px;
+background:#111;
+color:white;
+border:none;
 border-radius:15px;
-margin-top:20px;
-}
-
-.message{
-margin:8px 0;
-}
-
-/* MAPA */
-
-.map{
-margin-top:20px;
-height:250px;
-border-radius:20px;
-background:
-linear-gradient(45deg,#0d0d0d,#1c1c1c);
-display:flex;
-justify-content:center;
-align-items:center;
-font-size:2rem;
-color:#ffd000;
-}
-
-/* MODO BRUCE */
-
-.bruce{
-background:#f5f5f5;
-color:black;
-}
-
-.bruce .card,
-.bruce .counterBox,
-.bruce .voteCard{
-background:white;
-color:black;
-}
-
-.bruce button{
-background:#ddd;
-color:black;
+padding:20px;
 }
 
 </style>
@@ -471,6 +456,8 @@ color:black;
 
 <nav>
 <div class="logo">BATMANHUB</div>
+
+<button onclick="showHub()">Hub</button>
 </nav>
 
 <div class="hub" id="hub">
@@ -481,6 +468,10 @@ color:black;
 
 <div class="card" onclick="openSection('votes')">
 <h2>VOTACIONES</h2>
+</div>
+
+<div class="card" onclick="openSection('notes')">
+<h2>NOTAS</h2>
 </div>
 
 <div class="card" onclick="openSection('missions')">
@@ -573,12 +564,11 @@ color:black;
 
 <h1 style="text-align:center;color:#ffd000;">NOTAS</h1>
 
-<textarea id="notesArea" style="width:100%;height:300px;background:#111;color:white;border:none;border-radius:15px;padding:20px;"></textarea>
+<textarea id="notesArea"></textarea>
 
 </div>
 
 </section>
-
 
 <!-- MISIONES -->
 
@@ -612,8 +602,7 @@ color:black;
 
 </section>
 
-
-<!-- REEMPLAZA LOS AUDIOS POR ESTOS -->
+<!-- SONIDOS -->
 
 <audio id="addSound">
 <source src="sounds/add.mp3" type="audio/mpeg">
@@ -625,11 +614,12 @@ color:black;
 
 <script>
 
-/* EFECTOS */
+/* LLUVIA */
 
 for(let i=0;i<100;i++){
 
 const drop=document.createElement("div");
+
 drop.classList.add("drop");
 
 drop.style.left=Math.random()*100+"vw";
@@ -639,6 +629,8 @@ drop.style.animationDelay=Math.random()*2+"s";
 document.getElementById("rain").appendChild(drop);
 
 }
+
+/* PARTÍCULAS */
 
 for(let i=0;i<40;i++){
 
@@ -679,6 +671,26 @@ quotes[Math.floor(Math.random()*quotes.length)];
 
 updateQuote();
 
+function playAddSound(){
+
+const sound=document.getElementById("addSound");
+
+sound.currentTime=0;
+
+sound.play().catch(()=>{});
+
+}
+
+function playVoteSound(){
+
+const sound=document.getElementById("voteSound");
+
+sound.currentTime=0;
+
+sound.play().catch(()=>{});
+
+}
+
 function change(num){
 
 count=parseInt(count)+num;
@@ -694,6 +706,7 @@ let n=parseInt(document.getElementById("customNum").value);
 if(!isNaN(n)){
 
 count=parseInt(count)+n;
+
 saveCounter();
 
 }
@@ -707,6 +720,7 @@ let n=parseInt(document.getElementById("customNum").value);
 if(!isNaN(n)){
 
 count=parseInt(count)-n;
+
 saveCounter();
 
 }
@@ -721,7 +735,7 @@ localStorage.setItem("count",count);
 
 updateQuote();
 
-document.getElementById("addSound").play();
+playAddSound();
 
 updateStats();
 
@@ -750,9 +764,6 @@ s.classList.remove("active");
 document.getElementById("hub").style.display="grid";
 
 }
-
-
-
 
 /* VOTACIONES */
 
@@ -795,8 +806,7 @@ title,
 options:[
 {text:op1,votes:0},
 {text:op2,votes:0}
-],
-voted:[]
+]
 });
 
 saveVotes();
@@ -862,7 +872,7 @@ saveVotes();
 
 openVote(voteIndex);
 
-document.getElementById("voteSound").play();
+playVoteSound();
 
 }
 
@@ -899,7 +909,6 @@ notes.addEventListener("input",()=>{
 localStorage.setItem("notes",notes.value);
 
 });
-
 
 /* STATS */
 
