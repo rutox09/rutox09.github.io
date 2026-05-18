@@ -1,1896 +1,268 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RUTOX UNIVERSE</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%8C%3C/text%3E%3C/svg%3E">
+<title>RUTOX UNIVERSE</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- FullCalendar -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<style>
 
-  <style>
-    /* ===== CALENDAR (FullCalendar) ===== */
-    #calView {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 22px;
-      padding: 14px;
-    }
-    .fc, .fc * { color: #e9eefc; }
-    .fc .fc-toolbar-title { font-weight: 900; letter-spacing: .2px; }
-    .fc .fc-button {
-      background: rgba(255,255,255,0.08) !important;
-      border: 1px solid rgba(255,255,255,0.14) !important;
-      border-radius: 14px !important;
-      font-weight: 900 !important;
-    }
-    .fc .fc-button:hover { filter: brightness(1.15); }
-    .fc .fc-button-primary:not(:disabled).fc-button-active {
-      background: rgba(99,102,241,0.85) !important;
-      border-color: rgba(99,102,241,0.9) !important;
-    }
-    .fc .fc-daygrid-day-number { opacity: .9; font-weight: 800; }
-    .fc .fc-event { border-radius: 10px; border: 0 !important; padding: 2px 6px; }
+:root{
+  --bg:#020617;
+  --glass:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.12);
+  --neon:#00f2ff;
+}
 
-    /* Tipos (legend + chips) */
-    .typeBadge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      font-weight: 900;
-      font-size: 0.9rem;
-      user-select:none;
-    }
-    .typeDot{
-      width:10px;height:10px;border-radius:999px;
-      box-shadow:0 0 0 1px rgba(255,255,255,0.18);
-    }
-    .dotExam{ background:#b44545; }
-    .dotHomework{ background:#3b5fb8; }
-    .dotActivity{ background:#3d8a5a; }
+*{
+  box-sizing:border-box;
+}
 
-    :root {
-      --bg: #020617;
-      --glass: rgba(255,255,255,0.08);
-      --border: rgba(255,255,255,0.15);
-      --neon: #00f2ff;
-      --primary: #6366f1;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      color: white;
-      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-      background-attachment: fixed;
-    }
+body{
+  margin:0;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  color:white;
+  background:radial-gradient(circle at center,#0f172a 0%,#020617 100%);
+  min-height:100vh;
+}
 
-    /* ---------- LOBBY ---------- */
-    #lobby {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 20px;
-      padding: 10px 30px 30px 30px;
-    }
-    .app {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 25px;
-      height: 98px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .app:hover {
-      transform: scale(1.05);
-      background: rgba(255,255,255,0.15);
-    }
-    .app span { margin-top: 6px; font-size: 0.8rem; font-weight: 700; }
-    .app-icon { font-size: 1.8rem; }
+/* ---------- LOBBY ---------- */
 
-    /* ---------- SECCIONES ---------- */
-    .section { display: none; padding: 20px; }
-    .back {
-      margin-bottom: 20px;
-      background: none;
-      border: none;
-      color: var(--neon);
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight:900;
-    }
+#lobby{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:20px;
+  padding:40px;
+  max-width:800px;
+  margin:auto;
+}
 
-    /* ---------- COMÚN ---------- */
-    .container { max-width: 1200px; margin: auto; }
-    .title {
-      font-size: 4rem;
-      font-weight: 800;
-      text-align: center;
-      margin: 0 0 20px 0;
-      background: linear-gradient(90deg, #fff, var(--neon));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .controls-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-    .total-badge {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 10px 30px;
-      border-radius: 100px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--neon);
-      backdrop-filter: blur(10px);
-    }
-    .order-btn, .filter-btn {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 16px;
-      border-radius: 50px;
-      cursor: pointer;
-      font-weight: 900;
-      transition: 0.3s;
-      font-size: 0.9rem;
-    }
-    .order-btn:hover, .filter-btn:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.2);
-    }
-    .filter-btn.active { background: var(--primary); border-color: var(--primary); }
+.app{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:25px;
+  height:120px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:0.25s;
+}
 
-    .admin-panel {
-      background: rgba(15, 23, 42, 0.9);
-      padding: 30px;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 30px;
-      position: relative;
-      z-index: 100;
-    }
-    .grid-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-    }
-    input, textarea, select {
-      background: #000;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 15px;
-      color: white;
-      font-size: 1rem;
-      width: 100%;
-      outline: none;
-    }
-    textarea { min-height: 110px; resize: vertical; }
-    .btn-main {
-      background: white;
-      color: black;
-      border: none;
-      padding: 18px;
-      border-radius: 15px;
-      font-weight: 900;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1.05rem;
-    }
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 18px;
-      border-radius: 15px;
-      font-weight: 900;
-      cursor: pointer;
-      flex: 1;
-      min-width: 180px;
-      transition: 0.3s;
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+.app:hover{
+  transform:scale(1.05);
+  background:rgba(255,255,255,0.15);
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: 0.25s;
-    }
-    .card.checked {
-      border-color: rgba(0, 242, 255, 0.6);
-      box-shadow: 0 0 0 1px rgba(0, 242, 255, 0.25);
-      opacity: 0.92;
-    }
-    .card img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 20px;
-      margin-bottom: 15px;
-      pointer-events: none;
-    }
-    .card-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: #fff; }
-    .card-price { font-size: 2rem; font-weight: 900; color: var(--neon); margin-bottom: 15px; }
-    .card-actions {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      display: flex;
-      gap: 8px;
-      z-index: 50;
-    }
-    .circle-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight:900;
-    }
-    .btn-link {
-      display: block;
-      text-align: center;
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      color: var(--neon);
-      text-decoration: none;
-      font-weight: 900;
-      font-size: 0.85rem;
-    }
+.app-icon{
+  font-size:2rem;
+}
 
-    /* ---------- MEDIA ---------- */
-    .media-sub { text-align:center; opacity:0.85; margin:10px 0 30px; font-weight:700; }
-    .hint { text-align:center; font-weight:800; opacity:0.85; }
-    .warning { text-align:center; margin-top:10px; font-weight:900; color:var(--neon); opacity:0.95; }
-    .exam-row { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
-    .exam-meta { display:flex; justify-content:space-between; gap:10px; margin-top:10px; flex-wrap:wrap; }
-    .pill {
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      font-weight: 900;
-      font-size: 0.9rem;
-    }
-    .big-grade { font-size:2.2rem; font-weight:900; color:var(--neon); margin-top:12px; }
-    .muted { opacity:0.8; font-weight:800; }
-    .soft-note { text-align:center; opacity:0.85; font-weight:800; margin-top:10px; }
+.app span{
+  margin-top:10px;
+  font-weight:800;
+}
 
-    #lobbyClock { font-weight: 900; letter-spacing: 0.3px; }
-    #lobbyClock span { color: var(--neon); }
+/* ---------- GENERAL ---------- */
 
-    /* ---------- FABs ---------- */
-    #shareFab {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 9999;
-      width: 56px;
-      height: 56px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0, 0, 0, 0.55);
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(12px);
-      transition: 0.25s;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-      font-size: 1.2rem;
-      font-weight:900;
-    }
-    #shareFab:hover {
-      transform: translateY(-2px);
-      border-color: rgba(0,242,255,0.45);
-      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
-    }
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:30px;
+}
 
-    #adminFab {
-      position: fixed;
-      left: 18px;
-      bottom: 18px;
-      z-index: 9999;
-      height: 56px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0, 0, 0, 0.55);
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 0 14px;
-      backdrop-filter: blur(12px);
-      transition: 0.25s;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-      font-weight: 900;
-    }
-    #adminFab:hover {
-      transform: translateY(-2px);
-      border-color: rgba(0,242,255,0.45);
-      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
-    }
-    #adminStateDot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.35);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.2);
-    }
-    .dotOn {
-      background: rgba(0,242,255,0.95) !important;
-      box-shadow: 0 0 0 1px rgba(0,242,255,0.4), 0 0 18px rgba(0,242,255,0.25) !important;
-    }
+.title{
+  font-size:4rem;
+  font-weight:900;
+  text-align:center;
+  background:linear-gradient(90deg,#fff,var(--neon));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  margin-bottom:40px;
+}
 
-    /* ---------- WIDGET TIEMPO ---------- */
-    #wxTop {
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 9999;
-      padding: 10px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(12px);
-      cursor: pointer;
-      transition: 0.25s;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.35);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
-      min-width: 92px;
-      user-select: none;
-      font-weight:900;
-    }
-    #wxTop:hover {
-      transform: translateY(-2px);
-      border-color: rgba(0,242,255,0.45);
-      box-shadow: 0 12px 34px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,242,255,0.18);
-    }
-    #wxTopMain { font-weight: 900; font-size: 1rem; }
-    #wxTopSub  {
-      font-weight: 900;
-      font-size: 0.72rem;
-      color: var(--neon);
-      opacity: 0.92;
-      max-width: 180px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+.section{
+  display:none;
+}
 
-    /* ---------- MODAL ---------- */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 10000;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-    }
-    .modal.open { display: flex; }
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(6px);
-    }
-    .modalCard {
-      position: relative;
-      width: min(560px, 100%);
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(2, 6, 23, 0.78);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.55);
-      padding: 18px;
-      z-index: 2;
-    }
-    .modalTop {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:12px;
-    }
-    .modalTitle { font-weight: 900; font-size: 1.1rem; letter-spacing: 0.2px; }
-    .modalClose {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.45);
-      color: white;
-      cursor: pointer;
-      font-weight: 900;
-    }
-    .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
-    .chip {
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: white;
-      cursor: pointer;
-      font-weight: 900;
-      transition: 0.2s;
-    }
-    .chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(0,242,255,0.35); }
-    .btnPrimary {
-      flex: 1;
-      min-width: 160px;
-      padding: 14px;
-      border-radius: 16px;
-      border: none;
-      font-weight: 900;
-      cursor: pointer;
-      background: white;
-      color: black;
-    }
-    .btnGhost {
-      flex: 1;
-      min-width: 160px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.14);
-      font-weight: 900;
-      cursor: pointer;
-      background: rgba(255,255,255,0.07);
-      color: white;
-    }
-    .btnDanger{
-      flex: 1;
-      min-width: 160px;
-      padding: 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,0,0,0.35);
-      font-weight: 900;
-      cursor: pointer;
-      background: rgba(255,0,0,0.16);
-      color: white;
-    }
-    .small { margin-top:10px; font-weight:900; font-size:0.85rem; opacity:0.86; }
-    .err { margin-top:10px; font-weight:900; color:var(--neon); display:none; }
-    .twoCol{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 560px){
-      .twoCol{ grid-template-columns: 1fr; }
-    }
-  </style>
+.back{
+  background:none;
+  border:none;
+  color:var(--neon);
+  font-size:1rem;
+  cursor:pointer;
+  margin-bottom:20px;
+  font-weight:900;
+}
+
+/* ---------- PANEL ---------- */
+
+.panel{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:30px;
+  padding:40px;
+  text-align:center;
+}
+
+/* ---------- CONTADOR ---------- */
+
+#counterNumber{
+  font-size:7rem;
+  font-weight:900;
+  color:var(--neon);
+  margin-bottom:30px;
+}
+
+.row{
+  display:flex;
+  gap:15px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+button{
+  border:none;
+  border-radius:15px;
+  padding:18px 25px;
+  font-weight:900;
+  cursor:pointer;
+  transition:0.2s;
+  font-size:1rem;
+}
+
+button:hover{
+  transform:scale(1.04);
+}
+
+.btn-main{
+  background:white;
+  color:black;
+}
+
+.btn-secondary{
+  background:rgba(255,255,255,0.08);
+  color:white;
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+.btn-danger{
+  background:rgba(255,0,0,0.2);
+  color:white;
+}
+
+input{
+  width:100%;
+  background:black;
+  color:white;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:15px;
+  padding:18px;
+  font-size:1rem;
+  outline:none;
+}
+
+.input-wrap{
+  max-width:300px;
+  margin:auto;
+  margin-top:20px;
+}
+
+</style>
 </head>
 
 <body>
-  <!-- TÍTULO -->
-  <div class="container" style="padding: 28px 30px 0 30px;">
-    <h1 class="title" data-aos="fade-down" style="margin-bottom: 18px;">RUTOX UNIVERSE</h1>
-    <div id="lobbyClock" class="soft-note" style="margin-top:-10px; margin-bottom:14px;">
-      🕒 <span>--:--:--</span> · <span id="clockPlace">—</span>
-    </div>
+
+<div class="container">
+
+  <h1 class="title">
+    RUTOX UNIVERSE
+  </h1>
+
+</div>
+
+<!-- LOBBY -->
+
+<div id="lobby">
+
+  <div class="app" onclick="openSection('counter')">
+    <div class="app-icon">🔢</div>
+    <span>Contador</span>
   </div>
 
-  <!-- LOBBY -->
-  <div id="lobby">
-    <div class="app" onclick="openSection('wishlist')">
-      <div class="app-icon">🧠</div>
-      <span>Wishlist</span>
-    </div>
+</div>
 
-    <div class="app" onclick="openSection('media')">
-      <div class="app-icon">📚</div>
-      <span>Media</span>
-    </div>
+<!-- CONTADOR -->
 
-    <div class="app" onclick="openSection('calendar')">
-      <div class="app-icon">📅</div>
-      <span>Calendario</span>
-    </div>
+<div id="counter" class="section">
 
-    <div class="app">
-      <div class="app-icon">🚧</div>
-      <span>Próximamente</span>
-    </div>
-  </div>
+  <div class="container">
 
-  <!-- WIDGET TIEMPO (solo lobby) -->
-  <div id="wxTop" onclick="wxOpenModal()" title="Cambiar ciudad / usar ubicación">
-    <div id="wxTopMain">—</div>
-    <div id="wxTopSub">Pulsa para elegir</div>
-  </div>
+    <button class="back" onclick="goHome()">
+      ← Volver
+    </button>
 
-  <!-- MODAL TIEMPO -->
-  <div id="wxModal" class="modal" aria-hidden="true">
-    <div class="overlay" onclick="wxCloseModal()"></div>
-    <div class="modalCard">
-      <div class="modalTop">
-        <div class="modalTitle">Tiempo</div>
-        <button class="modalClose" onclick="wxCloseModal()" aria-label="Cerrar">✕</button>
+    <h1 class="title">
+      Contador
+    </h1>
+
+    <div class="panel">
+
+      <div id="counterNumber">
+        0
       </div>
-
-      <div class="small">Ciudad (o deja vacío y usa ubicación)</div>
-      <input id="wxCityInput" type="text" placeholder="Ej: Barcelona" />
 
       <div class="row">
-        <button class="chip" onclick="wxQuickCity('Barcelona')">Barcelona</button>
-        <button class="chip" onclick="wxUseMyLocationFromModal()">📍 Mi ubicación</button>
-        <button class="chip" onclick="wxRefreshNow()">🔄 Actualizar</button>
+
+        <button class="btn-main" onclick="sumarUno()">
+          +1
+        </button>
+
       </div>
 
-      <div class="row" style="margin-top:14px;">
-        <button class="btnPrimary" onclick="wxSaveCityFromModal()">Guardar</button>
-        <button class="btnGhost" onclick="wxCloseModal()">Cancelar</button>
+      <div class="input-wrap">
+
+        <input
+          id="customAmount"
+          type="number"
+          placeholder="Cantidad personalizada"
+          value="5"
+        >
+
       </div>
 
-      <div id="wxModalError" class="err"></div>
+      <div class="row">
+
+        <button class="btn-secondary" onclick="sumarCustom()">
+          SUMAR
+        </button>
+
+        <button class="btn-secondary" onclick="restarCustom()">
+          RESTAR
+        </button>
+
+      </div>
+
+      <div class="row">
+
+        <button class="btn-danger" onclick="reiniciarContador()">
+          REINICIAR
+        </button>
+
+      </div>
+
     </div>
+
   </div>
 
-  <!-- MODAL ADMIN (Wishlist) -->
-  <div id="adminModal" class="modal" aria-hidden="true">
-    <div class="overlay" onclick="adminCloseModal()"></div>
-    <div class="modalCard">
-      <div class="modalTop">
-        <div class="modalTitle">Admin</div>
-        <button class="modalClose" onclick="adminCloseModal()" aria-label="Cerrar">✕</button>
-      </div>
+</div>
 
-      <div id="adminLoggedBox" style="display:none;">
-        <div class="small">Estás logueado ✅</div>
-        <div class="row">
-          <button class="chip" onclick="adminShowUID()">🆔 Ver UID</button>
-          <button class="chip" onclick="adminLogout()">Salir</button>
-        </div>
-      </div>
+<script src="script.js"></script>
 
-      <div id="adminLoginBox">
-        <div class="small">Email</div>
-        <input id="adminEmail" type="email" placeholder="tuemail@..." />
-        <div class="small">Contraseña</div>
-        <input id="adminPass" type="password" placeholder="••••••••" />
-
-        <div class="row" style="margin-top:14px;">
-          <button class="btnPrimary" onclick="adminLogin()">Entrar</button>
-          <button class="chip" onclick="adminResetPass()">He olvidado la contraseña</button>
-          <button class="btnGhost" onclick="adminCloseModal()">Cancelar</button>
-        </div>
-      </div>
-
-      <div id="adminErr" class="err"></div>
-    </div>
-  </div>
-
-  <!-- BOTÓN COMPARTIR (solo lobby) -->
-  <button id="shareFab" onclick="shareSite()" aria-label="Compartir web" title="Compartir">🔗</button>
-
-  <!-- BOTÓN ADMIN -->
-  <button id="adminFab" onclick="adminOpenModal()" aria-label="Admin" title="Admin">
-    <span id="adminStateDot"></span>
-    <span id="adminFabText">Admin</span>
-  </button>
-
-  <!-- WISHLIST -->
-  <div id="wishlist" class="section">
-    <button class="back" onclick="goHome()">← Volver</button>
-
-    <div class="container">
-      <h1 class="title" data-aos="fade-down">Wishlist</h1>
-
-      <div class="controls-row" data-aos="fade-up">
-        <div class="total-badge" id="totalPrice">0.00 €</div>
-        <button class="order-btn" onclick="toggleOrden()">⇅ Ordenar por Precio</button>
-
-        <button id="fAll" class="filter-btn active" onclick="setFiltro('all')">Todos</button>
-        <button id="fChecked" class="filter-btn" onclick="setFiltro('checked')">Marcados</button>
-        <button id="fUnchecked" class="filter-btn" onclick="setFiltro('unchecked')">Sin marcar</button>
-      </div>
-
-      <!-- Panel admin -->
-      <div class="admin-panel" id="wishlistAdminPanel" data-aos="fade-up" style="display:none;">
-        <div class="grid-inputs">
-          <input id="name" type="text" placeholder="¿Qué es?">
-          <input id="price" type="number" step="0.01" placeholder="Precio (€)">
-          <input id="link" placeholder="URL Producto">
-          <input id="image" placeholder="URL Imagen">
-        </div>
-
-        <div style="display:flex; gap:10px; margin-top:15px;">
-          <button id="saveBtn" class="btn-main" onclick="guardar()">GUARDAR</button>
-        </div>
-
-        <input type="hidden" id="editId">
-      </div>
-
-      <div id="productContainer" class="grid"></div>
-    </div>
-  </div>
-
-  <!-- MEDIA -->
-  <div id="media" class="section">
-    <button class="back" onclick="goHome()">← Volver</button>
-
-    <div class="container">
-      <h1 class="title" data-aos="fade-down">Media</h1>
-      <div class="media-sub" data-aos="fade-up">
-        Calcula tu <b>media ponderada</b> según el porcentaje de cada examen.
-      </div>
-
-      <div class="controls-row" data-aos="fade-up">
-        <div class="total-badge" id="weightedAvg">--</div>
-        <div class="total-badge" id="weightTotal">0%</div>
-      </div>
-
-      <div class="hint muted" data-aos="fade-up">
-        Media = (Σ nota × peso) / (Σ peso) · mínimo 2 exámenes
-      </div>
-      <div class="warning" id="weightWarning"></div>
-
-      <div class="admin-panel" data-aos="fade-up">
-        <div class="grid-inputs">
-          <input id="examName" type="text" placeholder="Nombre (opcional)">
-          <input id="examGrade" type="number" step="0.01" placeholder="Nota (0–10)">
-          <input id="examWeight" type="number" step="0.01" placeholder="Peso (%) (p. ej. 30)">
-        </div>
-
-        <div class="exam-row">
-          <button id="examSaveBtn" class="btn-main" onclick="addOrUpdateExam()">AÑADIR</button>
-          <button class="btn-secondary" onclick="resetExams()">RESET</button>
-        </div>
-
-        <input type="hidden" id="examEditIndex" value="">
-      </div>
-
-      <div id="examContainer" class="grid"></div>
-    </div>
-  </div>
-
-  <!-- CALENDARIO -->
-  <div id="calendar" class="section">
-    <button class="back" onclick="goHome()">← Volver</button>
-
-    <div class="container">
-      <h1 class="title" data-aos="fade-down">Calendario</h1>
-
-      <!-- Auth -->
-      <div class="admin-panel" id="calAuthBox" data-aos="fade-up">
-        <div class="soft-note" style="margin-top:0;">
-          Inicia sesión una vez y <b>se queda guardada</b> ✅
-        </div>
-
-        <div class="grid-inputs" style="margin-top:14px;">
-          <input id="calEmail" type="email" placeholder="Email (solo si usas contraseña)" />
-          <input id="calPass" type="password" placeholder="Contraseña (solo si usas contraseña)" />
-        </div>
-
-        <div class="exam-row">
-          <button class="btn-main" onclick="calLoginFb()">Entrar</button>
-          <button class="btn-secondary" onclick="calRegisterFb()">Crear cuenta</button>
-          <button class="btn-secondary" onclick="calLoginGoogle()">Entrar con Google</button>
-        </div>
-
-        <div class="soft-note" id="calMsg" style="margin-top:10px;"></div>
-      </div>
-
-      <!-- Filtros -->
-      <div class="controls-row" id="calFilters" data-aos="fade-up" style="display:none;">
-        <button class="filter-btn active" onclick="calSetFilter('all', this)">Todos</button>
-        <button class="filter-btn" onclick="calSetFilter('exam', this)">Exámenes</button>
-        <button class="filter-btn" onclick="calSetFilter('homework', this)">Deberes</button>
-        <button class="filter-btn" onclick="calSetFilter('activity', this)">Actividades</button>
-        <button class="order-btn" onclick="calOpenCreate()">＋ Añadir</button>
-        <button class="btn-secondary" onclick="calLogoutFb()" id="calLogoutBtn" style="display:none; min-width:140px;">Salir</button>
-      </div>
-
-      <!-- Mini leyenda -->
-      <div class="controls-row" id="calLegend" style="display:none; margin-top:-18px;">
-        <span class="typeBadge"><span class="typeDot dotExam"></span> Examen</span>
-        <span class="typeBadge"><span class="typeDot dotHomework"></span> Deberes</span>
-        <span class="typeBadge"><span class="typeDot dotActivity"></span> Actividad</span>
-      </div>
-
-      <!-- Calendario -->
-      <div class="admin-panel" data-aos="fade-up" id="calWrap" style="display:none;">
-        <div id="calView"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL: Crear/Editar evento -->
-  <div id="calEventModal" class="modal" aria-hidden="true">
-    <div class="overlay" onclick="calCloseEventModal()"></div>
-    <div class="modalCard">
-      <div class="modalTop">
-        <div class="modalTitle" id="calEventModalTitle">Nuevo evento</div>
-        <button class="modalClose" onclick="calCloseEventModal()" aria-label="Cerrar">✕</button>
-      </div>
-
-      <div class="twoCol">
-        <div>
-          <div class="small">Tipo</div>
-          <select id="calType">
-            <option value="exam">🧪 Examen</option>
-            <option value="homework">📘 Deberes</option>
-            <option value="activity">🏃 Actividad</option>
-          </select>
-        </div>
-        <div>
-          <div class="small">Título</div>
-          <input id="calTitle" type="text" placeholder="Ej: Examen mates" />
-        </div>
-      </div>
-
-      <div class="twoCol" style="margin-top:10px;">
-        <div>
-          <div class="small">Inicio</div>
-          <input id="calStart" type="datetime-local" />
-        </div>
-        <div>
-          <div class="small">Fin (opcional)</div>
-          <input id="calEnd" type="datetime-local" />
-        </div>
-      </div>
-
-      <div style="margin-top:10px;">
-        <div class="small">Descripción (opcional)</div>
-        <textarea id="calDesc" placeholder="Apuntes, temas, recordatorios…"></textarea>
-      </div>
-
-      <div style="margin-top:10px;">
-        <div class="small">Link (opcional)</div>
-        <input id="calLink" type="url" placeholder="https://classroom.google.com/..." />
-        <div class="small" style="opacity:.7; margin-top:6px;">
-          Si pones un link, al abrir el evento verás 🔗 y podrás ir directo.
-        </div>
-      </div>
-
-      <input id="calEditingId" type="hidden" value="" />
-
-      <div class="row" style="margin-top:14px;">
-        <button class="btnPrimary" onclick="calSaveEventFromModal()">Guardar</button>
-        <button class="btnDanger" id="calDeleteBtn" onclick="calDeleteEventFromModal()" style="display:none;">Borrar</button>
-        <button class="btnGhost" onclick="calCloseEventModal()">Cancelar</button>
-      </div>
-
-      <div id="calEventErr" class="err"></div>
-    </div>
-  </div>
-
-  <!-- LIBRERÍAS -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
-
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
-
-  <script>
-    // ✅ Evita caer en /__/auth/handler en GitHub Pages (si alguien abre esa URL)
-    if (location.pathname.startsWith("/__/auth/handler")) {
-      location.replace("/");
-    }
-
-    AOS.init({ duration: 800 });
-
-    // Helpers
-    function $(id){ return document.getElementById(id); }
-    function formatNum(n) { const x = Number(n); return Number.isNaN(x) ? "0.00" : x.toFixed(2); }
-    function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-    function ensureHttp(url){
-      const u = (url || "").trim();
-      if (!u) return "";
-      if (/^https?:\/\//i.test(u)) return u;
-      return "https://" + u;
-    }
-
-    // Firebase init
-    const firebaseConfig = {
-      apiKey: "AIzaSyBTobN1gD7fhXYiwH1w7dYQLWi3bFZoBjU",
-      authDomain: "cosas-af46c.firebaseapp.com",
-      projectId: "cosas-af46c",
-      storageBucket: "cosas-af46c.firebasestorage.app",
-      messagingSenderId: "145996030094",
-      appId: "1:145996030094:web:2f8f38fdbde5d6d386e9df",
-      measurementId: "G-YCBY7FRLQW"
-    };
-
-    let db = null;
-    let auth = null;
-    let isAdmin = false;
-
-    function friendlyAuthError(e){
-      const code = e?.code || "";
-      if (code === "auth/user-not-found") return "Ese email NO existe en este proyecto Firebase.";
-      if (code === "auth/wrong-password") return "Contraseña incorrecta.";
-      if (code === "auth/invalid-email") return "Email inválido.";
-      if (code === "auth/too-many-requests") return "Demasiados intentos. Espera un poco.";
-      if (code === "auth/operation-not-allowed") return "Email/Password NO está activado en Firebase Auth.";
-      if (code === "auth/network-request-failed") return "Fallo de red.";
-      if (code === "auth/popup-blocked") return "El navegador bloqueó el popup. Permite popups.";
-      if (code === "auth/popup-closed-by-user") return "Cerraste la ventana de login.";
-      if (code === "auth/unauthorized-domain") return "Dominio NO autorizado. Añade rutox09.github.io en Firebase Auth → Dominios autorizados.";
-      if (code === "auth/redirect-cancelled-by-user") return "Cancelaste el login.";
-      if (code === "auth/redirect-operation-pending") return "Ya hay un login en proceso. Espera y vuelve a intentar.";
-      return `Error: ${code || (e?.message || "desconocido")}`;
-    }
-
-    function initFirebase() {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      try { firebase.analytics(); } catch(e) {}
-
-      db = firebase.firestore();
-      auth = firebase.auth();
-
-      // Persistencia local
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-        .then(() => console.log("Auth persistence: LOCAL"))
-        .catch((e) => console.warn("Persistence error:", e));
-
-      // ✅ SOLO 1 redirectResult (por si usamos fallback redirect)
-      auth.getRedirectResult()
-        .then((res) => {
-          if (res && res.user) calMsg("Sesión iniciada con Google ✅");
-        })
-        .catch((e) => {
-          // Si no había redirect, normalmente no pasa nada.
-          if (e?.code) console.warn("Redirect result error:", e);
-        });
-
-      // Listener central
-      auth.onAuthStateChanged((user) => {
-        console.log("Auth state:", user ? (user.email || user.uid) : "NO USER");
-
-        // ✅ SOLO estos UID pueden ser admin
-        const ADMIN_UIDS = new Set([
-          "2aijS4elZgMqE1iWJ49PT3Sv4or1",
-          "wpRT6eJjbVemGpJtO9Day9VQmbH3"
-        ]);
-
-isAdmin = !!user && ADMIN_UIDS.has(user.uid);
-
-
-        // Calendario
-        if (user) {
-          calSetUIAuthed(true);
-          calInitCalendarIfNeeded();
-          calLoadEvents();
-          calMsg("Sesión iniciada ✅");
-        } else {
-          calClearListener();
-          if (calCalendar) calCalendar.removeAllEvents();
-          calSetUIAuthed(false);
-          calMsg("");
-        }
-      });
-    }
-    initFirebase();
-
-    // NAV
-    function openSection(id) {
-      wxCloseModal();
-      adminCloseModal();
-      calCloseEventModal();
-
-      $("lobby").style.display = "none";
-      $("shareFab").style.display = "none";
-      $("wxTop").style.display = "none";
-
-      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-      $(id).style.display = "block";
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-
-      if (id === "calendar") {
-        if (auth && auth.currentUser) calSetUIAuthed(true);
-        else calSetUIAuthed(false);
-
-        calInitCalendarIfNeeded();
-        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 120);
-      }
-    }
-
-    function goHome() {
-      wxCloseModal();
-      adminCloseModal();
-      calCloseEventModal();
-
-      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
-      $("lobby").style.display = "grid";
-      $("shareFab").style.display = "flex";
-      $("wxTop").style.display = "flex";
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      wxAutoUpdate();
-    }
-
-    async function shareSite() {
-      const url = window.location.href;
-      const title = "RUTOX UNIVERSE";
-      const text = "Mira mi web:";
-      try {
-        if (navigator.share) {
-          await navigator.share({ title, text, url });
-          return;
-        }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(url);
-          alert("Enlace copiado ✅");
-        } else {
-          prompt("Copia el enlace:", url);
-        }
-      } catch (e) { console.log(e); }
-    }
-
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") { wxCloseModal(); adminCloseModal(); calCloseEventModal(); }
-    });
-
-    // ADMIN (Wishlist)
-    function adminErr(msg) {
-      const el = $("adminErr");
-      if (!el) return;
-      if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
-      el.style.display = "block";
-      el.innerText = msg;
-    }
-
-    async function adminResetPass() {
-      adminErr("");
-      const email = ($("adminEmail").value || "").trim();
-      if (!email) return adminErr("Escribe tu email para enviarte el reset.");
-      try {
-        await auth.sendPasswordResetEmail(email);
-        adminErr("Te he enviado un email para cambiar la contraseña ✅");
-      } catch (e) {
-        adminErr("No pude enviar el email. Revisa el email.");
-        console.error(e);
-      }
-    }
-
-    function applyAdminUI() {
-      const dot = $("adminStateDot");
-      const txt = $("adminFabText");
-      const panel = $("wishlistAdminPanel");
-
-      if (isAdmin) {
-        dot.classList.add("dotOn");
-        txt.innerText = "Admin ON";
-        if (panel) panel.style.display = "block";
-      } else {
-        dot.classList.remove("dotOn");
-        txt.innerText = "Admin";
-        if (panel) panel.style.display = "none";
-      }
-
-      if (lastSnap) renderizar(lastSnap);
-    }
-
-    function adminOpenModal() {
-      adminErr("");
-      const m = $("adminModal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-      const user = auth.currentUser;
-      $("adminLoggedBox").style.display = user ? "block" : "none";
-      $("adminLoginBox").style.display = user ? "none" : "block";
-      setTimeout(() => { if (!user) $("adminEmail").focus(); }, 50);
-    }
-
-    function adminCloseModal() {
-      const m = $("adminModal");
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
-    }
-
-    async function adminLogin() {
-      adminErr("");
-      const email = ($("adminEmail").value || "").trim();
-      const pass  = ($("adminPass").value || "").trim();
-      if (!email || !pass) return adminErr("Pon email y contraseña.");
-
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        adminCloseModal();
-      } catch (e) {
-        adminErr(friendlyAuthError(e));
-        console.error("AUTH FULL:", e);
-      }
-    }
-
-    async function adminLogout() {
-      adminErr("");
-      try {
-        await auth.signOut();
-        adminCloseModal();
-      } catch (e) {
-        adminErr("No pude cerrar sesión.");
-        console.error(e);
-      }
-    }
-
-    function adminShowUID() {
-      const u = auth.currentUser;
-      if (!u) return adminErr("No estás logueado.");
-      alert("TU UID:\n\n" + u.uid);
-    }
-
-    function requireAdminOrOpen() {
-      if (isAdmin) return true;
-      adminOpenModal();
-      return false;
-    }
-
-    // MEDIA (LocalStorage)
-    const EXAMS_KEY = "aleix_exams_v1";
-    let exams = [];
-
-    function loadExams() {
-      try {
-        exams = JSON.parse(localStorage.getItem(EXAMS_KEY) || "[]");
-        if (!Array.isArray(exams)) exams = [];
-      } catch { exams = []; }
-      renderExams();
-      updateStats();
-    }
-    function saveExams() { localStorage.setItem(EXAMS_KEY, JSON.stringify(exams)); }
-
-    function addOrUpdateExam() {
-      const name = ($("examName").value || "").trim();
-      const gradeRaw = parseFloat($("examGrade").value);
-      const weightRaw = parseFloat($("examWeight").value);
-
-      if (Number.isNaN(gradeRaw)) return alert("Pon una nota válida.");
-      if (Number.isNaN(weightRaw)) return alert("Pon un peso (%) válido.");
-
-      const grade = clamp(gradeRaw, 0, 10);
-      const weight = clamp(weightRaw, 0, 100);
-
-      const idx = $("examEditIndex").value;
-      const payload = { name, grade, weight };
-
-      if (idx !== "" && !Number.isNaN(parseInt(idx, 10))) exams[parseInt(idx, 10)] = payload;
-      else exams.push(payload);
-
-      saveExams();
-      clearExamForm();
-      renderExams();
-      updateStats();
-    }
-
-    function editExam(index) {
-      const e = exams[index]; if (!e) return;
-      $("examName").value = e.name || "";
-      $("examGrade").value = e.grade;
-      $("examWeight").value = e.weight;
-      $("examEditIndex").value = index;
-      $("examSaveBtn").innerText = "ACTUALIZAR";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function deleteExam(index) {
-      if (!exams[index]) return;
-      exams.splice(index, 1);
-      saveExams();
-      renderExams();
-      updateStats();
-    }
-
-    function clearExamForm() {
-      $("examName").value = "";
-      $("examGrade").value = "";
-      $("examWeight").value = "";
-      $("examEditIndex").value = "";
-      $("examSaveBtn").innerText = "AÑADIR";
-    }
-
-    function resetExams() {
-      if (!confirm("¿Seguro que quieres borrar todos los exámenes?")) return;
-      exams = [];
-      saveExams();
-      clearExamForm();
-      renderExams();
-      updateStats();
-    }
-
-    function renderExams() {
-      const container = $("examContainer");
-      let html = "";
-      exams.forEach((e, i) => {
-        const title = (e.name && e.name.trim()) ? escapeHtml(e.name) : `Examen #${i + 1}`;
-        html += `
-          <div class="card" data-tilt data-tilt-max="8">
-            <div class="card-actions">
-              <button class="circle-btn" onclick="editExam(${i})">✏️</button>
-              <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="deleteExam(${i})">🗑️</button>
-            </div>
-            <div class="card-name">${title}</div>
-            <div class="exam-meta">
-              <div class="pill">Peso: ${formatNum(e.weight)}%</div>
-              <div class="pill">Aporta: ${formatNum((e.grade * e.weight) / 100)}</div>
-            </div>
-            <div class="big-grade">${formatNum(e.grade)}</div>
-            <div class="muted">Nota</div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-      if (window.VanillaTilt) VanillaTilt.init(document.querySelectorAll("#examContainer .card"));
-    }
-
-    function updateStats() {
-      const totalWeight = exams.reduce((acc, e) => acc + (parseFloat(e.weight) || 0), 0);
-      const weightedSum = exams.reduce((acc, e) => acc + ((parseFloat(e.grade) || 0) * (parseFloat(e.weight) || 0)), 0);
-
-      $("weightTotal").innerText = formatNum(totalWeight) + "%";
-      const warn = $("weightWarning");
-      warn.style.display = "block";
-
-      if (exams.length < 2) {
-        $("weightedAvg").innerText = "--";
-        warn.innerText = "Añade mínimo 2 exámenes para calcular la media.";
-        return;
-      }
-
-      const avg = totalWeight > 0 ? (weightedSum / totalWeight) : 0;
-      $("weightedAvg").innerText = formatNum(avg);
-
-      const diff = 100 - totalWeight;
-      if (Math.abs(diff) > 0.001) {
-        warn.innerText = diff > 0
-          ? `Te falta ${formatNum(diff)}% para llegar a 100%`
-          : `Te sobra ${formatNum(-diff)}% (superas 100%)`;
-      } else {
-        warn.innerText = "Perfecto: el peso total suma 100% ✅";
-      }
-    }
-
-    loadExams();
-
-    // TIEMPO (Open-Meteo)
-    const WX_LOC_KEY  = "rutox_weather_loc_v1";
-    const WX_LAST_KEY = "rutox_weather_last_v1";
-    const WX_TZ_KEY   = "rutox_weather_tz_v1";
-    let wxTimeZone = "Europe/Madrid";
-    let wxClockTimer = null;
-
-    function wxPrettyPlace(label){
-      if (!label) return "—";
-      return String(label).split(",")[0].trim() || label;
-    }
-    function wxSaveTZ(tz){
-      if (!tz) return;
-      wxTimeZone = tz;
-      try { localStorage.setItem(WX_TZ_KEY, tz); } catch {}
-      wxStartClock();
-    }
-    function wxLoadTZ(){
-      try {
-        const tz = localStorage.getItem(WX_TZ_KEY);
-        if (tz) wxTimeZone = tz;
-      } catch {}
-    }
-    function wxStartClock(){
-      const el = $("lobbyClock");
-      const placeEl = $("clockPlace");
-      if (!el || !placeEl) return;
-
-      const loc = wxGetLoc();
-      const placeLabel = loc?.label ? wxPrettyPlace(loc.label) : "—";
-      placeEl.innerText = placeLabel;
-
-      if (wxClockTimer) clearInterval(wxClockTimer);
-
-      const fmtTime = new Intl.DateTimeFormat("es-ES", {
-        timeZone: wxTimeZone,
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit"
-      });
-
-      const tick = () => {
-        const now = new Date();
-        el.querySelector("span").innerText = fmtTime.format(now);
-      };
-
-      tick();
-      wxClockTimer = setInterval(tick, 1000);
-    }
-    function wxErr(msg) {
-      const el = $("wxModalError");
-      if (!el) return;
-      if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
-      el.style.display = "block";
-      el.innerText = msg;
-    }
-    function wxSetTop(main, sub){
-      $("wxTopMain").innerText = main || "—";
-      $("wxTopSub").innerText = sub || "Pulsa para elegir";
-      try { localStorage.setItem(WX_LAST_KEY, JSON.stringify({ main, sub, updatedAt: Date.now() })); } catch {}
-    }
-    function wxLoadLast(){
-      try {
-        const x = JSON.parse(localStorage.getItem(WX_LAST_KEY) || "null");
-        if (x?.main || x?.sub) wxSetTop(x.main, x.sub);
-      } catch {}
-    }
-    function wxSaveLoc(obj){ try { localStorage.setItem(WX_LOC_KEY, JSON.stringify(obj)); } catch {} }
-    function wxGetLoc(){
-      try {
-        const x = JSON.parse(localStorage.getItem(WX_LOC_KEY) || "null");
-        return x && typeof x === "object" ? x : null;
-      } catch { return null; }
-    }
-    function wxEmoji(code){
-      if (code === 0) return "☀️";
-      if ([1,2,3].includes(code)) return "⛅";
-      if ([45,48].includes(code)) return "🌫️";
-      if ([51,53,55,56,57].includes(code)) return "🌦️";
-      if ([61,63,65,66,67].includes(code)) return "🌧️";
-      if ([71,73,75,77].includes(code)) return "❄️";
-      if ([80,81,82].includes(code)) return "🌧️";
-      if ([95,96,99].includes(code)) return "⛈️";
-      return "🌥️";
-    }
-    async function wxFetchJson(url){
-      const r = await fetch(url);
-      if (!r.ok) throw new Error("Tiempo no disponible");
-      return await r.json();
-    }
-    async function wxGeocodeCity(name){
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=es&format=json`;
-      const data = await wxFetchJson(url);
-      const hit = data?.results?.[0];
-      if (!hit) return null;
-      return {
-        label: `${hit.name}${hit.admin1 ? ", " + hit.admin1 : ""}${hit.country ? ", " + hit.country : ""}`,
-        lat: hit.latitude,
-        lon: hit.longitude
-      };
-    }
-    async function wxLoadByCoords(lat, lon, label, {save=true} = {}){
-      const url =
-        `https://api.open-meteo.com/v1/forecast` +
-        `?latitude=${encodeURIComponent(lat)}` +
-        `&longitude=${encodeURIComponent(lon)}` +
-        `&current=temperature_2m,weather_code` +
-        `&timezone=auto`;
-
-      const data = await wxFetchJson(url);
-      if (data && data.timezone) wxSaveTZ(data.timezone);
-
-      const c = data.current || {};
-      const code = Number(c.weather_code);
-      const temp = c.temperature_2m;
-
-      const main = (temp == null) ? "—" : `${wxEmoji(code)} ${Math.round(Number(temp))}°`;
-      const sub  = label || "—";
-      wxSetTop(main, sub);
-      wxStartClock();
-
-      if (save) wxSaveLoc({ type:"city", label: sub, lat, lon });
-    }
-    async function wxSetCity(cityName){
-      wxErr("");
-      const hit = await wxGeocodeCity(cityName);
-      if (!hit) { wxErr("No encontré esa ciudad."); return; }
-      await wxLoadByCoords(hit.lat, hit.lon, hit.label, {save:true});
-      wxCloseModal();
-      wxStartClock();
-    }
-    function wxUseMyLocation(){
-      wxErr("");
-      if (!navigator.geolocation) { wxErr("Tu navegador no permite geolocalización."); return; }
-
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          try {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            wxSaveLoc({ type:"geo", label:"Mi ubicación", lat, lon });
-            await wxLoadByCoords(lat, lon, "Mi ubicación", {save:false});
-            wxCloseModal();
-          } catch { wxErr("No pude cargar el tiempo."); }
-        },
-        () => wxErr("Permiso denegado o no disponible.")
-      );
-    }
-    async function wxAutoUpdate(){
-      try {
-        const loc = wxGetLoc();
-        if (loc && typeof loc.lat === "number" && typeof loc.lon === "number") {
-          if (loc.type === "geo") { wxSetTop("📍", "Pulsa para actualizar"); return; }
-          await wxLoadByCoords(loc.lat, loc.lon, loc.label, {save:false});
-          return;
-        }
-        wxSetTop("—", "Pulsa para elegir");
-      } catch { wxSetTop("—", "Pulsa para elegir"); }
-    }
-    function wxOpenModal(){
-      wxErr("");
-      const modal = $("wxModal");
-      modal.classList.add("open");
-      modal.setAttribute("aria-hidden", "false");
-
-      const loc = wxGetLoc();
-      const input = $("wxCityInput");
-      input.value = (loc && loc.type === "city" && loc.label) ? loc.label.split(",")[0] : "";
-      setTimeout(() => input.focus(), 50);
-    }
-    function wxCloseModal(){
-      const modal = $("wxModal");
-      modal.classList.remove("open");
-      modal.setAttribute("aria-hidden", "true");
-    }
-    function wxQuickCity(name){
-      $("wxCityInput").value = name;
-      wxSaveCityFromModal();
-    }
-    function wxSaveCityFromModal(){
-      const city = ($("wxCityInput").value || "").trim();
-      if (!city) { wxUseMyLocation(); return; }
-      wxSetCity(city);
-    }
-    function wxUseMyLocationFromModal(){ wxUseMyLocation(); }
-    async function wxRefreshNow(){
-      const loc = wxGetLoc();
-      if (loc?.type === "geo") { wxUseMyLocation(); return; }
-      if (loc?.type === "city") { await wxLoadByCoords(loc.lat, loc.lon, loc.label, {save:false}); return; }
-      wxSaveCityFromModal();
-    }
-
-    wxLoadLast();
-    wxLoadTZ();
-    (function seedDefaultCity(){
-      const loc = wxGetLoc();
-      if (loc) return;
-      wxSaveLoc({ type:"city", label:"Barcelona, España", lat: 41.3874, lon: 2.1686 });
-    })();
-    wxStartClock();
-    wxAutoUpdate();
-
-    // WISHLIST (Firestore)
-    let ordenAscendente = true;
-    let filtro = "all";
-    let lastSnap = null;
-    let wishlistUnsub = null;
-
-    function setFiltro(mode) {
-      filtro = mode;
-      $("fAll").classList.toggle("active", mode === "all");
-      $("fChecked").classList.toggle("active", mode === "checked");
-      $("fUnchecked").classList.toggle("active", mode === "unchecked");
-      if (lastSnap) renderizar(lastSnap);
-    }
-
-    function cargarProductos() {
-      if (!db) return;
-      if (wishlistUnsub) { wishlistUnsub(); wishlistUnsub = null; }
-
-      wishlistUnsub = db.collection("productos")
-        .orderBy("price", ordenAscendente ? "asc" : "desc")
-        .onSnapshot((snap) => {
-          lastSnap = snap;
-          renderizar(snap);
-        }, (err) => console.error(err));
-    }
-
-    function toggleOrden() {
-      ordenAscendente = !ordenAscendente;
-      cargarProductos();
-    }
-
-    async function toggleMarcado(id, current) {
-      if (!requireAdminOrOpen()) return;
-      try {
-        await db.collection("productos").doc(id).update({ checked: !current });
-      } catch (e) {
-        alert("No tienes permisos (revisa Rules).");
-        console.error(e);
-      }
-    }
-
-    function renderizar(snap) {
-      const container = $("productContainer");
-      let html = "";
-      let total = 0;
-      let count = 1;
-
-      snap.forEach((doc) => {
-        const p = doc.data();
-        const checked = !!p.checked;
-
-        if (filtro === "checked" && !checked) return;
-        if (filtro === "unchecked" && checked) return;
-
-        total += parseFloat(p.price || 0);
-        const name = p.name || `Objeto #${count}`;
-
-        const actions = isAdmin ? `
-          <div class="card-actions">
-            <button class="circle-btn" title="Marcar" onclick="toggleMarcado('${doc.id}', ${checked})">
-              ${checked ? "☑️" : "⬜"}
-            </button>
-            <button class="circle-btn" onclick="prepararEdicion('${doc.id}')">✏️</button>
-            <button class="circle-btn" style="background:rgba(255,0,0,0.5)" onclick="eliminar('${doc.id}')">🗑️</button>
-          </div>
-        ` : "";
-
-        const img = (p.image || "").trim();
-
-        html += `
-          <div class="card ${checked ? "checked" : ""}" data-tilt data-tilt-max="8">
-            ${actions}
-            <img src="${img ? img : "https://placehold.co/400x300/020617/ffffff?text=Sin+Imagen"}"
-                 onerror="this.src='https://placehold.co/400x300/020617/ffffff?text=Sin+Imagen'">
-            <div class="card-name">${escapeHtml(name)}</div>
-            <div class="card-price">${parseFloat(p.price || 0).toFixed(2)}€</div>
-            <a href="${p.link || "#"}" target="_blank" class="btn-link">VER DETALLES</a>
-          </div>
-        `;
-        count++;
-      });
-
-      container.innerHTML = html;
-      $("totalPrice").innerText = total.toFixed(2) + " €";
-      if (window.VanillaTilt) VanillaTilt.init(document.querySelectorAll("#productContainer .card"));
-    }
-
-    async function guardar() {
-      if (!requireAdminOrOpen()) return;
-
-      const id = $("editId").value;
-      const data = {
-        name: ($("name").value || "").trim(),
-        price: parseFloat($("price").value) || 0,
-        link: ($("link").value || "").trim(),
-        image: ($("image").value || "").trim()
-      };
-      if (!id) data.checked = false;
-
-      try {
-        if (id) await db.collection("productos").doc(id).update(data);
-        else await db.collection("productos").add(data);
-        limpiar();
-      } catch (e) {
-        alert("No tienes permisos (revisa Rules).");
-        console.error(e);
-      }
-    }
-
-    function prepararEdicion(id) {
-      if (!requireAdminOrOpen()) return;
-
-      db.collection("productos").doc(id).get().then(doc => {
-        const p = doc.data() || {};
-        $("name").value = p.name || "";
-        $("price").value = p.price || 0;
-        $("link").value = p.link || "";
-        $("image").value = p.image || "";
-        $("editId").value = id;
-        $("saveBtn").innerText = "ACTUALIZAR";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    }
-
-    async function eliminar(id) {
-      if (!requireAdminOrOpen()) return;
-      if (!confirm("¿Borrar este producto?")) return;
-
-      try {
-        await db.collection("productos").doc(id).delete();
-      } catch (e) {
-        alert("No tienes permisos (revisa Rules).");
-        console.error(e);
-      }
-    }
-
-    function limpiar() {
-      ["name", "price", "link", "image", "editId"].forEach(i => $(i).value = "");
-      $("saveBtn").innerText = "GUARDAR";
-    }
-
-    cargarProductos();
-
-    // CALENDARIO (Auth + Firestore)
-    let calCalendar = null;
-    let calFilter = "all";
-    let calUnsub = null;
-
-    function calMsg(text){
-      const el = $("calMsg");
-      if (el) el.innerText = text || "";
-    }
-
-    function calSetUIAuthed(authed){
-      const filters = $("calFilters");
-      const wrap = $("calWrap");
-      const legend = $("calLegend");
-      const logoutBtn = $("calLogoutBtn");
-      const authBox = $("calAuthBox");
-
-      if (authed) {
-        if (authBox) authBox.style.display = "none";
-        filters.style.display = "flex";
-        legend.style.display = "flex";
-        wrap.style.display = "block";
-        logoutBtn.style.display = "inline-flex";
-      } else {
-        if (authBox) authBox.style.display = "block";
-        filters.style.display = "none";
-        legend.style.display = "none";
-        wrap.style.display = "none";
-        logoutBtn.style.display = "none";
-      }
-    }
-
-    function calColorByType(type){
-      if (type === "exam") return "#b44545";
-      if (type === "homework") return "#3b5fb8";
-      return "#3d8a5a";
-    }
-    function calIconByType(type){
-      if (type === "exam") return "🧪";
-      if (type === "homework") return "📘";
-      return "🏃";
-    }
-
-    function calInitCalendarIfNeeded(){
-      if (calCalendar) return;
-
-      const el = $("calView");
-      calCalendar = new FullCalendar.Calendar(el, {
-        initialView: "dayGridMonth",
-        height: "auto",
-        headerToolbar: {
-          left: "prev,next today",
-          center: "title",
-          right: "dayGridMonth,timeGridWeek,listWeek"
-        },
-        dateClick: (info) => {
-          calOpenCreate(new Date(info.dateStr + "T09:00:00"));
-        },
-        eventClick: (info) => {
-          const raw = info.event.extendedProps.__raw;
-          calOpenEdit(raw);
-        },
-        eventContent: (arg) => {
-          const r = arg.event.extendedProps.__raw || {};
-          const hasLink = !!(r.link && String(r.link).trim());
-          const icon = calIconByType(r.type);
-          const title = arg.event.title || "";
-          return { html: `<span style="font-weight:900">${icon} ${escapeHtml(title)}${hasLink ? " 🔗" : ""}</span>` };
-        }
-      });
-
-      calCalendar.render();
-    }
-
-    function calSetFilter(type, btn){
-      calFilter = type;
-      document.querySelectorAll("#calFilters .filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      calLoadEvents();
-    }
-
-    // Auth Firebase (email/pass)
-    async function calRegisterFb(){
-      calMsg("");
-      const email = ($("calEmail").value || "").trim();
-      const pass  = ($("calPass").value || "").trim();
-      if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-      try {
-        await auth.createUserWithEmailAndPassword(email, pass);
-        calMsg("Cuenta creada ✅");
-        try { localStorage.setItem("rutox_cal_email", email); } catch {}
-      } catch(e){
-        calMsg(friendlyAuthError(e));
-      }
-    }
-
-    async function calLoginFb(){
-      calMsg("");
-      const email = ($("calEmail").value || "").trim();
-      const pass  = ($("calPass").value || "").trim();
-      if (!email || !pass) return calMsg("Pon email y contraseña.");
-
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        calMsg("Sesión iniciada ✅");
-        try { localStorage.setItem("rutox_cal_email", email); } catch {}
-      } catch(e){
-        calMsg(friendlyAuthError(e));
-      }
-    }
-
-    // ✅ Google login: Popup primero, fallback Redirect si falla
-    async function calLoginGoogle(){
-      calMsg("");
-      try{
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-
-        const res = await auth.signInWithPopup(provider);
-        if (res && res.user) {
-          calMsg("Sesión iniciada con Google ✅");
-          return;
-        }
-      } catch(e){
-        console.warn("Popup login failed:", e);
-
-        const code = e?.code || "";
-        if (code === "auth/popup-blocked" || code === "auth/popup-closed-by-user") {
-          try{
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: "select_account" });
-            await auth.signInWithRedirect(provider);
-            return;
-          } catch(err){
-            console.error("Redirect login failed:", err);
-            calMsg(friendlyAuthError(err));
-            return;
-          }
-        }
-
-        calMsg(friendlyAuthError(e));
-      }
-    }
-
-    async function calLogoutFb(){
-      calMsg("");
-      try {
-        await auth.signOut();
-        calMsg("Sesión cerrada.");
-      } catch(e){
-        calMsg("No pude cerrar sesión.");
-      }
-    }
-
-    // Firestore
-    function calEventsRef(){
-      const u = auth.currentUser;
-      if (!u) return null;
-      return db.collection("users").doc(u.uid).collection("events");
-    }
-
-    function calClearListener(){
-      if (calUnsub) { calUnsub(); calUnsub = null; }
-    }
-
-    function calLoadEvents(){
-      if (!calCalendar) return;
-      const ref = calEventsRef();
-      if (!ref) return;
-
-      calClearListener();
-      calCalendar.removeAllEvents();
-
-      calUnsub = ref.onSnapshot((snap) => {
-        calCalendar.removeAllEvents();
-
-        snap.forEach((doc) => {
-          const r = doc.data();
-          if (!r) return;
-          if (calFilter !== "all" && r.type !== calFilter) return;
-
-          const c = calColorByType(r.type);
-          calCalendar.addEvent({
-            id: doc.id,
-            title: r.title,
-            start: r.start,
-            end: r.end || null,
-            backgroundColor: c,
-            borderColor: c,
-            extendedProps: { __raw: { id: doc.id, ...r } }
-          });
-        });
-
-        setTimeout(() => { if (calCalendar) calCalendar.updateSize(); }, 60);
-      }, (err) => {
-        console.error(err);
-        calMsg("Error cargando eventos (revisa reglas de Firestore).");
-      });
-    }
-
-    // Modal evento
-    function calEventErr(msg){
-      const el = $("calEventErr");
-      if (!el) return;
-      if (!msg) { el.style.display = "none"; el.innerText = ""; return; }
-      el.style.display = "block";
-      el.innerText = msg;
-    }
-
-    function calOpenEventModal(){
-      const m = $("calEventModal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-    }
-    function calCloseEventModal(){
-      const m = $("calEventModal");
-      if (!m) return;
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
-      calEventErr("");
-    }
-
-    function calToLocalInputValue(date) {
-      const pad = (n) => String(n).padStart(2, "0");
-      return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
-    function calIsoFromLocalInput(value){
-      const d = new Date(value);
-      return d.toISOString();
-    }
-
-    function calOpenCreate(defaultDate = new Date()){
-      if (!auth.currentUser) return calMsg("Haz login primero.");
-
-      $("calEventModalTitle").innerText = "Nuevo evento";
-      $("calEditingId").value = "";
-      $("calDeleteBtn").style.display = "none";
-
-      $("calType").value = "exam";
-      $("calTitle").value = "";
-      $("calStart").value = calToLocalInputValue(defaultDate);
-      $("calEnd").value = "";
-      $("calDesc").value = "";
-      $("calLink").value = "";
-
-      calEventErr("");
-      calOpenEventModal();
-      setTimeout(()=> $("calTitle").focus(), 60);
-    }
-
-    function calOpenEdit(ev){
-      if (!auth.currentUser) return;
-
-      $("calEventModalTitle").innerText = "Editar evento";
-      $("calEditingId").value = ev.id || "";
-      $("calDeleteBtn").style.display = "inline-flex";
-
-      $("calType").value = ev.type || "exam";
-      $("calTitle").value = ev.title || "";
-      $("calStart").value = ev.start ? calToLocalInputValue(new Date(ev.start)) : "";
-      $("calEnd").value = ev.end ? calToLocalInputValue(new Date(ev.end)) : "";
-      $("calDesc").value = ev.description || "";
-      $("calLink").value = ev.link || "";
-
-      calEventErr("");
-      calOpenEventModal();
-      setTimeout(()=> $("calTitle").focus(), 60);
-    }
-
-    async function calSaveEventFromModal(){
-      if (!auth.currentUser) return calEventErr("Haz login primero.");
-
-      const title = ($("calTitle").value || "").trim();
-      const type = ($("calType").value || "exam").trim();
-      const startLocal = $("calStart").value;
-      const endLocal = $("calEnd").value;
-      const desc = ($("calDesc").value || "").trim();
-      const link = ensureHttp(($("calLink").value || "").trim());
-
-      if (!title) return calEventErr("Pon un título.");
-      if (!startLocal) return calEventErr("Pon una fecha/hora de inicio.");
-
-      if (endLocal) {
-        const s = new Date(startLocal).getTime();
-        const e = new Date(endLocal).getTime();
-        if (e < s) return calEventErr("El fin no puede ser antes del inicio.");
-      }
-
-      const payload = {
-        title,
-        type,
-        start: calIsoFromLocalInput(startLocal),
-        end: endLocal ? calIsoFromLocalInput(endLocal) : null,
-        description: desc || null,
-        link: link || null,
-        updatedAt: new Date().toISOString()
-      };
-
-      const ref = calEventsRef();
-      if (!ref) return calEventErr("No pude acceder a tu calendario.");
-
-      const id = ($("calEditingId").value || "").trim();
-
-      try{
-        if (id) {
-          await ref.doc(id).update(payload);
-          calMsg("Evento actualizado ✅");
-        } else {
-          payload.createdAt = new Date().toISOString();
-          await ref.add(payload);
-          calMsg("Evento creado ✅");
-        }
-        calCloseEventModal();
-      } catch(e){
-        console.error(e);
-        calEventErr("No pude guardar (revisa reglas de Firestore).");
-      }
-    }
-
-    async function calDeleteEventFromModal(){
-      if (!auth.currentUser) return;
-      const id = ($("calEditingId").value || "").trim();
-      if (!id) return;
-      if (!confirm("¿Borrar este evento?")) return;
-
-      try{
-        await calEventsRef().doc(id).delete();
-        calMsg("Evento borrado ✅");
-        calCloseEventModal();
-      } catch(e){
-        console.error(e);
-        calEventErr("No pude borrar (revisa reglas).");
-      }
-    }
-
-    // Autocompletar email
-    (function preloadCalEmail(){
-      try{
-        const saved = localStorage.getItem("rutox_cal_email");
-        if (saved && $("calEmail")) $("calEmail").value = saved;
-      } catch {}
-    })();
-
-    applyAdminUI();
-  </script>
-
-  <!-- Firebase Console:
-    Authentication → Sign-in method → Google → Enable
-    Authentication → Settings → Authorized domains → rutox09.github.io
-  -->
 </body>
 </html>
