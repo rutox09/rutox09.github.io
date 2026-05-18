@@ -1,268 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador y Votaciones</title>
 
-<title>RUTOX UNIVERSE</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-
-:root{
-  --bg:#020617;
-  --glass:rgba(255,255,255,0.08);
-  --border:rgba(255,255,255,0.12);
-  --neon:#00f2ff;
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  color:white;
-  background:radial-gradient(circle at center,#0f172a 0%,#020617 100%);
-  min-height:100vh;
-}
-
-/* ---------- LOBBY ---------- */
-
-#lobby{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:20px;
-  padding:40px;
-  max-width:800px;
-  margin:auto;
-}
-
-.app{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:25px;
-  height:120px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  transition:0.25s;
-}
-
-.app:hover{
-  transform:scale(1.05);
-  background:rgba(255,255,255,0.15);
-}
-
-.app-icon{
-  font-size:2rem;
-}
-
-.app span{
-  margin-top:10px;
-  font-weight:800;
-}
-
-/* ---------- GENERAL ---------- */
-
-.container{
-  max-width:1000px;
-  margin:auto;
-  padding:30px;
-}
-
-.title{
-  font-size:4rem;
-  font-weight:900;
-  text-align:center;
-  background:linear-gradient(90deg,#fff,var(--neon));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  margin-bottom:40px;
-}
-
-.section{
-  display:none;
-}
-
-.back{
-  background:none;
-  border:none;
-  color:var(--neon);
-  font-size:1rem;
-  cursor:pointer;
-  margin-bottom:20px;
-  font-weight:900;
-}
-
-/* ---------- PANEL ---------- */
-
-.panel{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:30px;
-  padding:40px;
-  text-align:center;
-}
-
-/* ---------- CONTADOR ---------- */
-
-#counterNumber{
-  font-size:7rem;
-  font-weight:900;
-  color:var(--neon);
-  margin-bottom:30px;
-}
-
-.row{
-  display:flex;
-  gap:15px;
-  justify-content:center;
-  flex-wrap:wrap;
-  margin-top:20px;
-}
-
-button{
-  border:none;
-  border-radius:15px;
-  padding:18px 25px;
-  font-weight:900;
-  cursor:pointer;
-  transition:0.2s;
-  font-size:1rem;
-}
-
-button:hover{
-  transform:scale(1.04);
-}
-
-.btn-main{
-  background:white;
-  color:black;
-}
-
-.btn-secondary{
-  background:rgba(255,255,255,0.08);
-  color:white;
-  border:1px solid rgba(255,255,255,0.1);
-}
-
-.btn-danger{
-  background:rgba(255,0,0,0.2);
-  color:white;
-}
-
-input{
-  width:100%;
-  background:black;
-  color:white;
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:15px;
-  padding:18px;
-  font-size:1rem;
-  outline:none;
-}
-
-.input-wrap{
-  max-width:300px;
-  margin:auto;
-  margin-top:20px;
-}
-
-</style>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<div class="container">
+    <header class="hero">
+        <h1 class="titulo">CONTADOR INTERACTIVO</h1>
+        <p class="subtitulo">Animaciones, votaciones y contador configurable</p>
+    </header>
 
-  <h1 class="title">
-    RUTOX UNIVERSE
-  </h1>
+    <main>
 
-</div>
+        <section class="card fade-up">
+            <h2>Contador</h2>
 
-<!-- LOBBY -->
+            <div id="contador" class="contador">0</div>
 
-<div id="lobby">
+            <div class="botones">
+                <button id="sumar1">+1</button>
 
-  <div class="app" onclick="openSection('counter')">
-    <div class="app-icon">🔢</div>
-    <span>Contador</span>
-  </div>
+                <input type="number" id="cantidad" value="5">
 
-</div>
+                <button id="sumarCustom">Sumar cantidad</button>
 
-<!-- CONTADOR -->
+                <button id="reiniciar">Reiniciar</button>
+            </div>
+        </section>
 
-<div id="counter" class="section">
+        <section class="card fade-up delay">
+            <h2>Crear votación</h2>
 
-  <div class="container">
+            <input type="text" id="tituloVotacion" placeholder="Título de la votación">
 
-    <button class="back" onclick="goHome()">
-      ← Volver
-    </button>
+            <textarea id="opcionesVotacion" placeholder="Una opción por línea"></textarea>
 
-    <h1 class="title">
-      Contador
-    </h1>
+            <button id="crearVotacion">Crear votación</button>
+        </section>
 
-    <div class="panel">
+        <section class="card fade-up delay2">
+            <h2>Votaciones</h2>
 
-      <div id="counterNumber">
-        0
-      </div>
+            <div id="listaVotaciones"></div>
+        </section>
 
-      <div class="row">
+    </main>
 
-        <button class="btn-main" onclick="sumarUno()">
-          +1
-        </button>
-
-      </div>
-
-      <div class="input-wrap">
-
-        <input
-          id="customAmount"
-          type="number"
-          placeholder="Cantidad personalizada"
-          value="5"
-        >
-
-      </div>
-
-      <div class="row">
-
-        <button class="btn-secondary" onclick="sumarCustom()">
-          SUMAR
-        </button>
-
-        <button class="btn-secondary" onclick="restarCustom()">
-          RESTAR
-        </button>
-
-      </div>
-
-      <div class="row">
-
-        <button class="btn-danger" onclick="reiniciarContador()">
-          REINICIAR
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
