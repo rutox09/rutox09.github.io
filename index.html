@@ -3,274 +3,554 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>BatmanHub</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-    background:#0d1117;
+    background:
+    radial-gradient(circle at top,#1a1a1a 0%,#050505 45%,#000 100%);
     color:white;
-    min-height:100vh;
+    font-family:'Inter',sans-serif;
     overflow-x:hidden;
 }
 
-/* SIDEBAR */
+/* =========================
+   FONDO
+========================= */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,0.82),
+        rgba(0,0,0,0.92)
+    ),
+    url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1974&auto=format&fit=crop");
+
+    background-size:cover;
+    background-position:center;
+
+    z-index:-2;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    background:
+    repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px,
+        transparent 120px
+    );
+
+    z-index:-1;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar{
-    width:260px;
-    height:100vh;
-    background:#010409;
-    border-right:1px solid #30363d;
     position:fixed;
     left:0;
     top:0;
-    padding:20px;
+
+    width:280px;
+    height:100vh;
+
+    background:rgba(7,7,7,0.92);
+
+    backdrop-filter:blur(12px);
+
+    border-right:1px solid rgba(255,255,255,0.08);
+
+    padding:30px;
 }
 
 .logo{
-    font-size:32px;
-    font-weight:bold;
-    color:#f0f6fc;
-    margin-bottom:40px;
-    letter-spacing:2px;
+    font-family:'Orbitron',sans-serif;
+    font-size:38px;
+    font-weight:700;
+    letter-spacing:5px;
+
+    color:#f7d354;
+
+    margin-bottom:50px;
+
+    text-shadow:
+    0 0 15px rgba(247,211,84,0.4);
+}
+
+.bruce{
+    color:#777;
+    font-size:13px;
+    letter-spacing:3px;
+    margin-top:-35px;
+    margin-bottom:50px;
 }
 
 .menu{
     display:flex;
     flex-direction:column;
-    gap:15px;
+    gap:20px;
 }
 
 .menu button{
-    background:#161b22;
-    border:1px solid #30363d;
+    background:linear-gradient(
+        135deg,
+        rgba(30,30,30,0.95),
+        rgba(12,12,12,0.95)
+    );
+
+    border:1px solid rgba(255,255,255,0.06);
+
     color:white;
-    padding:15px;
-    border-radius:12px;
-    text-align:left;
+
+    padding:18px;
+
+    border-radius:18px;
+
     cursor:pointer;
-    transition:0.3s;
-    font-size:16px;
-}
 
-.menu button:hover{
-    background:#21262d;
-    transform:translateX(5px);
-}
-
-/* MAIN */
-
-.main{
-    margin-left:260px;
-    padding:40px;
-}
-
-.hero{
-    background:linear-gradient(135deg,#161b22,#21262d);
-    border:1px solid #30363d;
-    padding:40px;
-    border-radius:25px;
-    margin-bottom:40px;
-    animation:fadeIn 1s ease;
-}
-
-.hero h1{
-    font-size:60px;
-    margin-bottom:10px;
-}
-
-.hero p{
-    color:#8b949e;
-    font-size:18px;
-}
-
-/* APPS */
-
-.apps{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-    gap:30px;
-}
-
-.card{
-    background:#161b22;
-    border:1px solid #30363d;
-    border-radius:25px;
-    padding:30px;
-    cursor:pointer;
     transition:0.4s;
+
+    font-size:16px;
+
+    text-align:left;
+
     position:relative;
+
     overflow:hidden;
 }
 
-.card:hover{
-    transform:translateY(-10px) scale(1.02);
-    border-color:#58a6ff;
-    box-shadow:0 0 30px rgba(88,166,255,0.3);
+.menu button::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+
+    width:100%;
+    height:100%;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(247,211,84,0.15),
+        transparent
+    );
+
+    transition:0.5s;
+}
+
+.menu button:hover::before{
+    left:100%;
+}
+
+.menu button:hover{
+    transform:translateX(8px);
+    border-color:#f7d354;
+    box-shadow:
+    0 0 20px rgba(247,211,84,0.15);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    margin-left:280px;
+    padding:50px;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    position:relative;
+
+    background:
+    linear-gradient(
+        135deg,
+        rgba(20,20,20,0.92),
+        rgba(5,5,5,0.96)
+    );
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    border-radius:35px;
+
+    padding:70px;
+
+    overflow:hidden;
+
+    margin-bottom:50px;
+
+    box-shadow:
+    0 20px 50px rgba(0,0,0,0.6);
+}
+
+.hero::before{
+    content:"";
+
+    position:absolute;
+
+    width:500px;
+    height:500px;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(247,211,84,0.16),
+        transparent 70%
+    );
+
+    top:-250px;
+    right:-200px;
+}
+
+.hero h1{
+    font-family:'Orbitron',sans-serif;
+
+    font-size:72px;
+
+    color:#f7d354;
+
+    margin-bottom:15px;
+
+    letter-spacing:4px;
+
+    text-shadow:
+    0 0 25px rgba(247,211,84,0.2);
+}
+
+.hero p{
+    color:#b3b3b3;
+    font-size:20px;
+    max-width:800px;
+    line-height:1.7;
+}
+
+/* =========================
+   APPS
+========================= */
+
+.apps{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(350px,1fr));
+
+    gap:40px;
+}
+
+.card{
+    position:relative;
+
+    background:
+    linear-gradient(
+        145deg,
+        rgba(17,17,17,0.96),
+        rgba(6,6,6,0.96)
+    );
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:35px;
+
+    padding:40px;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+    transition:0.5s;
 }
 
 .card::before{
     content:"";
+
     position:absolute;
-    width:200px;
-    height:200px;
-    background:rgba(88,166,255,0.08);
-    border-radius:50%;
-    top:-50px;
-    right:-50px;
+
+    width:300px;
+    height:300px;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(247,211,84,0.14),
+        transparent 70%
+    );
+
+    top:-150px;
+    right:-120px;
+}
+
+.card:hover{
+    transform:
+    translateY(-12px)
+    scale(1.02);
+
+    border-color:#f7d354;
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,0.7),
+    0 0 35px rgba(247,211,84,0.12);
 }
 
 .card h2{
-    font-size:32px;
-    margin-bottom:15px;
     position:relative;
+
+    font-size:38px;
+
+    margin-bottom:20px;
+
+    color:#f7d354;
 }
 
 .card p{
-    color:#8b949e;
-    line-height:1.5;
     position:relative;
+
+    color:#b5b5b5;
+
+    line-height:1.8;
+
+    font-size:17px;
 }
 
 .badge{
     display:inline-block;
-    margin-top:20px;
-    background:#238636;
-    padding:8px 14px;
+
+    margin-top:25px;
+
+    padding:10px 18px;
+
     border-radius:50px;
+
+    background:#f7d354;
+
+    color:black;
+
+    font-weight:700;
+
     font-size:14px;
-    position:relative;
 }
 
-/* SECTIONS */
+/* =========================
+   SECCIONES
+========================= */
 
 .section{
     display:none;
-    animation:fadeIn 0.5s ease;
+    animation:fade 0.5s ease;
 }
 
 .active{
     display:block;
 }
 
-/* CONTADOR */
+/* =========================
+   CONTADOR
+========================= */
 
 .counter-box{
-    background:#161b22;
-    border:1px solid #30363d;
-    border-radius:25px;
-    padding:40px;
-    max-width:700px;
+    background:
+    linear-gradient(
+        145deg,
+        rgba(17,17,17,0.95),
+        rgba(6,6,6,0.98)
+    );
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:35px;
+
+    padding:50px;
+
+    box-shadow:
+    0 25px 50px rgba(0,0,0,0.6);
 }
 
 .counter-number{
-    font-size:90px;
+    font-size:140px;
+
     text-align:center;
-    margin:30px 0;
+
+    color:#f7d354;
+
+    font-family:'Orbitron',sans-serif;
+
+    margin-bottom:40px;
+
+    text-shadow:
+    0 0 30px rgba(247,211,84,0.25);
+
     transition:0.2s;
 }
 
 .pop{
-    transform:scale(1.15);
-    color:#58a6ff;
+    transform:scale(1.08);
 }
 
 .controls{
     display:flex;
-    gap:15px;
+    gap:20px;
     flex-wrap:wrap;
     justify-content:center;
 }
 
 .controls button,
 .controls input{
-    padding:15px;
+    padding:18px 24px;
+
     border:none;
-    border-radius:12px;
+
+    border-radius:18px;
+
     font-size:16px;
 }
 
-.controls button{
-    background:#238636;
+.controls input{
+    width:140px;
+
+    background:#0b0b0b;
+
     color:white;
+
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.controls button{
+    background:#f7d354;
+
+    color:black;
+
+    font-weight:700;
+
     cursor:pointer;
+
     transition:0.3s;
 }
 
 .controls button:hover{
-    transform:scale(1.05);
+    transform:scale(1.08);
 }
 
-.controls input{
-    background:#0d1117;
-    border:1px solid #30363d;
-    color:white;
-    width:120px;
-}
-
-/* VOTACIONES */
+/* =========================
+   VOTACIONES
+========================= */
 
 .vote-container{
     display:grid;
-    gap:30px;
+    gap:40px;
 }
 
-.create-vote{
-    background:#161b22;
-    border:1px solid #30363d;
-    padding:30px;
-    border-radius:25px;
+.create-vote,
+.vote-card{
+    background:
+    linear-gradient(
+        145deg,
+        rgba(17,17,17,0.96),
+        rgba(6,6,6,0.98)
+    );
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:30px;
+
+    padding:35px;
 }
 
 .create-vote input,
 .create-vote textarea{
     width:100%;
-    background:#0d1117;
-    border:1px solid #30363d;
+
+    background:#090909;
+
+    border:1px solid rgba(255,255,255,0.08);
+
     color:white;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:15px;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    margin-bottom:20px;
+
+    font-size:16px;
 }
 
 .create-vote button{
-    background:#238636;
+    background:#f7d354;
+
+    color:black;
+
     border:none;
-    padding:15px 20px;
-    color:white;
-    border-radius:12px;
+
+    padding:18px 28px;
+
+    border-radius:18px;
+
+    font-weight:700;
+
     cursor:pointer;
+
+    transition:0.3s;
 }
 
-.vote-card{
-    background:#161b22;
-    border:1px solid #30363d;
-    padding:25px;
-    border-radius:20px;
+.create-vote button:hover{
+    transform:scale(1.05);
+}
+
+.vote-card h2{
+    margin-bottom:20px;
+    color:#f7d354;
 }
 
 .vote-option{
-    background:#21262d;
-    padding:15px;
-    border-radius:12px;
-    margin-top:10px;
+    background:#101010;
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    padding:18px;
+
+    border-radius:16px;
+
+    margin-top:15px;
+
     cursor:pointer;
+
     transition:0.3s;
 }
 
 .vote-option:hover{
-    background:#30363d;
+    background:#181818;
+    border-color:#f7d354;
+    transform:translateX(5px);
 }
 
-/* ANIMATIONS */
+/* =========================
+   ANIMACIONES
+========================= */
 
-@keyframes fadeIn{
+@keyframes fade{
     from{
         opacity:0;
         transform:translateY(20px);
@@ -282,53 +562,113 @@ body{
     }
 }
 
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px){
+
+    .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .hero h1{
+        font-size:50px;
+    }
+
+    .counter-number{
+        font-size:90px;
+    }
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
+
     <div class="logo">BATMANHUB</div>
 
-    <div class="menu">
-        <button onclick="showSection('home')">🏠 Inicio</button>
-        <button onclick="showSection('contador')">🔢 Contador</button>
-        <button onclick="showSection('votaciones')">🗳️ Votaciones</button>
+    <div class="bruce">
+        WAYNE ENTERPRISES SYSTEM
     </div>
+
+    <div class="menu">
+
+        <button onclick="showSection('home')">
+            🦇 Inicio
+        </button>
+
+        <button onclick="showSection('contador')">
+            🔢 Contador
+        </button>
+
+        <button onclick="showSection('votaciones')">
+            🗳️ Votaciones
+        </button>
+
+    </div>
+
 </div>
 
 <div class="main">
 
     <!-- HOME -->
+
     <div id="home" class="section active">
 
         <div class="hero">
-            <h1>BatmanHub</h1>
-            <p>Centro interactivo con aplicaciones, votaciones y contador avanzado.</p>
+
+            <h1>BATMANHUB</h1>
+
+            <p>
+                Plataforma inspirada en el universo tecnológico
+                y oscuro de Bruce Wayne. Accede a herramientas,
+                sistemas interactivos y votaciones en una interfaz
+                premium estilo Wayne Enterprises.
+            </p>
+
         </div>
 
         <div class="apps">
 
             <div class="card" onclick="showSection('contador')">
+
                 <h2>🔢 Contador</h2>
 
                 <p>
-                    Sistema de contador interactivo con animaciones,
-                    incremento configurable y reinicio instantáneo.
+                    Sistema de contador avanzado con persistencia,
+                    animaciones cinematográficas y configuración
+                    dinámica de incremento.
                 </p>
 
-                <div class="badge">Aplicación</div>
+                <div class="badge">
+                    Wayne Tech
+                </div>
+
             </div>
 
             <div class="card" onclick="showSection('votaciones')">
+
                 <h2>🗳️ Votaciones</h2>
 
                 <p>
-                    Crea votaciones públicas, añade opciones y deja
-                    que la gente vote en tiempo real.
+                    Crea sistemas de votación interactivos donde
+                    los usuarios pueden participar y almacenar
+                    resultados permanentemente.
                 </p>
 
-                <div class="badge">Aplicación</div>
+                <div class="badge">
+                    Gotham Network
+                </div>
+
             </div>
 
         </div>
@@ -336,21 +676,36 @@ body{
     </div>
 
     <!-- CONTADOR -->
+
     <div id="contador" class="section">
 
         <div class="hero">
-            <h1>Contador</h1>
-            <p>Contador configurable con efectos visuales.</p>
+
+            <h1>CONTADOR</h1>
+
+            <p>
+                Motor numérico interactivo de Wayne Enterprises.
+            </p>
+
         </div>
 
         <div class="counter-box">
 
-            <div id="counter" class="counter-number">0</div>
+            <div id="counter" class="counter-number">
+                0
+            </div>
 
             <div class="controls">
-                <button onclick="sumarUno()">+1</button>
 
-                <input type="number" id="cantidad" value="5">
+                <button onclick="sumarUno()">
+                    +1
+                </button>
+
+                <input
+                    type="number"
+                    id="cantidad"
+                    value="5"
+                >
 
                 <button onclick="sumarCantidad()">
                     Sumar cantidad
@@ -359,6 +714,7 @@ body{
                 <button onclick="reiniciar()">
                     Reiniciar
                 </button>
+
             </div>
 
         </div>
@@ -366,18 +722,24 @@ body{
     </div>
 
     <!-- VOTACIONES -->
+
     <div id="votaciones" class="section">
 
         <div class="hero">
-            <h1>Votaciones</h1>
-            <p>Crea y vota encuestas interactivas.</p>
+
+            <h1>VOTACIONES</h1>
+
+            <p>
+                Centro de decisiones y votaciones de Gotham.
+            </p>
+
         </div>
 
         <div class="vote-container">
 
             <div class="create-vote">
 
-                <input 
+                <input
                     type="text"
                     id="titulo"
                     placeholder="Título de la votación"
@@ -429,6 +791,7 @@ let contador = localStorage.getItem("contador")
 const counter = document.getElementById("counter");
 
 function guardarContador(){
+
     localStorage.setItem("contador", contador);
 }
 
@@ -488,11 +851,12 @@ function guardarVotaciones(){
 
 function renderizarVotaciones(){
 
-    const lista = document.getElementById("listaVotaciones");
+    const lista =
+    document.getElementById("listaVotaciones");
 
     lista.innerHTML = "";
 
-    votaciones.forEach((votacion, index)=>{
+    votaciones.forEach((votacion,index)=>{
 
         let card = document.createElement("div");
 
@@ -500,14 +864,15 @@ function renderizarVotaciones(){
 
         let html = `<h2>${votacion.titulo}</h2>`;
 
-        votacion.opciones.forEach((opcion, i)=>{
+        votacion.opciones.forEach((opcion,i)=>{
 
             html += `
-                <div 
+                <div
                     class="vote-option"
-                    onclick="votar(${index}, ${i})"
+                    onclick="votar(${index},${i})"
                 >
                     ${opcion.nombre}
+
                     <span style="float:right">
                         ${opcion.votos} votos
                     </span>
@@ -523,14 +888,13 @@ function renderizarVotaciones(){
 
 function crearVotacion(){
 
-    let titulo = document
-        .getElementById("titulo")
-        .value;
+    let titulo =
+    document.getElementById("titulo").value;
 
-    let opcionesTexto = document
-        .getElementById("opciones")
-        .value
-        .split("\n");
+    let opcionesTexto =
+    document.getElementById("opciones")
+    .value
+    .split("\n");
 
     if(!titulo){
         return;
@@ -543,30 +907,30 @@ function crearVotacion(){
         if(opcion.trim() !== ""){
 
             nuevasOpciones.push({
-                nombre: opcion,
-                votos: 0
+                nombre:opcion,
+                votos:0
             });
         }
     });
 
     votaciones.unshift({
-        titulo: titulo,
-        opciones: nuevasOpciones
+        titulo:titulo,
+        opciones:nuevasOpciones
     });
 
     guardarVotaciones();
 
     renderizarVotaciones();
 
-    document.getElementById("titulo").value = "";
-    document.getElementById("opciones").value = "";
+    document.getElementById("titulo").value="";
+    document.getElementById("opciones").value="";
 }
 
-function votar(votacionIndex, opcionIndex){
+function votar(votacionIndex,opcionIndex){
 
     votaciones[votacionIndex]
-        .opciones[opcionIndex]
-        .votos++;
+    .opciones[opcionIndex]
+    .votos++;
 
     guardarVotaciones();
 
