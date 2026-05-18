@@ -1,1 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador y Votaciones</title>
 
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="hero">
+        <h1 class="titulo">CONTADOR INTERACTIVO</h1>
+        <p class="subtitulo">Animaciones, votaciones y contador configurable</p>
+    </header>
+
+    <main>
+
+        <section class="card fade-up">
+            <h2>Contador</h2>
+
+            <div id="contador" class="contador">0</div>
+
+            <div class="botones">
+                <button id="sumar1">+1</button>
+
+                <input type="number" id="cantidad" value="5">
+
+                <button id="sumarCustom">Sumar cantidad</button>
+
+                <button id="reiniciar">Reiniciar</button>
+            </div>
+        </section>
+
+        <section class="card fade-up delay">
+            <h2>Crear votación</h2>
+
+            <input type="text" id="tituloVotacion" placeholder="Título de la votación">
+
+            <textarea id="opcionesVotacion" placeholder="Una opción por línea"></textarea>
+
+            <button id="crearVotacion">Crear votación</button>
+        </section>
+
+        <section class="card fade-up delay2">
+            <h2>Votaciones</h2>
+
+            <div id="listaVotaciones"></div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
