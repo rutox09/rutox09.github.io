@@ -5,121 +5,249 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BatmanHub</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap');
 
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
+font-family:'Orbitron',sans-serif;
 }
 
 body{
-font-family:'Oswald',sans-serif;
-background:
-linear-gradient(rgba(0,0,0,0.86),rgba(0,0,0,0.95)),
-url('https://wallpapercave.com/wp/wp3649653.jpg');
+background:#050505;
+color:white;
+overflow-x:hidden;
+min-height:100vh;
+background-image:
+linear-gradient(rgba(0,0,0,.86),rgba(0,0,0,.92)),
+url("https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop");
 background-size:cover;
 background-position:center;
 background-attachment:fixed;
-color:white;
-min-height:100vh;
-overflow-x:hidden;
+position:relative;
 }
+
+/* SCANLINES */
 
 body::before{
 content:"";
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+inset:0;
 background:
-radial-gradient(circle at top,#d9a30022 0%,transparent 40%);
+repeating-linear-gradient(
+to bottom,
+rgba(255,255,255,.02),
+rgba(255,255,255,.02) 1px,
+transparent 1px,
+transparent 3px
+);
 pointer-events:none;
+z-index:999;
 }
 
-header{
-padding:40px 20px;
-text-align:center;
-border-bottom:1px solid #d9a30033;
-backdrop-filter:blur(10px);
+/* LLUVIA */
+
+.rain{
+position:fixed;
+inset:0;
+overflow:hidden;
+z-index:-1;
 }
 
-header h1{
-font-size:70px;
+.drop{
+position:absolute;
+width:1px;
+height:120px;
+background:linear-gradient(transparent,#8fbfff);
+opacity:.18;
+animation:rain linear infinite;
+}
+
+@keyframes rain{
+0%{
+transform:translateY(-150px);
+}
+100%{
+transform:translateY(120vh);
+}
+}
+
+/* PARTÍCULAS */
+
+.particles span{
+position:fixed;
+width:3px;
+height:3px;
+background:#ffd000;
+border-radius:50%;
+opacity:.3;
+animation:float 12s linear infinite;
+}
+
+@keyframes float{
+0%{
+transform:translateY(100vh) translateX(0);
+}
+100%{
+transform:translateY(-100vh) translateX(100px);
+}
+}
+
+/* PANTALLA LOGIN */
+
+#boot{
+position:fixed;
+inset:0;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:5000;
+animation:bootfade 5s forwards;
+}
+
+#boot h1{
+font-size:4rem;
+color:#ffd000;
 letter-spacing:10px;
-color:#d9a300;
-text-shadow:0 0 25px #d9a300;
+text-shadow:0 0 30px #ffd000;
+animation:pulse 2s infinite;
 }
 
-header p{
-margin-top:10px;
-color:#888;
-letter-spacing:4px;
+#boot p{
+margin-top:20px;
+opacity:.8;
 }
 
-main{
-padding:50px;
+@keyframes bootfade{
+0%,80%{
+opacity:1;
+}
+100%{
+opacity:0;
+visibility:hidden;
+}
 }
 
-#hub{
+@keyframes pulse{
+0%,100%{
+transform:scale(1);
+}
+50%{
+transform:scale(1.04);
+}
+}
+
+/* NAV */
+
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+backdrop-filter:blur(10px);
+border-bottom:1px solid rgba(255,208,0,.2);
+position:sticky;
+top:0;
+z-index:100;
+}
+
+.logo{
+font-size:2rem;
+font-weight:700;
+color:#ffd000;
+letter-spacing:3px;
+text-shadow:0 0 20px #ffd000;
+}
+
+.modeBtn{
+background:linear-gradient(145deg,#1a1a1a,#333);
+border:none;
+padding:12px 20px;
+color:#ffd000;
+cursor:pointer;
+border-radius:10px;
+transition:.3s;
+box-shadow:
+0 0 15px rgba(255,208,0,.15),
+inset 0 0 10px rgba(255,255,255,.05);
+}
+
+.modeBtn:hover{
+transform:translateY(-3px);
+}
+
+/* HUB */
+
+.hub{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-gap:35px;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
+padding:50px;
+perspective:1000px;
 }
 
-.app-card{
-height:260px;
+.card{
+background:rgba(10,10,10,.72);
+border:1px solid rgba(255,208,0,.15);
 border-radius:25px;
+padding:40px;
+min-height:220px;
+cursor:pointer;
 position:relative;
 overflow:hidden;
-cursor:pointer;
-transition:0.4s;
-background:#111;
-border:1px solid #333;
-box-shadow:0 0 30px rgba(0,0,0,0.8);
+transition:.4s;
+transform-style:preserve-3d;
+box-shadow:
+0 0 30px rgba(0,0,0,.7),
+0 0 20px rgba(0,170,255,.08);
+backdrop-filter:blur(12px);
 }
 
-.app-card:hover{
-transform:translateY(-10px) scale(1.02);
-border-color:#d9a300;
-box-shadow:0 0 35px #d9a30055;
-}
-
-.app-card img{
+.card::before{
+content:"";
 position:absolute;
-width:100%;
-height:100%;
-object-fit:cover;
-opacity:0.35;
-transition:0.4s;
+inset:-100%;
+background:linear-gradient(
+120deg,
+transparent,
+rgba(255,208,0,.25),
+transparent
+);
+transition:.6s;
 }
 
-.app-card:hover img{
-transform:scale(1.08);
-opacity:0.5;
+.card:hover::before{
+inset:100%;
 }
 
-.app-overlay{
-position:absolute;
-inset:0;
-background:linear-gradient(to top,#000 15%,transparent);
+.card:hover{
+transform:
+rotateX(6deg)
+rotateY(-6deg)
+translateY(-8px)
+scale(1.02);
+box-shadow:
+0 0 35px rgba(255,208,0,.3),
+0 0 60px rgba(0,170,255,.2);
 }
 
-.app-title{
-position:absolute;
-bottom:30px;
-left:30px;
-font-size:40px;
-letter-spacing:4px;
-color:#fff;
-text-shadow:0 0 20px black;
+.card h2{
+font-size:2rem;
+color:#ffd000;
+text-shadow:0 0 15px #ffd000;
 }
+
+/* SECCIONES */
 
 .section{
 display:none;
-animation:fade 0.5s ease;
+padding:40px;
+animation:fade .5s;
 }
 
 .active{
@@ -129,7 +257,7 @@ display:block;
 @keyframes fade{
 from{
 opacity:0;
-transform:translateY(20px);
+transform:translateY(30px);
 }
 to{
 opacity:1;
@@ -137,482 +265,783 @@ transform:translateY(0);
 }
 }
 
-.back-btn{
-margin-bottom:25px;
-padding:12px 25px;
-background:#111;
-border:1px solid #d9a300;
-color:#d9a300;
-cursor:pointer;
-border-radius:12px;
-font-family:'Oswald';
-letter-spacing:2px;
-transition:0.3s;
-}
+/* CONTADOR */
 
-.back-btn:hover{
-background:#d9a300;
-color:black;
-}
-
-.counter-box{
-background:#111111dd;
+.counterBox{
+max-width:700px;
+margin:auto;
 padding:40px;
+background:rgba(0,0,0,.65);
 border-radius:25px;
-border:1px solid #333;
+border:1px solid rgba(255,208,0,.2);
+backdrop-filter:blur(12px);
+box-shadow:0 0 40px rgba(255,208,0,.1);
+}
+
+.counterDisplay{
+font-size:7rem;
 text-align:center;
-box-shadow:0 0 40px rgba(0,0,0,0.8);
+margin:30px 0;
+color:#00e5ff;
+text-shadow:
+0 0 20px #00e5ff,
+0 0 50px #00e5ff;
+animation:led 1s infinite alternate;
 }
 
-#counter{
-font-size:120px;
-color:#d9a300;
-text-shadow:0 0 30px #d9a300;
-transition:0.2s;
-margin:25px 0;
+@keyframes led{
+from{
+opacity:.7;
+}
+to{
+opacity:1;
+}
 }
 
-.counter-quote{
-font-size:24px;
-letter-spacing:2px;
-margin-top:15px;
-color:#aaa;
-height:40px;
+.quote{
+text-align:center;
+font-size:1rem;
+opacity:.8;
+margin-bottom:30px;
+min-height:30px;
 }
 
 .controls{
 display:flex;
-justify-content:center;
 gap:15px;
+justify-content:center;
 flex-wrap:wrap;
-margin-top:30px;
 }
 
-.controls input{
-width:120px;
+button{
+padding:14px 24px;
+border:none;
+border-radius:12px;
+background:linear-gradient(145deg,#202020,#101010);
+color:#ffd000;
+cursor:pointer;
+font-size:1rem;
+transition:.25s;
+box-shadow:
+0 0 20px rgba(255,208,0,.12),
+inset 0 0 10px rgba(255,255,255,.05);
+}
+
+button:hover{
+transform:translateY(-3px);
+box-shadow:
+0 0 25px rgba(255,208,0,.3);
+}
+
+input{
 padding:12px;
-background:#000;
-border:1px solid #444;
-color:white;
+border:none;
 border-radius:10px;
-font-size:18px;
+background:#111;
+color:white;
+width:120px;
 text-align:center;
 }
 
-.controls button{
-padding:14px 24px;
-font-size:18px;
-background:#1b1b1b;
-border:none;
-color:#d9a300;
-border-radius:12px;
-cursor:pointer;
-transition:0.3s;
-font-family:'Oswald';
+/* VOTACIONES */
+
+.voteGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:25px;
+margin-top:30px;
 }
 
-.controls button:hover{
-background:#d9a300;
-color:black;
-transform:scale(1.05);
-}
-
-.vote-create{
-background:#111111dd;
+.voteCard{
+background:rgba(10,10,10,.75);
+border:1px solid rgba(255,208,0,.15);
 padding:30px;
 border-radius:20px;
-margin-bottom:35px;
-border:1px solid #333;
-}
-
-.vote-create input{
-width:100%;
-padding:15px;
-margin-bottom:15px;
-background:black;
-border:1px solid #444;
-color:white;
-border-radius:10px;
-font-size:16px;
-}
-
-.vote-create button{
-padding:14px 24px;
-background:#d9a300;
-border:none;
-color:black;
-font-family:'Oswald';
-border-radius:10px;
 cursor:pointer;
-font-size:18px;
-}
-
-.vote-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:25px;
-}
-
-.vote-card{
-background:#111111dd;
-padding:25px;
-border-radius:20px;
-border:1px solid #333;
-cursor:pointer;
-transition:0.3s;
+transition:.35s;
 position:relative;
 overflow:hidden;
 }
 
-.vote-card:hover{
-transform:translateY(-6px);
-border-color:#d9a300;
+.voteCard:hover{
+transform:scale(1.04);
+box-shadow:0 0 35px rgba(255,208,0,.25);
 }
 
-.vote-card h3{
-font-size:28px;
-color:#d9a300;
-letter-spacing:2px;
+.voteCard h3{
+color:#ffd000;
+font-size:1.3rem;
 }
 
-.vote-detail{
-margin-top:20px;
+/* MODAL */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.85);
 display:none;
-animation:fade 0.4s ease;
+justify-content:center;
+align-items:center;
+z-index:1000;
+backdrop-filter:blur(10px);
+animation:fade .4s;
 }
 
-.vote-option{
-margin-top:12px;
-padding:14px;
-background:#1a1a1a;
-border-radius:10px;
+.modalContent{
+width:90%;
+max-width:600px;
+background:#0d0d0d;
+padding:40px;
+border-radius:25px;
+border:1px solid rgba(255,208,0,.25);
+box-shadow:
+0 0 50px rgba(255,208,0,.2);
+position:relative;
+animation:zoom .35s;
+}
+
+@keyframes zoom{
+from{
+transform:scale(.7);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.option{
 display:flex;
 justify-content:space-between;
 align-items:center;
+padding:14px;
+margin:12px 0;
+background:#151515;
+border-radius:12px;
 }
 
-.vote-option button{
-background:#d9a300;
-border:none;
-padding:8px 15px;
-border-radius:8px;
-cursor:pointer;
-font-family:'Oswald';
+/* CHAT */
+
+.chatBox{
+height:250px;
+overflow:auto;
+background:#101010;
+padding:15px;
+border-radius:15px;
+margin-top:20px;
 }
 
-.delete-btn{
-margin-top:18px;
-width:100%;
-padding:12px;
-background:#7a0000;
-border:none;
-color:white;
-border-radius:10px;
-cursor:pointer;
-font-family:'Oswald';
+.message{
+margin:8px 0;
 }
 
-.open .vote-detail{
-display:block;
+/* MAPA */
+
+.map{
+margin-top:20px;
+height:250px;
+border-radius:20px;
+background:
+linear-gradient(45deg,#0d0d0d,#1c1c1c);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:2rem;
+color:#ffd000;
 }
 
-@media(max-width:700px){
+/* MODO BRUCE */
 
-header h1{
-font-size:45px;
+.bruce{
+background:#f5f5f5;
+color:black;
 }
 
-#counter{
-font-size:80px;
+.bruce .card,
+.bruce .counterBox,
+.bruce .voteCard{
+background:white;
+color:black;
 }
 
-.app-title{
-font-size:28px;
+.bruce button{
+background:#ddd;
+color:black;
 }
 
-main{
-padding:20px;
-}
-
-}
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>BATMANHUB</h1>
-<p>WAYNE ENTERPRISES SYSTEM</p>
-</header>
-
-<main>
-
-<div id="hub">
-
-<div class="app-card" onclick="openSection('contadorSection')">
-<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop">
-<div class="app-overlay"></div>
-<div class="app-title">CONTADOR</div>
+<div id="boot">
+<h1>WAYNE ENTERPRISES</h1>
+<p>ACCESSING BATCAVE SYSTEM...</p>
 </div>
 
-<div class="app-card" onclick="openSection('votacionesSection')">
-<img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop">
-<div class="app-overlay"></div>
-<div class="app-title">VOTACIONES</div>
+<div class="rain" id="rain"></div>
+
+<div class="particles" id="particles"></div>
+
+<nav>
+<div class="logo">BATMANHUB</div>
+
+<div style="display:flex;gap:10px;">
+<button class="modeBtn" onclick="toggleMode()">Bruce/Batman</button>
+<button class="modeBtn" onclick="showHub()">Hub</button>
 </div>
+</nav>
 
-</div>
+<div class="hub" id="hub">
 
-<section id="contadorSection" class="section">
-
-<button class="back-btn" onclick="goHub()">← BATMANHUB</button>
-
-<div class="counter-box">
-
+<div class="card" onclick="openSection('counter')">
 <h2>CONTADOR</h2>
+</div>
 
-<div id="counter">0</div>
+<div class="card" onclick="openSection('votes')">
+<h2>VOTACIONES</h2>
+</div>
 
-<div class="counter-quote" id="quote"></div>
+<div class="card" onclick="openSection('notes')">
+<h2>NOTAS</h2>
+</div>
+
+<div class="card" onclick="openSection('chat')">
+<h2>GOTHAM CHAT</h2>
+</div>
+
+<div class="card" onclick="openSection('missions')">
+<h2>MISIONES</h2>
+</div>
+
+<div class="card" onclick="openSection('stats')">
+<h2>ESTADÍSTICAS</h2>
+</div>
+
+<div class="card" onclick="openSection('map')">
+<h2>MAPA GOTHAM</h2>
+</div>
+
+<div class="card" onclick="openSection('alfred')">
+<h2>ALFRED AI</h2>
+</div>
+
+</div>
+
+<!-- CONTADOR -->
+
+<section class="section" id="counter">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">CONTADOR</h1>
+
+<div class="counterDisplay" id="count">0</div>
+
+<div class="quote" id="quote"></div>
 
 <div class="controls">
-<button onclick="changeCounter(-1)">-1</button>
-<button onclick="changeCounter(1)">+1</button>
 
-<input type="number" id="customValue" placeholder="Número">
+<button onclick="change(-1)">-1</button>
 
-<button onclick="addCustom()">SUMAR</button>
-<button onclick="subtractCustom()">RESTAR</button>
+<button onclick="change(1)">+1</button>
+
+<input type="number" id="customNum" placeholder="número">
+
+<button onclick="customAdd()">Añadir</button>
+
+<button onclick="customSub()">Restar</button>
+
 </div>
 
 </div>
 
 </section>
 
-<section id="votacionesSection" class="section">
+<!-- VOTACIONES -->
 
-<button class="back-btn" onclick="goHub()">← BATMANHUB</button>
+<section class="section" id="votes">
 
-<div class="vote-create">
+<div style="max-width:800px;margin:auto;">
 
-<input type="text" id="voteTitle" placeholder="Título">
+<h1 style="text-align:center;color:#ffd000;">VOTACIONES</h1>
 
-<input type="text" id="option1" placeholder="Opción 1">
+<div style="display:flex;gap:10px;margin-top:30px;flex-wrap:wrap;justify-content:center;">
 
-<input type="text" id="option2" placeholder="Opción 2">
+<input id="voteTitle" placeholder="Título">
 
-<button onclick="createVote()">CREAR</button>
+<input id="option1" placeholder="Opción 1">
+
+<input id="option2" placeholder="Opción 2">
+
+<button onclick="createVote()">Crear</button>
 
 </div>
 
-<div class="vote-grid" id="voteGrid"></div>
+<div class="voteGrid" id="voteGrid"></div>
+
+</div>
 
 </section>
 
-</main>
+<!-- MODAL -->
 
-<audio id="sound">
-<source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3">
-</audio>
+<div class="modal" id="voteModal">
+
+<div class="modalContent">
+
+<h2 id="modalTitle"></h2>
+
+<div id="modalOptions"></div>
+
+<button onclick="closeModal()">Cerrar</button>
+
+</div>
+
+</div>
+
+<!-- NOTAS -->
+
+<section class="section" id="notes">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">NOTAS</h1>
+
+<textarea id="notesArea" style="width:100%;height:300px;background:#111;color:white;border:none;border-radius:15px;padding:20px;"></textarea>
+
+</div>
+
+</section>
+
+<!-- CHAT -->
+
+<section class="section" id="chat">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">GOTHAM CHAT</h1>
+
+<div class="chatBox" id="chatMessages"></div>
+
+<div style="display:flex;gap:10px;margin-top:15px;">
+
+<input id="chatInput" placeholder="mensaje..." style="flex:1;">
+
+<button onclick="sendMessage()">Enviar</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- MISIONES -->
+
+<section class="section" id="missions">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">MISIONES</h1>
+
+<ul id="missionList" style="margin-top:20px;line-height:2;">
+<li>Patrullar Gotham</li>
+<li>Interrogar al Joker</li>
+<li>Activar Batseñal</li>
+</ul>
+
+</div>
+
+</section>
+
+<!-- STATS -->
+
+<section class="section" id="stats">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">ESTADÍSTICAS</h1>
+
+<p id="statsText" style="margin-top:20px;"></p>
+
+</div>
+
+</section>
+
+<!-- MAPA -->
+
+<section class="section" id="map">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">MAPA GOTHAM</h1>
+
+<div class="map">
+GOTHAM CITY
+</div>
+
+</div>
+
+</section>
+
+<!-- ALFRED -->
+
+<section class="section" id="alfred">
+
+<div class="counterBox">
+
+<h1 style="text-align:center;color:#ffd000;">ALFRED ASSISTANT</h1>
+
+<div id="alfredText" style="margin-top:25px;font-size:1.1rem;">
+Buenas noches, señor Wayne.
+</div>
+
+</div>
+
+</section>
+
+<audio id="addSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7d4f74fcb2.mp3?filename=click-124467.mp3"></audio>
+
+<audio id="voteSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_24f51dfb31.mp3?filename=notification-124466.mp3"></audio>
 
 <script>
 
-let counter = localStorage.getItem("batCounter")
-? parseInt(localStorage.getItem("batCounter"))
-: 0
+/* EFECTOS */
 
-const quotes = [
-"WHY DO WE FALL?",
-"THE NIGHT IS DARKEST BEFORE THE DAWN",
-"I'M BATMAN",
-"A HERO CAN BE ANYONE",
-"YOU EITHER DIE A HERO...",
-"THIS CITY NEEDS ME",
-"FEAR IS A TOOL",
-"THE BAT SIGNAL IS NOT JUST A CALL",
-"RISE",
-"THE SHADOW BETRAYS YOU"
-]
+for(let i=0;i<100;i++){
 
-document.getElementById("counter").innerText = counter
-updateQuote()
+const drop=document.createElement("div");
+drop.classList.add("drop");
 
-function playSound(){
-document.getElementById("sound").currentTime=0
-document.getElementById("sound").play()
+drop.style.left=Math.random()*100+"vw";
+drop.style.animationDuration=Math.random()*1+0.5+"s";
+drop.style.animationDelay=Math.random()*2+"s";
+
+document.getElementById("rain").appendChild(drop);
+
 }
 
-function animateCounter(){
-const c = document.getElementById("counter")
-c.style.transform="scale(1.2)"
-setTimeout(()=>{
-c.style.transform="scale(1)"
-},150)
+for(let i=0;i<40;i++){
+
+const p=document.createElement("span");
+
+p.style.left=Math.random()*100+"vw";
+p.style.animationDuration=Math.random()*10+8+"s";
+p.style.opacity=Math.random();
+
+document.getElementById("particles").appendChild(p);
+
 }
+
+/* FRASES */
+
+const quotes=[
+"Why do we fall?",
+"It's not who I am underneath.",
+"The night is darkest before the dawn.",
+"A hero can be anyone.",
+"You either die a hero.",
+"Fear is a tool.",
+"Gotham needs me."
+];
+
+/* CONTADOR */
+
+let count=localStorage.getItem("count") || 0;
+
+document.getElementById("count").innerText=count;
 
 function updateQuote(){
-document.getElementById("quote").innerText =
-quotes[Math.floor(Math.random()*quotes.length)]
+
+document.getElementById("quote").innerText=
+quotes[Math.floor(Math.random()*quotes.length)];
+
 }
 
-function changeCounter(value){
-counter += value
+updateQuote();
 
-document.getElementById("counter").innerText = counter
+function change(num){
 
-localStorage.setItem("batCounter",counter)
+count=parseInt(count)+num;
 
-animateCounter()
-playSound()
-updateQuote()
+saveCounter();
+
 }
 
-function addCustom(){
-const val = parseInt(document.getElementById("customValue").value)
+function customAdd(){
 
-if(!isNaN(val)){
-changeCounter(val)
-}
+let n=parseInt(document.getElementById("customNum").value);
+
+if(!isNaN(n)){
+
+count=parseInt(count)+n;
+saveCounter();
+
 }
 
-function subtractCustom(){
-const val = parseInt(document.getElementById("customValue").value)
+}
 
-if(!isNaN(val)){
-changeCounter(-val)
+function customSub(){
+
+let n=parseInt(document.getElementById("customNum").value);
+
+if(!isNaN(n)){
+
+count=parseInt(count)-n;
+saveCounter();
+
 }
+
 }
+
+function saveCounter(){
+
+document.getElementById("count").innerText=count;
+
+localStorage.setItem("count",count);
+
+updateQuote();
+
+document.getElementById("addSound").play();
+
+updateStats();
+
+}
+
+/* SECCIONES */
 
 function openSection(id){
 
-document.getElementById("hub").style.display="none"
+document.querySelectorAll(".section").forEach(s=>{
+s.classList.remove("active");
+});
 
-document.querySelectorAll(".section").forEach(sec=>{
-sec.classList.remove("active")
-})
+document.getElementById("hub").style.display="none";
 
-document.getElementById(id).classList.add("active")
+document.getElementById(id).classList.add("active");
+
 }
 
-function goHub(){
+function showHub(){
 
-document.getElementById("hub").style.display="grid"
+document.querySelectorAll(".section").forEach(s=>{
+s.classList.remove("active");
+});
 
-document.querySelectorAll(".section").forEach(sec=>{
-sec.classList.remove("active")
-})
+document.getElementById("hub").style.display="grid";
+
 }
 
-let votes = JSON.parse(localStorage.getItem("batVotes")) || []
+/* MODO */
 
-function saveVotes(){
-localStorage.setItem("batVotes",JSON.stringify(votes))
+function toggleMode(){
+
+document.body.classList.toggle("bruce");
+
+}
+
+/* VOTACIONES */
+
+let votes=JSON.parse(localStorage.getItem("votes")) || [];
+
+function renderVotes(){
+
+const grid=document.getElementById("voteGrid");
+
+grid.innerHTML="";
+
+votes.forEach((vote,index)=>{
+
+const div=document.createElement("div");
+
+div.className="voteCard";
+
+div.innerHTML=`
+<h3>${vote.title}</h3>
+`;
+
+div.onclick=()=>openVote(index);
+
+grid.appendChild(div);
+
+});
+
 }
 
 function createVote(){
 
-const title = document.getElementById("voteTitle").value
-const option1 = document.getElementById("option1").value
-const option2 = document.getElementById("option2").value
+const title=document.getElementById("voteTitle").value;
+const op1=document.getElementById("option1").value;
+const op2=document.getElementById("option2").value;
 
-if(title && option1 && option2){
+if(title && op1 && op2){
 
 votes.push({
-id:Date.now(),
-title:title,
-creator:"user",
+title,
 options:[
-{text:option1,votes:0,voters:[]},
-{text:option2,votes:0,voters:[]}
-]
-})
+{text:op1,votes:0},
+{text:op2,votes:0}
+],
+voted:[]
+});
 
-saveVotes()
-renderVotes()
+saveVotes();
 
-document.getElementById("voteTitle").value=""
-document.getElementById("option1").value=""
-document.getElementById("option2").value=""
-}
 }
 
-function vote(voteId,optionIndex){
-
-const userId = "user"
-
-const voteObj = votes.find(v=>v.id===voteId)
-
-if(voteObj.options[optionIndex].voters.includes(userId)){
-return
 }
 
-voteObj.options[optionIndex].votes++
-voteObj.options[optionIndex].voters.push(userId)
+function openVote(index){
 
-saveVotes()
-renderVotes()
-}
+const modal=document.getElementById("voteModal");
 
-function deleteVote(id){
+modal.style.display="flex";
 
-votes = votes.filter(v=>v.id!==id)
+const vote=votes[index];
 
-saveVotes()
-renderVotes()
-}
+document.getElementById("modalTitle").innerText=vote.title;
 
-function toggleVote(card){
-card.classList.toggle("open")
-}
+const box=document.getElementById("modalOptions");
 
-function renderVotes(){
+box.innerHTML="";
 
-const grid = document.getElementById("voteGrid")
+vote.options.forEach((o,i)=>{
 
-grid.innerHTML=""
+const div=document.createElement("div");
 
-votes.forEach(vote=>{
+div.className="option";
 
-const card = document.createElement("div")
-card.className="vote-card"
+div.innerHTML=`
+<span>${o.text} (${o.votes})</span>
+<button onclick="voteOption(${index},${i})">Votar</button>
+`;
 
-card.innerHTML=`
+box.appendChild(div);
 
-<h3>${vote.title}</h3>
+});
 
-<div class="vote-detail">
-
-${vote.options.map((opt,index)=>`
-
-<div class="vote-option">
-
-<span>${opt.text} (${opt.votes})</span>
-
-<button onclick="event.stopPropagation();vote(${vote.id},${index})">
-VOTAR
+box.innerHTML+=`
+<button onclick="deleteVote(${index})">
+Borrar votación
 </button>
+`;
 
-</div>
-
-`).join("")}
-
-<button class="delete-btn"
-onclick="event.stopPropagation();deleteVote(${vote.id})">
-BORRAR
-</button>
-
-</div>
-
-`
-
-card.onclick=()=>toggleVote(card)
-
-grid.appendChild(card)
-
-})
 }
 
-renderVotes()
+function closeModal(){
+
+document.getElementById("voteModal").style.display="none";
+
+}
+
+function voteOption(voteIndex,optIndex){
+
+const key="vote_"+voteIndex+"_"+optIndex;
+
+if(localStorage.getItem(key)) return;
+
+votes[voteIndex].options[optIndex].votes++;
+
+localStorage.setItem(key,true);
+
+saveVotes();
+
+openVote(voteIndex);
+
+document.getElementById("voteSound").play();
+
+}
+
+function deleteVote(index){
+
+votes.splice(index,1);
+
+saveVotes();
+
+closeModal();
+
+}
+
+function saveVotes(){
+
+localStorage.setItem("votes",JSON.stringify(votes));
+
+renderVotes();
+
+updateStats();
+
+}
+
+renderVotes();
+
+/* NOTAS */
+
+const notes=document.getElementById("notesArea");
+
+notes.value=localStorage.getItem("notes") || "";
+
+notes.addEventListener("input",()=>{
+
+localStorage.setItem("notes",notes.value);
+
+});
+
+/* CHAT */
+
+function sendMessage(){
+
+const input=document.getElementById("chatInput");
+
+if(!input.value) return;
+
+const msg=document.createElement("div");
+
+msg.className="message";
+
+msg.innerText="🦇 "+input.value;
+
+document.getElementById("chatMessages").appendChild(msg);
+
+input.value="";
+
+}
+
+/* STATS */
+
+function updateStats(){
+
+let totalVotes=0;
+
+votes.forEach(v=>{
+v.options.forEach(o=>{
+totalVotes+=o.votes;
+});
+});
+
+document.getElementById("statsText").innerHTML=`
+Contador actual: ${count}<br><br>
+Votaciones creadas: ${votes.length}<br><br>
+Votos totales: ${totalVotes}
+`;
+
+}
+
+updateStats();
+
+/* EASTER EGG */
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="j"){
+
+document.body.style.filter="hue-rotate(180deg)";
+
+alert("Chaos Mode Activated");
+
+}
+
+});
 
 </script>
 
