@@ -3,274 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>BatmanHub</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap');
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    font-family:'Orbitron',sans-serif;
-    background:
-    radial-gradient(circle at top,#1a1a1a 0%,#050505 60%);
-    color:white;
-    overflow-x:hidden;
-    min-height:100vh;
+font-family:'Oswald',sans-serif;
+background:
+linear-gradient(rgba(0,0,0,0.9),rgba(0,0,0,0.95)),
+url('https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=2070&auto=format&fit=crop');
+background-size:cover;
+background-attachment:fixed;
+color:white;
+min-height:100vh;
+overflow-x:hidden;
 }
 
 body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size:50px 50px;
-    pointer-events:none;
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at top,#d9a30022 0%,transparent 40%);
+pointer-events:none;
 }
 
 header{
-    width:100%;
-    padding:40px 50px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    border-bottom:1px solid rgba(255,255,255,0.08);
-    backdrop-filter:blur(10px);
+padding:40px 20px;
+text-align:center;
+border-bottom:1px solid #d9a30033;
+backdrop-filter:blur(10px);
 }
 
-.logo{
-    font-size:50px;
-    font-weight:800;
-    letter-spacing:5px;
-    color:#f5c542;
-    text-shadow:0 0 20px rgba(245,197,66,0.4);
+header h1{
+font-size:70px;
+letter-spacing:10px;
+color:#d9a300;
+text-shadow:0 0 25px #d9a300;
 }
 
-.bruce{
-    color:#777;
-    font-size:14px;
+header p{
+margin-top:10px;
+color:#888;
+letter-spacing:4px;
 }
 
-.main{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:50px;
-    padding:60px;
-    flex-wrap:wrap;
+main{
+padding:50px;
+}
+
+#hub{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:35px;
 }
 
 .app-card{
-    width:340px;
-    height:240px;
-    background:linear-gradient(145deg,#111,#1f1f1f);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:30px;
-    cursor:pointer;
-    position:relative;
-    overflow:hidden;
-    transition:0.4s;
-    box-shadow:
-    0 10px 30px rgba(0,0,0,0.7),
-    inset 0 0 30px rgba(255,255,255,0.03);
+height:260px;
+border-radius:25px;
+position:relative;
+overflow:hidden;
+cursor:pointer;
+transition:0.4s;
+background:#111;
+border:1px solid #333;
+box-shadow:0 0 30px rgba(0,0,0,0.8);
 }
 
 .app-card:hover{
-    transform:translateY(-10px) scale(1.02);
-    border-color:#f5c542;
-    box-shadow:
-    0 0 30px rgba(245,197,66,0.3),
-    0 20px 50px rgba(0,0,0,0.9);
+transform:translateY(-10px) scale(1.02);
+border-color:#d9a300;
+box-shadow:0 0 35px #d9a30055;
 }
 
-.app-card::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(120deg,
-    transparent,
-    rgba(245,197,66,0.12),
-    transparent);
-    transform:translateX(-100%);
-    transition:1s;
+.app-card img{
+position:absolute;
+width:100%;
+height:100%;
+object-fit:cover;
+opacity:0.35;
+transition:0.4s;
 }
 
-.app-card:hover::before{
-    transform:translateX(100%);
+.app-card:hover img{
+transform:scale(1.08);
+opacity:0.5;
 }
 
-.card-content{
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:20px;
+.app-overlay{
+position:absolute;
+inset:0;
+background:linear-gradient(to top,#000 15%,transparent);
 }
 
-.card-icon{
-    font-size:70px;
-}
-
-.card-title{
-    font-size:30px;
-    letter-spacing:2px;
+.app-title{
+position:absolute;
+bottom:30px;
+left:30px;
+font-size:40px;
+letter-spacing:4px;
+color:#fff;
+text-shadow:0 0 20px black;
 }
 
 .section{
-    display:none;
-    padding:50px;
-    animation:fade 0.4s ease;
+display:none;
+animation:fade 0.5s ease;
 }
 
 .active{
-    display:block;
+display:block;
 }
 
 @keyframes fade{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 .back-btn{
-    margin-bottom:30px;
-    padding:12px 24px;
-    background:#111;
-    color:#f5c542;
-    border:1px solid #f5c542;
-    border-radius:12px;
-    cursor:pointer;
-    transition:0.3s;
-    font-family:'Orbitron';
+margin-bottom:25px;
+padding:12px 25px;
+background:#111;
+border:1px solid #d9a300;
+color:#d9a300;
+cursor:pointer;
+border-radius:12px;
+font-family:'Oswald';
+letter-spacing:2px;
+transition:0.3s;
 }
 
 .back-btn:hover{
-    background:#f5c542;
-    color:black;
+background:#d9a300;
+color:black;
 }
 
-.panel{
-    max-width:900px;
-    margin:auto;
-    background:rgba(20,20,20,0.95);
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:30px;
-    padding:50px;
-    box-shadow:0 0 40px rgba(0,0,0,0.8);
+.counter-box{
+background:#111111dd;
+padding:40px;
+border-radius:25px;
+border:1px solid #333;
+text-align:center;
+box-shadow:0 0 40px rgba(0,0,0,0.8);
 }
 
-.counter-number{
-    font-size:120px;
-    text-align:center;
-    margin:30px 0;
-    color:#f5c542;
-    transition:0.2s;
-    text-shadow:0 0 25px rgba(245,197,66,0.4);
+#counter{
+font-size:120px;
+color:#d9a300;
+text-shadow:0 0 30px #d9a300;
+transition:0.2s;
+margin:25px 0;
 }
 
-.counter-controls{
-    display:flex;
-    justify-content:center;
-    gap:15px;
-    flex-wrap:wrap;
+.counter-quote{
+font-size:24px;
+letter-spacing:2px;
+margin-top:15px;
+color:#aaa;
+height:40px;
 }
 
-button{
-    padding:14px 22px;
-    border:none;
-    border-radius:14px;
-    background:#1f1f1f;
-    color:white;
-    cursor:pointer;
-    transition:0.25s;
-    font-family:'Orbitron';
+.controls{
+display:flex;
+justify-content:center;
+gap:15px;
+flex-wrap:wrap;
+margin-top:30px;
 }
 
-button:hover{
-    background:#f5c542;
-    color:black;
-    transform:scale(1.05);
+.controls input{
+width:120px;
+padding:12px;
+background:#000;
+border:1px solid #444;
+color:white;
+border-radius:10px;
+font-size:18px;
+text-align:center;
 }
 
-input,textarea{
-    width:100%;
-    padding:15px;
-    margin-top:15px;
-    background:#101010;
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:14px;
-    color:white;
-    font-family:'Orbitron';
+.controls button{
+padding:14px 24px;
+font-size:18px;
+background:#1b1b1b;
+border:none;
+color:#d9a300;
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+font-family:'Oswald';
 }
 
-.quote{
-    margin-top:35px;
-    text-align:center;
-    color:#999;
-    min-height:40px;
-    font-size:15px;
-    transition:0.3s;
+.controls button:hover{
+background:#d9a300;
+color:black;
+transform:scale(1.05);
+}
+
+.vote-create{
+background:#111111dd;
+padding:30px;
+border-radius:20px;
+margin-bottom:35px;
+border:1px solid #333;
+}
+
+.vote-create input{
+width:100%;
+padding:15px;
+margin-bottom:15px;
+background:black;
+border:1px solid #444;
+color:white;
+border-radius:10px;
+font-size:16px;
+}
+
+.vote-create button{
+padding:14px 24px;
+background:#d9a300;
+border:none;
+color:black;
+font-family:'Oswald';
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+}
+
+.vote-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:25px;
 }
 
 .vote-card{
-    margin-top:30px;
-    padding:25px;
-    border-radius:20px;
-    background:#111;
-    border:1px solid rgba(255,255,255,0.08);
+background:#111111dd;
+padding:25px;
+border-radius:20px;
+border:1px solid #333;
+cursor:pointer;
+transition:0.3s;
+position:relative;
+overflow:hidden;
+}
+
+.vote-card:hover{
+transform:translateY(-6px);
+border-color:#d9a300;
+}
+
+.vote-card h3{
+font-size:28px;
+color:#d9a300;
+letter-spacing:2px;
+}
+
+.vote-detail{
+margin-top:20px;
+display:none;
+animation:fade 0.4s ease;
 }
 
 .vote-option{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:15px;
-    background:#1a1a1a;
-    padding:12px;
-    border-radius:12px;
+margin-top:12px;
+padding:14px;
+background:#1a1a1a;
+border-radius:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-.vote-bar{
-    height:10px;
-    background:#f5c542;
-    border-radius:10px;
-    margin-top:6px;
+.vote-option button{
+background:#d9a300;
+border:none;
+padding:8px 15px;
+border-radius:8px;
+cursor:pointer;
+font-family:'Oswald';
 }
 
-h2{
-    margin-bottom:20px;
-    color:#f5c542;
+.delete-btn{
+margin-top:18px;
+width:100%;
+padding:12px;
+background:#7a0000;
+border:none;
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-family:'Oswald';
 }
 
-@media(max-width:800px){
-
-.main{
-    padding:30px;
+.open .vote-detail{
+display:block;
 }
 
-.logo{
-    font-size:35px;
+@media(max-width:700px){
+
+header h1{
+font-size:45px;
 }
 
-.counter-number{
-    font-size:80px;
+#counter{
+font-size:80px;
 }
 
-.panel{
-    padding:30px;
+.app-title{
+font-size:28px;
+}
+
+main{
+padding:20px;
 }
 
 }
@@ -280,298 +340,278 @@ h2{
 <body>
 
 <header>
-    <div class="logo">BATMANHUB</div>
-    <div class="bruce">WAYNE ENTERPRISES</div>
+<h1>BATMANHUB</h1>
+<p>WAYNE ENTERPRISES SYSTEM</p>
 </header>
 
-<div id="hub" class="main">
+<main>
 
-    <div class="app-card" onclick="openSection('contador')">
-        <div class="card-content">
-            <div class="card-icon">🦇</div>
-            <div class="card-title">CONTADOR</div>
-        </div>
-    </div>
+<div id="hub">
 
-    <div class="app-card" onclick="openSection('votaciones')">
-        <div class="card-content">
-            <div class="card-icon">⚖️</div>
-            <div class="card-title">VOTACIONES</div>
-        </div>
-    </div>
+<div class="app-card" onclick="openSection('contadorSection')">
+<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070&auto=format&fit=crop">
+<div class="app-overlay"></div>
+<div class="app-title">CONTADOR</div>
+</div>
+
+<div class="app-card" onclick="openSection('votacionesSection')">
+<img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop">
+<div class="app-overlay"></div>
+<div class="app-title">VOTACIONES</div>
+</div>
 
 </div>
 
-<div id="contador" class="section">
+<section id="contadorSection" class="section">
 
-    <button class="back-btn" onclick="goBack()">← HUB</button>
+<button class="back-btn" onclick="goHub()">← BATMANHUB</button>
 
-    <div class="panel">
+<div class="counter-box">
 
-        <h2>CONTADOR</h2>
+<h2>CONTADOR</h2>
 
-        <div class="counter-number" id="contadorNumero">0</div>
+<div id="counter">0</div>
 
-        <div class="counter-controls">
-            <button onclick="cambiar(-1)">-1</button>
-            <button onclick="cambiar(1)">+1</button>
+<div class="counter-quote" id="quote"></div>
 
-            <input type="number" id="cantidad" value="5" style="width:120px">
+<div class="controls">
+<button onclick="changeCounter(-1)">-1</button>
+<button onclick="changeCounter(1)">+1</button>
 
-            <button onclick="sumarCantidad()">SUMAR</button>
+<input type="number" id="customValue" placeholder="Número">
 
-            <button onclick="reiniciar()">REINICIAR</button>
-        </div>
-
-        <div class="quote" id="frase"></div>
-
-    </div>
+<button onclick="addCustom()">SUMAR</button>
+<button onclick="subtractCustom()">RESTAR</button>
+</div>
 
 </div>
 
-<div id="votaciones" class="section">
+</section>
 
-    <button class="back-btn" onclick="goBack()">← HUB</button>
+<section id="votacionesSection" class="section">
 
-    <div class="panel">
+<button class="back-btn" onclick="goHub()">← BATMANHUB</button>
 
-        <h2>CREAR VOTACIÓN</h2>
+<div class="vote-create">
 
-        <input id="titulo" placeholder="Título">
+<input type="text" id="voteTitle" placeholder="Título">
 
-        <textarea id="opciones" rows="5" placeholder="Una opción por línea"></textarea>
+<input type="text" id="option1" placeholder="Opción 1">
 
-        <button style="margin-top:20px" onclick="crearVotacion()">CREAR</button>
+<input type="text" id="option2" placeholder="Opción 2">
 
-        <div id="listaVotaciones"></div>
-
-    </div>
+<button onclick="createVote()">CREAR</button>
 
 </div>
+
+<div class="vote-grid" id="voteGrid"></div>
+
+</section>
+
+</main>
+
+<audio id="sound">
+<source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3">
+</audio>
 
 <script>
 
-let contador = localStorage.getItem("contador")
-? parseInt(localStorage.getItem("contador"))
+let counter = localStorage.getItem("batCounter")
+? parseInt(localStorage.getItem("batCounter"))
 : 0
 
 const quotes = [
-
-"Why do we fall?",
-"The night is darkest before the dawn.",
-"You either die a hero...",
-"Gotham needs something more.",
-"It's not who I am underneath.",
-"A hero can be anyone.",
-"Fear is a tool.",
-"Welcome to a world without rules.",
-"The Batman has no limits.",
-"You have my permission to die.",
-"Sometimes people deserve hope.",
-"The fire rises.",
-"Legends never die.",
-"Criminals thrive on fear.",
-"The city deserves a better class of criminal."
-
+"WHY DO WE FALL?",
+"THE NIGHT IS DARKEST BEFORE THE DAWN",
+"I'M BATMAN",
+"A HERO CAN BE ANYONE",
+"YOU EITHER DIE A HERO...",
+"THIS CITY NEEDS ME",
+"FEAR IS A TOOL",
+"THE BAT SIGNAL IS NOT JUST A CALL",
+"RISE",
+"THE SHADOW BETRAYS YOU"
 ]
 
-const audio = new Audio("https://actions.google.com/sounds/v1/impacts/metal_thin_hit.ogg")
+document.getElementById("counter").innerText = counter
+updateQuote()
 
-const numero = document.getElementById("contadorNumero")
-
-function actualizarContador(){
-
-    numero.innerText = contador
-
-    numero.style.transform = "scale(1.2)"
-
-    setTimeout(()=>{
-        numero.style.transform = "scale(1)"
-    },150)
-
-    localStorage.setItem("contador",contador)
-
-    document.getElementById("frase").innerText =
-    quotes[Math.floor(Math.random()*quotes.length)]
-
+function playSound(){
+document.getElementById("sound").currentTime=0
+document.getElementById("sound").play()
 }
 
-function cambiar(valor){
-
-    contador += valor
-
-    actualizarContador()
-
-    audio.currentTime = 0
-    audio.play()
-
+function animateCounter(){
+const c = document.getElementById("counter")
+c.style.transform="scale(1.2)"
+setTimeout(()=>{
+c.style.transform="scale(1)"
+},150)
 }
 
-function sumarCantidad(){
-
-    let cantidad =
-    parseInt(document.getElementById("cantidad").value)
-
-    if(!isNaN(cantidad)){
-
-        contador += cantidad
-
-        actualizarContador()
-
-        audio.currentTime = 0
-        audio.play()
-
-    }
-
+function updateQuote(){
+document.getElementById("quote").innerText =
+quotes[Math.floor(Math.random()*quotes.length)]
 }
 
-function reiniciar(){
+function changeCounter(value){
+counter += value
 
-    contador = 0
+document.getElementById("counter").innerText = counter
 
-    actualizarContador()
+localStorage.setItem("batCounter",counter)
 
+animateCounter()
+playSound()
+updateQuote()
 }
 
-actualizarContador()
+function addCustom(){
+const val = parseInt(document.getElementById("customValue").value)
+
+if(!isNaN(val)){
+changeCounter(val)
+}
+}
+
+function subtractCustom(){
+const val = parseInt(document.getElementById("customValue").value)
+
+if(!isNaN(val)){
+changeCounter(-val)
+}
+}
 
 function openSection(id){
 
-    document.getElementById("hub").style.display = "none"
+document.getElementById("hub").style.display="none"
 
-    document.querySelectorAll(".section").forEach(sec=>{
-        sec.classList.remove("active")
-    })
+document.querySelectorAll(".section").forEach(sec=>{
+sec.classList.remove("active")
+})
 
-    document.getElementById(id).classList.add("active")
-
+document.getElementById(id).classList.add("active")
 }
 
-function goBack(){
+function goHub(){
 
-    document.getElementById("hub").style.display = "flex"
+document.getElementById("hub").style.display="grid"
 
-    document.querySelectorAll(".section").forEach(sec=>{
-        sec.classList.remove("active")
-    })
-
+document.querySelectorAll(".section").forEach(sec=>{
+sec.classList.remove("active")
+})
 }
 
-let votaciones = localStorage.getItem("votaciones")
-? JSON.parse(localStorage.getItem("votaciones"))
-: []
+let votes = JSON.parse(localStorage.getItem("batVotes")) || []
 
-function guardarVotaciones(){
-
-    localStorage.setItem(
-        "votaciones",
-        JSON.stringify(votaciones)
-    )
-
+function saveVotes(){
+localStorage.setItem("batVotes",JSON.stringify(votes))
 }
 
-function crearVotacion(){
+function createVote(){
 
-    const titulo =
-    document.getElementById("titulo").value
+const title = document.getElementById("voteTitle").value
+const option1 = document.getElementById("option1").value
+const option2 = document.getElementById("option2").value
 
-    const opciones =
-    document.getElementById("opciones")
-    .value
-    .split("\n")
-    .filter(o=>o.trim()!="")
+if(title && option1 && option2){
 
-    if(titulo && opciones.length > 0){
+votes.push({
+id:Date.now(),
+title:title,
+creator:"user",
+options:[
+{text:option1,votes:0,voters:[]},
+{text:option2,votes:0,voters:[]}
+]
+})
 
-        votaciones.push({
-            titulo,
-            opciones: opciones.map(o=>({
-                nombre:o,
-                votos:0
-            }))
-        })
+saveVotes()
+renderVotes()
 
-        guardarVotaciones()
-
-        renderVotaciones()
-
-        document.getElementById("titulo").value=""
-        document.getElementById("opciones").value=""
-
-    }
-
+document.getElementById("voteTitle").value=""
+document.getElementById("option1").value=""
+document.getElementById("option2").value=""
+}
 }
 
-function votar(votacionIndex,opcionIndex){
+function vote(voteId,optionIndex){
 
-    votaciones[votacionIndex]
-    .opciones[opcionIndex]
-    .votos++
+const userId = "user"
 
-    guardarVotaciones()
+const voteObj = votes.find(v=>v.id===voteId)
 
-    renderVotaciones()
-
+if(voteObj.options[optionIndex].voters.includes(userId)){
+return
 }
 
-function renderVotaciones(){
+voteObj.options[optionIndex].votes++
+voteObj.options[optionIndex].voters.push(userId)
 
-    const contenedor =
-    document.getElementById("listaVotaciones")
-
-    contenedor.innerHTML=""
-
-    votaciones.forEach((v,index)=>{
-
-        let total =
-        v.opciones.reduce((acc,o)=>acc+o.votos,0)
-
-        let html = `
-        <div class="vote-card">
-
-            <h2>${v.titulo}</h2>
-        `
-
-        v.opciones.forEach((o,i)=>{
-
-            let porcentaje =
-            total > 0
-            ? (o.votos/total)*100
-            : 0
-
-            html += `
-            <div class="vote-option">
-
-                <div style="width:100%">
-
-                    <div>
-                    ${o.nombre}
-                    (${o.votos})
-                    </div>
-
-                    <div class="vote-bar"
-                    style="width:${porcentaje}%"></div>
-
-                </div>
-
-                <button onclick="votar(${index},${i})">
-                VOTAR
-                </button>
-
-            </div>
-            `
-
-        })
-
-        html += `</div>`
-
-        contenedor.innerHTML += html
-
-    })
-
+saveVotes()
+renderVotes()
 }
 
-renderVotaciones()
+function deleteVote(id){
+
+votes = votes.filter(v=>v.id!==id)
+
+saveVotes()
+renderVotes()
+}
+
+function toggleVote(card){
+card.classList.toggle("open")
+}
+
+function renderVotes(){
+
+const grid = document.getElementById("voteGrid")
+
+grid.innerHTML=""
+
+votes.forEach(vote=>{
+
+const card = document.createElement("div")
+card.className="vote-card"
+
+card.innerHTML=`
+
+<h3>${vote.title}</h3>
+
+<div class="vote-detail">
+
+${vote.options.map((opt,index)=>`
+
+<div class="vote-option">
+
+<span>${opt.text} (${opt.votes})</span>
+
+<button onclick="event.stopPropagation();vote(${vote.id},${index})">
+VOTAR
+</button>
+
+</div>
+
+`).join("")}
+
+<button class="delete-btn"
+onclick="event.stopPropagation();deleteVote(${vote.id})">
+BORRAR
+</button>
+
+</div>
+
+`
+
+card.onclick=()=>toggleVote(card)
+
+grid.appendChild(card)
+
+})
+}
+
+renderVotes()
 
 </script>
 
