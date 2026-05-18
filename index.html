@@ -1,55 +1,540 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador y Votaciones</title>
 
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CounterHub</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+
+    background:
+    radial-gradient(circle at top left,#1d4ed8,transparent 25%),
+    radial-gradient(circle at bottom right,#7c3aed,transparent 25%),
+    #020617;
+
+    color:white;
+
+    overflow-x:hidden;
+}
+
+header{
+    padding:80px 20px 40px;
+    text-align:center;
+}
+
+header h1{
+
+    font-size:5rem;
+    font-weight:700;
+
+    background:linear-gradient(90deg,#60a5fa,#c084fc);
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:float 4s ease-in-out infinite;
+}
+
+header p{
+    margin-top:15px;
+    font-size:1.2rem;
+    opacity:0.8;
+}
+
+.container{
+
+    width:90%;
+    max-width:1400px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(380px,1fr));
+
+    gap:30px;
+
+    padding-bottom:60px;
+}
+
+.card{
+
+    background:rgba(255,255,255,0.06);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    border-radius:30px;
+
+    padding:35px;
+
+    backdrop-filter:blur(18px);
+
+    transition:0.35s;
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,0.4);
+}
+
+.card:hover{
+
+    transform:
+    translateY(-10px)
+    scale(1.02);
+
+    box-shadow:
+    0 25px 60px rgba(0,0,0,0.5);
+}
+
+.card h2{
+
+    font-size:2rem;
+    margin-bottom:25px;
+}
+
+.contador{
+
+    text-align:center;
+
+    font-size:8rem;
+    font-weight:700;
+
+    margin:40px 0;
+
+    background:
+    linear-gradient(90deg,#38bdf8,#a78bfa);
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.botones{
+
+    display:flex;
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:15px;
+}
+
+button{
+
+    border:none;
+
+    padding:15px 24px;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-size:1rem;
+    font-weight:600;
+
+    color:white;
+
+    background:
+    linear-gradient(135deg,#2563eb,#7c3aed);
+
+    transition:0.25s;
+
+    box-shadow:
+    0 10px 25px rgba(37,99,235,0.35);
+}
+
+button:hover{
+
+    transform:
+    translateY(-4px)
+    scale(1.05);
+
+    box-shadow:
+    0 15px 35px rgba(124,58,237,0.5);
+}
+
+button:active{
+    transform:scale(0.95);
+}
+
+input,
+textarea{
+
+    width:100%;
+
+    margin-bottom:18px;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:rgba(255,255,255,0.07);
+
+    color:white;
+
+    outline:none;
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    transition:0.25s;
+}
+
+input:focus,
+textarea:focus{
+
+    border:1px solid #60a5fa;
+
+    box-shadow:
+    0 0 15px rgba(96,165,250,0.4);
+}
+
+textarea{
+    min-height:140px;
+    resize:none;
+}
+
+.votacion{
+
+    margin-top:20px;
+
+    padding:20px;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,0.05);
+
+    border:1px solid rgba(255,255,255,0.08);
+
+    animation:fadeUp 0.5s ease;
+}
+
+.votacion h3{
+    margin-bottom:20px;
+}
+
+.opcion{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:12px;
+
+    margin-bottom:12px;
+
+    border-radius:12px;
+
+    background:rgba(255,255,255,0.04);
+}
+
+.animar{
+    animation:pop 0.25s ease;
+}
+
+@keyframes pop{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.15);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes float{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-10px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+}
+
+@media(max-width:768px){
+
+    header h1{
+        font-size:3rem;
+    }
+
+    .contador{
+        font-size:5rem;
+    }
+}
+
+</style>
+
 </head>
+
 <body>
 
-    <header class="hero">
-        <h1 class="titulo">CONTADOR INTERACTIVO</h1>
-        <p class="subtitulo">Animaciones, votaciones y contador configurable</p>
-    </header>
+<header>
 
-    <main>
+    <h1>COUNTERHUB</h1>
 
-        <section class="card fade-up">
-            <h2>Contador</h2>
+    <p>Contador interactivo y votaciones online</p>
 
-            <div id="contador" class="contador">0</div>
+</header>
 
-            <div class="botones">
-                <button id="sumar1">+1</button>
+<div class="container">
 
-                <input type="number" id="cantidad" value="5">
+    <div class="card">
 
-                <button id="sumarCustom">Sumar cantidad</button>
+        <h2>Contador</h2>
 
-                <button id="reiniciar">Reiniciar</button>
+        <div class="contador" id="contador">
+            0
+        </div>
+
+        <div class="botones">
+
+            <button id="sumar1">
+                +1
+            </button>
+
+            <input
+                type="number"
+                id="cantidad"
+                value="5"
+            >
+
+            <button id="sumarCustom">
+                Sumar cantidad
+            </button>
+
+            <button id="reiniciar">
+                Reiniciar
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Crear votación</h2>
+
+        <input
+            type="text"
+            id="titulo"
+            placeholder="Título de la votación"
+        >
+
+        <textarea
+            id="opciones"
+            placeholder="Una opción por línea"
+        ></textarea>
+
+        <button id="crear">
+            Crear votación
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Votaciones</h2>
+
+        <div id="lista"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+const contador = document.getElementById('contador');
+
+const sumar1 = document.getElementById('sumar1');
+
+const sumarCustom =
+document.getElementById('sumarCustom');
+
+const reiniciar =
+document.getElementById('reiniciar');
+
+const cantidad =
+document.getElementById('cantidad');
+
+let numero = 0;
+
+function actualizar(){
+
+    contador.innerText = numero;
+
+    contador.classList.remove('animar');
+
+    void contador.offsetWidth;
+
+    contador.classList.add('animar');
+}
+
+sumar1.addEventListener('click',()=>{
+
+    numero++;
+
+    actualizar();
+});
+
+sumarCustom.addEventListener('click',()=>{
+
+    numero += Number(cantidad.value);
+
+    actualizar();
+});
+
+reiniciar.addEventListener('click',()=>{
+
+    numero = 0;
+
+    actualizar();
+});
+
+const crear =
+document.getElementById('crear');
+
+const lista =
+document.getElementById('lista');
+
+crear.addEventListener('click',async()=>{
+
+    const titulo =
+    document.getElementById('titulo').value;
+
+    const opciones =
+    document.getElementById('opciones')
+    .value
+    .split('\\n')
+    .map(o=>o.trim())
+    .filter(o=>o !== '');
+
+    if(!titulo || opciones.length < 2){
+
+        alert('Mínimo 2 opciones');
+
+        return;
+    }
+
+    await fetch('/api/votaciones',{
+
+        method:'POST',
+
+        headers:{
+            'Content-Type':'application/json'
+        },
+
+        body:JSON.stringify({
+            titulo,
+            opciones
+        })
+    });
+
+    cargar();
+});
+
+async function votar(id,index){
+
+    await fetch(`/api/votar/${id}/${index}`,{
+        method:'POST'
+    });
+
+    cargar();
+}
+
+async function cargar(){
+
+    const res =
+    await fetch('/api/votaciones');
+
+    const votaciones =
+    await res.json();
+
+    lista.innerHTML = '';
+
+    votaciones.forEach(v=>{
+
+        const div =
+        document.createElement('div');
+
+        div.className = 'votacion';
+
+        let html =
+        `<h3>${v.titulo}</h3>`;
+
+        v.opciones.forEach((op,i)=>{
+
+            html += `
+
+            <div class="opcion">
+
+                <span>
+                    ${op.nombre}
+                    -
+                    ${op.votos} votos
+                </span>
+
+                <button
+                onclick="votar(${v.id},${i})">
+
+                    Votar
+
+                </button>
+
             </div>
-        </section>
+            `;
+        });
 
-        <section class="card fade-up delay">
-            <h2>Crear votación</h2>
+        div.innerHTML = html;
 
-            <input type="text" id="tituloVotacion" placeholder="Título de la votación">
+        lista.appendChild(div);
+    });
+}
 
-            <textarea id="opcionesVotacion" placeholder="Una opción por línea"></textarea>
+cargar();
 
-            <button id="crearVotacion">Crear votación</button>
-        </section>
+</script>
 
-        <section class="card fade-up delay2">
-            <h2>Votaciones</h2>
-
-            <div id="listaVotaciones"></div>
-        </section>
-
-    </main>
-
-    <script src="script.js"></script>
 </body>
 </html>
