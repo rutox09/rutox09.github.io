@@ -1,64 +1,54 @@
-// ---------- NAV ----------
+const express = require('express');
+const path = require('path');
 
-function openSection(id){
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-  document.getElementById("lobby").style.display = "none";
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-  document.querySelectorAll(".section").forEach(section=>{
-    section.style.display = "none";
-  });
+// Votaciones guardadas en memoria
+let votaciones = [];
 
-  document.getElementById(id).style.display = "block";
-}
+// Obtener votaciones
+app.get('/api/votaciones', (req, res) => {
+    res.json(votaciones);
+});
 
-function goHome(){
+// Crear votación
+app.post('/api/votaciones', (req, res) => {
+    const { titulo, opciones } = req.body;
 
-  document.querySelectorAll(".section").forEach(section=>{
-    section.style.display = "none";
-  });
+    const nueva = {
+        id: Date.now(),
+        titulo,
+        opciones: opciones.map(op => ({
+            nombre: op,
+            votos: 0
+        }))
+    };
 
-  document.getElementById("lobby").style.display = "grid";
-}
+    votaciones.push(nueva);
 
-// ---------- CONTADOR ----------
+    res.json(nueva);
+});
 
-let contador = 0;
+// Votar
+app.post('/api/votar/:id/:opcion', (req, res) => {
+    const id = Number(req.params.id);
+    const opcionIndex = Number(req.params.opcion);
 
-function actualizarContador(){
+    const votacion = votaciones.find(v => v.id === id);
 
-  document.getElementById("counterNumber").innerText = contador;
-}
+    if (!votacion) {
+        return res.status(404).json({ error: 'No encontrada' });
+    }
 
-function sumarUno(){
+    votacion.opciones[opcionIndex].votos++;
 
-  contador += 1;
+    res.json(votacion);
+});
 
-  actualizarContador();
-}
-
-function sumarCustom(){
-
-  const cantidad =
-    parseInt(document.getElementById("customAmount").value) || 0;
-
-  contador += cantidad;
-
-  actualizarContador();
-}
-
-function restarCustom(){
-
-  const cantidad =
-    parseInt(document.getElementById("customAmount").value) || 0;
-
-  contador -= cantidad;
-
-  actualizarContador();
-}
-
-function reiniciarContador(){
-
-  contador = 0;
-
-  actualizarContador();
-}
+app.listen(PORT, () => {
+    console.log(`Servidor iniciado en http://localhost:${PORT}`);
+});
