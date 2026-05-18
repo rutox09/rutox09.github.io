@@ -1,55 +1,72 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contador y Votaciones</title>
+* {
+    border-radius: 15px;
+    margin-bottom: 20px;
+    animation: aparecer 0.5s ease;
+}
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+.opcion {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
 
-    <header class="hero">
-        <h1 class="titulo">CONTADOR INTERACTIVO</h1>
-        <p class="subtitulo">Animaciones, votaciones y contador configurable</p>
-    </header>
+.fade-up {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: fadeUp 1s forwards;
+}
 
-    <main>
+.delay {
+    animation-delay: 0.3s;
+}
 
-        <section class="card fade-up">
-            <h2>Contador</h2>
+.delay2 {
+    animation-delay: 0.6s;
+}
 
-            <div id="contador" class="contador">0</div>
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-            <div class="botones">
-                <button id="sumar1">+1</button>
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
 
-                <input type="number" id="cantidad" value="5">
+    50% {
+        transform: scale(1.2);
+    }
 
-                <button id="sumarCustom">Sumar cantidad</button>
+    100% {
+        transform: scale(1);
+    }
+}
 
-                <button id="reiniciar">Reiniciar</button>
-            </div>
-        </section>
+@keyframes aparecer {
+    from {
+        opacity: 0;
+    }
 
-        <section class="card fade-up delay">
-            <h2>Crear votación</h2>
+    to {
+        opacity: 1;
+    }
+}
 
-            <input type="text" id="tituloVotacion" placeholder="Título de la votación">
+@keyframes flotar {
+    0% {
+        transform: translateY(0px);
+    }
 
-            <textarea id="opcionesVotacion" placeholder="Una opción por línea"></textarea>
+    50% {
+        transform: translateY(-10px);
+    }
 
-            <button id="crearVotacion">Crear votación</button>
-        </section>
-
-        <section class="card fade-up delay2">
-            <h2>Votaciones</h2>
-
-            <div id="listaVotaciones"></div>
-        </section>
-
-    </main>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    100% {
+        transform: translateY(0px);
+    }
+}
