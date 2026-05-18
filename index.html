@@ -405,6 +405,10 @@ body{
 
 <script>
 
+/* =========================
+   NAVEGACIÓN
+========================= */
+
 function showSection(id){
 
     document.querySelectorAll(".section").forEach(section=>{
@@ -414,11 +418,19 @@ function showSection(id){
     document.getElementById(id).classList.add("active");
 }
 
-/* CONTADOR */
+/* =========================
+   CONTADOR
+========================= */
 
-let contador = 0;
+let contador = localStorage.getItem("contador")
+    ? parseInt(localStorage.getItem("contador"))
+    : 0;
 
 const counter = document.getElementById("counter");
+
+function guardarContador(){
+    localStorage.setItem("contador", contador);
+}
 
 function actualizarContador(){
 
@@ -429,10 +441,14 @@ function actualizarContador(){
     setTimeout(()=>{
         counter.classList.remove("pop");
     },200);
+
+    guardarContador();
 }
 
 function sumarUno(){
+
     contador++;
+
     actualizarContador();
 }
 
@@ -448,67 +464,122 @@ function sumarCantidad(){
 }
 
 function reiniciar(){
+
     contador = 0;
+
     actualizarContador();
 }
 
-/* VOTACIONES */
+/* =========================
+   VOTACIONES
+========================= */
+
+let votaciones = localStorage.getItem("votaciones")
+    ? JSON.parse(localStorage.getItem("votaciones"))
+    : [];
+
+function guardarVotaciones(){
+
+    localStorage.setItem(
+        "votaciones",
+        JSON.stringify(votaciones)
+    );
+}
+
+function renderizarVotaciones(){
+
+    const lista = document.getElementById("listaVotaciones");
+
+    lista.innerHTML = "";
+
+    votaciones.forEach((votacion, index)=>{
+
+        let card = document.createElement("div");
+
+        card.className = "vote-card";
+
+        let html = `<h2>${votacion.titulo}</h2>`;
+
+        votacion.opciones.forEach((opcion, i)=>{
+
+            html += `
+                <div 
+                    class="vote-option"
+                    onclick="votar(${index}, ${i})"
+                >
+                    ${opcion.nombre}
+                    <span style="float:right">
+                        ${opcion.votos} votos
+                    </span>
+                </div>
+            `;
+        });
+
+        card.innerHTML = html;
+
+        lista.appendChild(card);
+    });
+}
 
 function crearVotacion(){
 
-    let titulo = document.getElementById("titulo").value;
+    let titulo = document
+        .getElementById("titulo")
+        .value;
 
     let opcionesTexto = document
         .getElementById("opciones")
         .value
         .split("\n");
 
-    if(!titulo || opcionesTexto.length === 0){
+    if(!titulo){
         return;
     }
 
-    let card = document.createElement("div");
-    card.className = "vote-card";
-
-    let html = `<h2>${titulo}</h2>`;
+    let nuevasOpciones = [];
 
     opcionesTexto.forEach(opcion=>{
 
         if(opcion.trim() !== ""){
 
-            html += `
-                <div class="vote-option">
-                    ${opcion}
-                    <span style="float:right">0 votos</span>
-                </div>
-            `;
+            nuevasOpciones.push({
+                nombre: opcion,
+                votos: 0
+            });
         }
     });
 
-    card.innerHTML = html;
-
-    let opciones = card.querySelectorAll(".vote-option");
-
-    opciones.forEach(opcion=>{
-
-        let votos = 0;
-
-        opcion.addEventListener("click",()=>{
-
-            votos++;
-
-            opcion.querySelector("span").textContent =
-                votos + " votos";
-        });
+    votaciones.unshift({
+        titulo: titulo,
+        opciones: nuevasOpciones
     });
 
-    document
-        .getElementById("listaVotaciones")
-        .prepend(card);
+    guardarVotaciones();
+
+    renderizarVotaciones();
 
     document.getElementById("titulo").value = "";
     document.getElementById("opciones").value = "";
 }
+
+function votar(votacionIndex, opcionIndex){
+
+    votaciones[votacionIndex]
+        .opciones[opcionIndex]
+        .votos++;
+
+    guardarVotaciones();
+
+    renderizarVotaciones();
+}
+
+/* =========================
+   CARGA INICIAL
+========================= */
+
+actualizarContador();
+
+renderizarVotaciones();
 
 </script>
 
